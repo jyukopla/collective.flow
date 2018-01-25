@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+<layers>
+  <layer
+      name="collective.flow"
+      interface="collective.flow.interfaces.ICollectiveFlowLayer"
+      />
+</layers>

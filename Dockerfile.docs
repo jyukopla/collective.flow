@@ -1,0 +1,2 @@
+FROM docker.kopla.jyu.fi/base/go-http-server:master
+ADD html ./

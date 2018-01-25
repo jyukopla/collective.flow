@@ -1,0 +1,3 @@
+pytest-runner
+https://github.com/MrTango/click/archive/master.tar.gz#egg=Click
+plonecli==0.1.0a4

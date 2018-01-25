@@ -1,0 +1,8 @@
+stages:
+  - test
+
+test-plone-5.x:
+  stage: test
+  script:
+  - make -f Makefile.docker BUILDOUT_FILENAME=buildout-plone-5.x.cfg show
+  - make -f Makefile.docker BUILDOUT_FILENAME=buildout-plone-5.x.cfg test

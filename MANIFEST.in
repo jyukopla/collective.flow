@@ -1,0 +1,5 @@
+graft src/jyu
+graft docs
+include *.nix *.rst *.txt
+global-exclude *.pyc
+exclude .* *.sh *.cfg result Makefile* Dockerfile*
