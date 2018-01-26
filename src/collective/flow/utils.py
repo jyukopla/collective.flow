@@ -1,10 +1,30 @@
 # -*- coding: utf-8 -*-
-from hashlib import md5
-from plone.memoize import ram
-from plone.supermodel import loadString
+from Acquisition import aq_inner
+from Acquisition import aq_parent
 
 
-# noinspection PyCallingNonCallable
-@ram.cache(lambda m, xml: md5(xml).hexdigest())
-def load_schema(xml):
-    return loadString(xml).schema
+# noinspection PyUnresolvedReferences
+def parents(context, iface=None):
+    """Iterate through parents for the context (providing the given interface).
+
+    Return generator to walk the acquisition chain of object, considering that
+    it could be a function.
+
+    Source: http://plone.org/documentation/manual/developer-manual/archetypes/
+    appendix-practicals/b-org-creating-content-types-the-plone-2.5-way/
+    writing-a-custom-pas-plug-in
+    """
+    context = aq_inner(context)
+
+    while context is not None:
+        if iface.providedBy(context):
+            yield context
+
+        func = getattr(context, 'im_self', None)
+        if func is not None:
+            context = aq_inner(func)
+        else:
+            # Don't use Acquisition.aq_inner() since portal_factory (and
+            # probably other) things, depends on being able to wrap itself in a
+            # fake context.
+            context = aq_parent(context)

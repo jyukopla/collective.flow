@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<registry>
+  <records prefix="plone.bundles/collective.flow"
+           interface='Products.CMFPlone.interfaces.IBundleRegistry'>
+    <value key="jscompilation">++plone++collective.flow/scripts.js</value>
+    <value key="csscompilation">++plone++collective.flow/styles.css</value>
+    <value key="last_compilation">2018-02-01 00:00:00</value>
+    <value key="compile">false</value>
+    <value key="depends">plone</value>
+    <value key="enabled">true</value>
+    <value key="merge_with">default</value>
+  </records>
+</registry>

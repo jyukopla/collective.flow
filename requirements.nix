@@ -3903,19 +3903,19 @@ self: super: {
     };
   };
   "setuptools" = super.buildPythonPackage {
-    name = "setuptools-38.2.5";
+    name = "setuptools-36.4.0";
     doCheck = false;
     src = fetchurl {
-      url = "https://pypi.python.org/packages/e9/c3/5986db56819bd88e1a250cad2a97249211686b1b7b5d95f9ab64d403a2cb/setuptools-38.2.5.zip";
-      sha256 = "01s5r41b9laqa3qw1gm7knpjykf1dkhcw0rc1da711l6rivg505h";
+      url = "https://pypi.python.org/packages/28/4f/889339f38da415e49cff15b21ab27becbf4c017c79fbfdeca663f5b33b36/setuptools-36.4.0.zip";
+      sha256 = "1bir09zxr55pm4xvn9xwzrwqbp303r0mpvinyd1frkp81wkv0n17";
     };
   };
   "six" = super.buildPythonPackage {
-    name = "six-1.10.0";
+    name = "six-1.11.0";
     doCheck = false;
     src = fetchurl {
-      url = "https://pypi.python.org/packages/b3/b2/238e2590826bfdd113244a40d9d3eb26918bd798fc187e2360a8367068db/six-1.10.0.tar.gz";
-      sha256 = "0snmb8xffb3vsma0z67i0h0w2g2dy0p3gsgh9gi4i0kgc5l8spqh";
+      url = "https://pypi.python.org/packages/16/d8/bc6316cf98419719bd59c91742194c111b6f2e85abac88e496adefaf7afe/six-1.11.0.tar.gz";
+      sha256 = "1scqzwc51c875z23phj48gircqjgnn3af8zy2izjwmnlxrxsgs3h";
     };
   };
   "slimit" = super.buildPythonPackage {
@@ -3992,11 +3992,11 @@ self: super: {
     };
   };
   "testfixtures" = super.buildPythonPackage {
-    name = "testfixtures-5.3.1";
+    name = "testfixtures-5.4.0";
     doCheck = false;
     src = fetchurl {
-      url = "https://pypi.python.org/packages/0b/15/6042f84f278fceab333bf97cc93c3c5bcb01fb3776e4268ec4c97d6dd0c3/testfixtures-5.3.1.tar.gz";
-      sha256 = "0a47b32sjrw3hkmdb92b1h28n2dg7j4jwsly41w244xp22adw2k7";
+      url = "https://pypi.python.org/packages/e0/dc/16e99f214c38267862266cee87574ec841b7c946b3ba3474761614f041fe/testfixtures-5.4.0.tar.gz";
+      sha256 = "1w581221qbsmc177n7xijqn7wghyaaxxlwd2p34vfcn4jnbfv2ik";
     };
   };
   "transaction" = super.buildPythonPackage {

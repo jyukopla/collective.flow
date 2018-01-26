@@ -46,7 +46,7 @@
   </action>
   <action title="Design" action_id="schema" category="object" condition_expr=""
           description="" icon_expr="" link_target=""
-          url_expr="string:${object_url}/@@schema" visible="True">
+          url_expr="string:${object_url}/@@design" visible="True">
     <permission value="Modify portal content"/>
   </action>
 </object>
