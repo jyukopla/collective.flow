@@ -2,6 +2,7 @@
 from collective.flow import _
 from collective.flow import browser
 from collective.flow import content
+from collective.flow import schema
 from plone import api
 from Products.CMFPlone.interfaces import INonInstallable
 from venusianconfiguration import configure
@@ -14,6 +15,7 @@ i18n_domain('collective.flow')
 configure.i18n.registerTranslations(directory='locales')
 
 scan(content)
+scan(schema)
 
 configure.include(package=browser, file='__init__.py')
 
@@ -26,6 +28,8 @@ configure.include(package=browser, file='__init__.py')
     provides=u'Products.GenericSetup.interfaces.EXTENSION')
 def setup(context):
     portal = api.portal.get()
+    if 'schemata' in portal.objectIds():
+        return
     portal.portal_types.FlowSchemaRepository.global_allow = True
     api.content.create(
         portal,
@@ -41,7 +45,7 @@ configure.gs.upgradeDepends(
     title=u'Upgrade collective.flow from 1000 to 1001',
     description=u'Update portal types',
     profile='collective.flow:default',
-    import_steps='typeinfo',
+    import_steps='typeinfo plone.app.registry',
 )
 
 

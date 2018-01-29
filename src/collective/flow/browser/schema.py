@@ -1,20 +1,25 @@
 # -*- coding: utf-8 -*-
+from AccessControl import Unauthorized
+from Acquisition import aq_base
 from collective.flow.interfaces import DEFAULT_SCHEMA
 from collective.flow.interfaces import ICollectiveFlowLayer
 from collective.flow.interfaces import IFlowSchema
 from collective.flow.interfaces import IFlowSchemaContext
-from collective.flow.utils import load_schema
+from collective.flow.schema import load_schema
+from lxml import etree
 from OFS.interfaces import IItem
 from plone.dexterity.browser.edit import DefaultEditForm
 from plone.schemaeditor.browser.schema.traversal import SchemaContext
-from plone.schemaeditor.interfaces import ISchemaModifiedEvent
-from plone.supermodel import serializeSchema
+from Products.Five import BrowserView
 from venusianconfiguration import configure
 from z3c.form import button
 from zope.cachedescriptors import property
-from zope.component import adapter
+from zope.component import queryMultiAdapter
 from zope.i18nmessageid import MessageFactory
 from zope.interface import implementer
+
+import json
+import plone.app.dexterity.browser
 
 
 _ = MessageFactory('collective.flow')
@@ -25,7 +30,7 @@ _ = MessageFactory('collective.flow')
     for_=IFlowSchema,
     layer=ICollectiveFlowLayer,
     permission='zope2.View',
-    template='submission_templates/view.pt',
+    template='schema_templates/view.pt',
 )
 class SchemaView(DefaultEditForm):
     buttons = button.Buttons()
@@ -42,14 +47,14 @@ class SchemaView(DefaultEditForm):
             return load_schema(self.context.schema_xml)
         except AttributeError:
             self.request.response.redirect(
-                '{0:s}/@@schema'.format(self.context.absolute_url()))
+                '{0:s}/@@design'.format(self.context.absolute_url()))
             return load_schema(DEFAULT_SCHEMA)
 
     additionalSchemata = ()
 
 
 @configure.browser.page.class_(
-    name='schema',
+    name='design',
     for_=IFlowSchema,
     layer=ICollectiveFlowLayer,
     permission='cmf.ModifyPortalContent',
@@ -59,17 +64,70 @@ class SchemaView(DefaultEditForm):
 class FlowSchemaContext(SchemaContext):
     def __init__(self, context, request):
         try:
-            schema = load_schema(context.schema_xml)
+            schema = load_schema(context.schema)
         except AttributeError:
             schema = load_schema(DEFAULT_SCHEMA)
         super(FlowSchemaContext, self).__init__(
             schema, request,
-            name=self.__name__,
-            title=_(u'flow input'))
-        self.object = context
+            name='@@{0:s}'.format(self.__name__),
+            title=_(u'design'))
+        self.content = context
 
 
-@configure.subscriber.handler()
-@adapter(IFlowSchemaContext, ISchemaModifiedEvent)
-def save_schema(schema_context, event):
-    schema_context.object.schema_xml = serializeSchema(schema_context.schema)
+class ModelEditorView(BrowserView):
+    def modelSource(self):
+        try:
+            return aq_base(self.context.content).schema
+        except AttributeError:
+            return DEFAULT_SCHEMA
+
+
+def authorized(context, request):
+    authenticator = queryMultiAdapter((context, request),
+                                      name=u'authenticator')
+    return authenticator and authenticator.verify()
+
+
+@configure.browser.page.class_(
+    name='model-edit-save',
+    for_=IFlowSchemaContext,
+    layer=ICollectiveFlowLayer,
+    permission='cmf.ModifyPortalContent',
+)
+class AjaxSaveHandler(BrowserView):
+    def __call__(self):
+        if not authorized(self.context, self.request):
+            raise Unauthorized()
+
+        source = self.request.form.get('source')
+
+        try:
+            source = etree.tostring(
+                etree.fromstring(source),
+                pretty_print=True,
+                xml_declaration=True,
+                encoding='utf8',
+            )
+            load_schema(source)
+        except Exception as e:
+            message = e.args[0].replace('\n  File "<unknown>"', '')
+            return json.dumps({
+                'success': False,
+                'message': u'ParseError: {0}'.format(message),
+            })
+
+        self.context.content.schema = source
+
+        self.request.response.setHeader('Content-Type', 'application/json')
+        return json.dumps({'success': True, 'message': _(u'Saved')})
+
+
+with configure(package=plone.app.dexterity.browser) as subconfigure:
+    subconfigure.browser.page(
+        name='modeleditor',
+        for_=IFlowSchemaContext,
+        layer=ICollectiveFlowLayer,
+        class_=ModelEditorView,
+        permission='cmf.ModifyPortalContent',
+        template='modeleditor.pt',
+    )

@@ -78,7 +78,6 @@ configparser==3.5.0
 cssmin==0.2.0
 cssselect==0.9.2
 diazo==1.2.5
-enum34==1.1.6
 feedparser==5.2.1
 five.customerize==1.1
 five.globalrequest==1.0
@@ -217,15 +216,14 @@ robotframework-selenium2screenshots==0.7.0
 robotsuite==1.7.0
 roman==1.4.0
 sauna.reload==0.5.5
-setuptools==38.2.5
-six==1.10.0
+setuptools==36.4.0
 slimit==0.8.1
 snowballstemmer==1.2.1
 sourcecodegen==0.6.14
 sphinx-rtd-theme==0.1.9
 sphinxcontrib-robotframework==0.7.0
 tempstorage==2.12.2
-testfixtures==5.3.1
+testfixtures==5.4.0
 transaction==1.1.1
 twine==1.8.1
 unittest2==0.5.1

@@ -4,27 +4,28 @@ from Acquisition import aq_inner
 from collective.flow.interfaces import DEFAULT_SCHEMA
 from collective.flow.interfaces import ICollectiveFlowLayer
 from collective.flow.interfaces import IFlowFolder
-from collective.flow.interfaces import IFlowSchemaContext
-from collective.flow.utils import load_schema
-from OFS.interfaces import IItem
+from collective.flow.interfaces import IFlowSchemaForm
+from collective.flow.schema import load_schema
+from collective.flow.schema import remove_attachments
+from datetime import datetime
+from persistent.mapping import PersistentMapping
 from plone.autoform.view import WidgetsView
 from plone.dexterity.browser.add import DefaultAddForm
 from plone.dexterity.events import AddBegunEvent
 from plone.dexterity.interfaces import IDexterityFTI
 from plone.dexterity.utils import addContentToContainer
-from plone.schemaeditor.browser.schema.traversal import SchemaContext
-from plone.schemaeditor.interfaces import ISchemaModifiedEvent
-from plone.supermodel import serializeSchema
+from plone.namedfile import NamedBlobFile
+from plone.namedfile import NamedBlobImage
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from venusianconfiguration import configure
 from z3c.form.interfaces import NOT_CHANGED
 from zope.cachedescriptors import property
-from zope.component import adapter
 from zope.component import createObject
 from zope.component import getUtility
 from zope.event import notify
 from zope.i18nmessageid import MessageFactory
 from zope.interface import implementer
+from zope.location.interfaces import IContained
 
 import os
 
@@ -32,30 +33,64 @@ import os
 _ = MessageFactory('collective.flow')
 
 
-@configure.browser.page.class_(
-    name='schema',
-    for_=IFlowFolder,
-    layer=ICollectiveFlowLayer,
-    permission='cmf.ModifyPortalContent',
-    allowed_interface=IItem)
-@implementer(IFlowSchemaContext)
-class FlowSchemaContext(SchemaContext):
-    def __init__(self, context, request):
-        try:
-            schema = load_schema(context.schema_xml)
-        except AttributeError:
-            schema = load_schema(DEFAULT_SCHEMA)
-        super(FlowSchemaContext, self).__init__(
-            schema, request,
-            name=self.__name__,
-            title=_(u'flow input schema'))
-        self.object = context
+def save_form(form, data, submission):
+    for name, field in form.fields.items():
+        if name == 'schema':
+            continue
+        elif name not in data:
+            continue
+
+        value = data[name]
+        if value is NOT_CHANGED:
+            continue
+
+        # Set contained information of schema.Object
+        if IContained.providedBy(value):
+            value.__name__ = name
+            value.__parent__ = submission
+
+        # Set contained information of schema.List|Tuple(value_type=Object)
+        if isinstance(value, list) or isinstance(value, tuple):
+            for item in value:
+                if IContained.providedBy(item):
+                    item.__name__ = name
+                    item.__parent__ = submission
+
+        setattr(submission, name, value)
 
 
-@configure.subscriber.handler()
-@adapter(IFlowSchemaContext, ISchemaModifiedEvent)
-def save_schema(schema_context, event):
-    schema_context.object.schema_xml = serializeSchema(schema_context.schema)
+def extract_attachments(data, context, prefix=u''):
+    if isinstance(data, list) or isinstance(data, tuple):
+        for i in range(len(data)):
+            for attachment in extract_attachments(
+                    data[i], context,
+                    prefix=u'{0:s}{1:02d}-'.format(prefix, i + 1)):
+                yield attachment
+        return
+    elif isinstance(data, dict) or isinstance(data, PersistentMapping):
+        fti = getUtility(IDexterityFTI, name='FlowAttachment')
+        for name, value in data.items():
+            if isinstance(value, NamedBlobFile):
+                attachment = createObject(fti.factory).__of__(context)
+                attachment.image = None
+                attachment.file = value
+                attachment.file.filename = u'{0:s}{1:s}-{2:s}'.format(
+                    prefix, name, attachment.file.filename)
+                del data[name]
+                yield aq_base(attachment)
+            elif isinstance(value, NamedBlobImage):
+                attachment = createObject(fti.factory).__of__(context)
+                attachment.file = None
+                attachment.image = value
+                attachment.image.filename = u'{0:s}{1:s}-{2:s}'.format(
+                    prefix, name, attachment.image.filename)
+                del data[name]
+                yield aq_base(attachment)
+            elif value:
+                for attachment in extract_attachments(
+                        value, context,
+                        prefix=u'{0:s}{1:s}-'.format(prefix, name)):
+                    yield attachment
 
 
 @configure.browser.page.class_(
@@ -63,11 +98,11 @@ def save_schema(schema_context, event):
     for_=IFlowFolder,
     layer=ICollectiveFlowLayer,
     permission='zope2.View')
+@implementer(IFlowSchemaForm)
 class FlowSubmitForm(DefaultAddForm):
     portal_type = 'FlowSubmission'
     description = u''
-
-    _submission = None
+    content = None
 
     def label(self):
         return self.context.Title()
@@ -75,10 +110,10 @@ class FlowSubmitForm(DefaultAddForm):
     @property.Lazy
     def schema(self):
         try:
-            return load_schema(self.context.schema_xml)
+            return load_schema(self.context.schema)
         except AttributeError:
             self.request.response.redirect(
-                u'{0}/@@edit-schema'.format(self.context.absolute_url()))
+                u'{0}/@@design'.format(self.context.absolute_url()))
             return load_schema(DEFAULT_SCHEMA)
 
     additionalSchemata = ()
@@ -93,32 +128,37 @@ class FlowSubmitForm(DefaultAddForm):
 
     def create(self, data):
         fti = getUtility(IDexterityFTI, name=self.portal_type)
+        context = aq_inner(self.context)
+        submission = createObject(fti.factory).__of__(context)
 
-        form = aq_inner(self.context)
-        submission = createObject(fti.factory).__of__(form)
-        submission.schema_xml = serializeSchema(self.schema)
+        # extract attachments to be saved into separate objects
+        attachments = tuple(extract_attachments(data, context))
 
         # save form data (bypass data manager for speed
         # and to avoid needing to reload the form schema)
-        for name, field in self.fields.items():
-            if name not in data:
-                continue
-            if data[name] is NOT_CHANGED:
-                continue
-            setattr(submission, name, data[name])
-        submission.title = self.context.title
-        submission.workflow = self.context.workflow
+        save_form(self, data, submission)
 
-        return aq_base(submission)
+        submission.schema = remove_attachments(self.context.schema)
+        submission.title = u'{0:s} {1:s}'.format(
+            context.title, datetime.utcnow().strftime('%Y-%#m-%#d'),
+        )
 
-    def add(self, submission):
+        return aq_base(submission), attachments
+
+    def add(self, submission_with_attachments):
+        submission, attachments = submission_with_attachments
         form = aq_inner(self.context)
-        addContentToContainer(form, submission, checkConstraints=False)
-        self._submission = submission.__of__(self.context)
+        submission = addContentToContainer(
+            form, submission, checkConstraints=False)
+        for attachment in attachments:
+            addContentToContainer(
+                submission, attachment, checkConstraints=False)
+        self.content = submission.__of__(self.context)
 
     def render(self):
         if self._finishedAdd:
-            return SubmissionView(self.context, self.request, self.schema)()
+            return SubmissionView(
+                self.context, self.request, self.content)()
         return super(FlowSubmitForm, self).render()
 
     def updateActions(self):
@@ -130,11 +170,15 @@ class FlowSubmitForm(DefaultAddForm):
 
 
 class SubmissionView(WidgetsView):
-    ignoreContext = True
-    ignoreRequest = False
+    ignoreRequest = True
+
     index = ViewPageTemplateFile(
         os.path.join('submission_templates', 'view.pt'))
 
-    def __init__(self, context, request, schema):
-        self.schema = schema
+    def __init__(self, context, request, content):
+        self.content = content
+        self.schema = load_schema(content.schema)
         super(SubmissionView, self).__init__(context, request)
+
+    def getContent(self):
+        return self.content

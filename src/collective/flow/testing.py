@@ -1,5 +1,6 @@
 # -*- coding:utf-8 -*-
 from Acquisition import aq_base
+from collective.flow.schema import SCHEMA_MODULE
 from plone import api
 from plone.app.robotframework import AutoLogin
 from plone.app.robotframework import I18N
@@ -29,7 +30,7 @@ import pkg_resources
 import venusianconfiguration
 
 
-_ = MessageFactory('colletive.flow')
+_ = MessageFactory('collective.flow')
 
 
 try:
@@ -41,15 +42,48 @@ except pkg_resources.VersionConflict:
     pass
 
 
+venusianconfiguration.configure.includePluginsOverrides(
+    package=u'plone', file='overrides.py')
+
+
+ORDER_SCHEMA = """\
+<?xml version="1.0" encoding="UTF-8"?>
+<model xmlns="http://namespaces.plone.org/supermodel/schema">
+  <schema>
+    <field name="name" type="zope.schema.TextLine">
+      <title>Full name</title>
+    </field>
+    <field name="order" type="zope.schema.List">
+      <title>Order</title>
+      <value_type type="zope.schema.Object">
+        <schema>{0:s}.order</schema>
+      </value_type>
+    </field>
+  </schema>
+  <schema name="order">
+    <field name="name" type="zope.schema.TextLine">
+      <title>Name</title>
+    </field>
+    <field name="amount" type="zope.schema.Int">
+      <title>Amount</title>
+    </field>
+  </schema>
+</model>
+""".format(SCHEMA_MODULE)
+
+
 def populate(portal, target_language):
     setRoles(portal, TEST_USER_ID, ('Manager',))
     login(portal, TEST_USER_NAME)
-    api.content.create(
+    ob = api.content.create(
         portal,
         'FlowFolder',
-        'registration-flow',
-        title=translate(_(u'Registration flow')),
+        'order',
+        title=translate(_(u'Order'), target_language=target_language),
     )
+    ob.schema = ORDER_SCHEMA
+    ob.submission_workflow = 'intranet_workflow'
+    ob.attachment_workflow = 'intranet_workflow'
     logout()
 
 
@@ -92,6 +126,7 @@ class FlowLayer(PloneSandboxLayer):
             self.loadZCML(package=plone.app.contenttypes)
         venusianconfiguration.enable()
         self.loadZCML(package=collective.flow, name='configure.py')
+        self.loadZCML(package=collective.flow, name='testing.py')
 
     def setUpPloneSite(self, portal):
         if HAVE_PLONE_5:

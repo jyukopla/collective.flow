@@ -1,0 +1,15 @@
+.portaltype-flowsubmission.template-view .multi-widget span.required {
+    display: none;
+}
+
+.portaltype-flowsubmission.template-view .multi-widget .row {
+    margin: 0;
+}
+
+.portaltype-flowsubmission.template-view .object-widget > div {
+    display: inline;
+}
+
+.portaltype-flowsubmission.template-view .object-widget > div.label {
+    margin-left: 1em;
+}
