@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 from collective.flow.interfaces import ICollectiveFlowLayer
 from collective.flow.interfaces import IFlowAttachment
-from collective.flow.interfaces import IFlowFolder
 from collective.flow.interfaces import IFlowSchema
 from collective.flow.interfaces import IFlowSchemaForm
 from collective.flow.interfaces import IFlowSubmission
@@ -99,17 +98,13 @@ class NameFromTitle(object):
 @configure.adapter.factory(for_=(IFlowSubmission, IPloneBaseTool))
 @implementer(IWorkflowChain)
 def getFlowSubmissionWorkflowChain(ob, tool):
-    for parent in parents(ob, iface=IFlowFolder):
-        return parent.submission_workflow,
-    assert False, u'FlowFolder not found for "{0:s}"'.format(
-        '/'.join(ob.getPhysicalPath()),
-    )
+    return ob.submission_workflow,
 
 
 @configure.adapter.factory(for_=(IFlowAttachment, IPloneBaseTool))
 @implementer(IWorkflowChain)
 def getFlowAttachmentWorkflowChain(ob, tool):
-    for parent in parents(ob, iface=IFlowFolder):
+    for parent in parents(ob, iface=IFlowSubmission):
         return parent.attachment_workflow,
     assert False, u'FlowFolder not found for "{0:s}"'.format(
         '/'.join(ob.getPhysicalPath()),

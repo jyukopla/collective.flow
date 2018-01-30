@@ -139,6 +139,9 @@ class FlowSubmitForm(DefaultAddForm):
         save_form(self, data, submission)
 
         submission.schema = remove_attachments(self.context.schema)
+        submission.submission_workflow = self.context.submission_workflow
+        submission.attachment_workflow = self.context.attachment_workflow
+
         submission.title = u'{0:s} {1:s}'.format(
             context.title, datetime.utcnow().strftime('%Y-%#m-%#d'),
         )
@@ -173,7 +176,7 @@ class SubmissionView(WidgetsView):
     ignoreRequest = True
 
     index = ViewPageTemplateFile(
-        os.path.join('submission_templates', 'view.pt'))
+        os.path.join('folder_templates', 'view.pt'))
 
     def __init__(self, context, request, content):
         self.content = content
