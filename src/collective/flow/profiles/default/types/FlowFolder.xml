@@ -1,21 +1,21 @@
 <?xml version="1.0"?>
-<object name="FlowSubmission" meta_type="Dexterity FTI" i18n:domain="plone"
+<object name="FlowFolder" meta_type="Dexterity FTI" i18n:domain="plone"
         xmlns:i18n="http://xml.zope.org/namespaces/i18n">
-  <property name="title" i18n:translate="">Flow submission</property>
+  <property name="title" i18n:translate="">Flow folder</property>
   <property name="description"
-            i18n:translate="">Flow submission
+            i18n:translate="">Flow folder
   </property>
   <property name="icon_expr">string:${portal_url}/document_icon.png</property>
-  <property name="factory">FlowSubmission</property>
+  <property name="factory">FlowFolder</property>
   <property
-    name="add_view_expr">string:${folder_url}/++add++FlowSubmission
+    name="add_view_expr">string:${folder_url}/++add++FlowFolder
   </property>
   <property name="link_target"/>
   <property name="immediate_view">view</property>
-  <property name="global_allow">False</property>
+  <property name="global_allow">True</property>
   <property name="filter_content_types">True</property>
   <property name="allowed_content_types">
-    <element value="FlowAttachment"/>
+    <!-- <element value="FlowSubFolder"/> -->
   </property>
   <property name="allow_discussion">False</property>
   <property name="default_view">view</property>
@@ -24,14 +24,14 @@
   </property>
   <property name="default_view_fallback">False</property>
   <property name="add_permission">cmf.AddPortalContent</property>
-  <property name="klass">collective.flow.content.FlowSubmission</property>
+  <property name="klass">plone.dexterity.content.Container</property>
   <property name="behaviors">
     <element value="plone.app.dexterity.behaviors.metadata.IDublinCore"/>
     <element value="plone.app.content.interfaces.INameFromTitle"/>
   </property>
-  <property name="schema">collective.flow.interfaces.IFlowSubmission</property>
+  <property name="schema">collective.flow.interfaces.IFlowFolder</property>
   <property name="model_source"/>
-  <property name="model_file" />
+  <property name="model_file"/>
   <property name="schema_policy">dexterity</property>
   <alias from="(Default)" to="(dynamic view)"/>
   <alias from="edit" to="@@edit"/>
@@ -46,6 +46,11 @@
   <action title="Edit" action_id="edit" category="object" condition_expr=""
           description="" icon_expr="" link_target=""
           url_expr="string:${object_url}/@@edit" visible="True">
+    <permission value="Modify portal content"/>
+  </action>
+  <action title="Design" action_id="design" category="object" condition_expr=""
+          description="" icon_expr="" link_target=""
+          url_expr="string:${object_url}/@@design" visible="True">
     <permission value="Modify portal content"/>
   </action>
 </object>
