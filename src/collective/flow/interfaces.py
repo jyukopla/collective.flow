@@ -1,14 +1,17 @@
 # -*- coding: utf-8 -*-
+from plone.app.textfield import RichText
 from plone.namedfile.field import NamedBlobFile
 from plone.namedfile.field import NamedBlobImage
 from plone.schemaeditor.interfaces import ISchemaContext
 from plone.supermodel import model
 from plone.supermodel.directives import fieldset
 from plone.supermodel.directives import primary
+from z3c.form.interfaces import IWidget
 from zope import schema
 from zope.i18nmessageid import MessageFactory
 from zope.interface import Attribute
 from zope.publisher.interfaces.browser import IDefaultBrowserLayer
+from zope.schema.interfaces import IField
 
 
 _ = MessageFactory('collective.flow')
@@ -56,27 +59,53 @@ class IFlowFolder(IFlowSchema):
         default=_(u'Submit'),
     )
 
+    form_prologue = RichText(
+        title=_(u'Form prologue'),
+        required=False,
+    )
+
+    form_epilogue = RichText(
+        title=_(u'Form epilogue'),
+        required=False,
+    )
+
+    form_thanks = RichText(
+        title=_(u'Thank you message'),
+        required=False,
+    )
+
+    fieldset(
+        'workflow',
+        label=_(u'Workflows'),
+        fields=[u'submission_workflow',
+                u'submission_transition',
+                u'attachment_workflow',
+                u'attachment_transition'],
+    )
+
     submission_workflow = schema.Choice(
         title=_(u'Submission workflow'),
         vocabulary='plone.app.vocabularies.Workflows',
-        default='intranet_workflow',
+        default='always_private_workflow',
     )
 
     submission_transition = schema.Choice(
         title=_(u'Submit transition'),
         vocabulary='plone.app.vocabularies.WorkflowTransitions',
+        default=None,
         required=False,
     )
 
     attachment_workflow = schema.Choice(
         title=_(u'Attachment workflow'),
         vocabulary='plone.app.vocabularies.Workflows',
-        default='intranet_workflow',
+        default='always_private_workflow',
     )
 
     attachment_transition = schema.Choice(
         title=_(u'Attachment transition'),
         vocabulary='plone.app.vocabularies.WorkflowTransitions',
+        default=None,
         required=False,
     )
 
@@ -113,13 +142,13 @@ class IFlowSubmission(IFlowSchema):
     submission_workflow = schema.Choice(
         title=_(u'Submission workflow'),
         vocabulary='plone.app.vocabularies.Workflows',
-        default='intranet_workflow',
+        default='always_private_workflow',
     )
 
     attachment_workflow = schema.Choice(
         title=_(u'Attachment workflow'),
         vocabulary='plone.app.vocabularies.Workflows',
-        default='intranet_workflow',
+        default='always_private_workflow',
     )
 
 
@@ -137,3 +166,18 @@ class IFlowAttachment(model.Schema):
         title=_(u'Image'),
         required=False,
     )
+
+
+class IRichTextLabel(model.Schema, IField):
+    """Rich text label field"""
+    text = RichText(
+        title=_(u'Text'),
+        default=u'',
+        missing_value=u'',
+    )
+    description = Attribute(u'Labels don\'t need to be described.')
+    required = Attribute(u'Labels don\'t require any input value.')
+
+
+class IRichTextLabelWidget(IWidget):
+    """Rich text label widget"""

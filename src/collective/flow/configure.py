@@ -2,6 +2,7 @@
 from collective.flow import _
 from collective.flow import browser
 from collective.flow import content
+from collective.flow import fields
 from collective.flow import schema
 from plone import api
 from Products.CMFPlone.interfaces import INonInstallable
@@ -16,6 +17,7 @@ configure.i18n.registerTranslations(directory='locales')
 
 scan(content)
 scan(schema)
+scan(fields)
 
 configure.include(package=browser, file='__init__.py')
 

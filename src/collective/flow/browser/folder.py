@@ -14,12 +14,12 @@ from plone.dexterity.browser.add import DefaultAddForm
 from plone.dexterity.events import AddBegunEvent
 from plone.dexterity.interfaces import IDexterityFTI
 from plone.dexterity.utils import addContentToContainer
+from plone.memoize import view
 from plone.namedfile import NamedBlobFile
 from plone.namedfile import NamedBlobImage
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from venusianconfiguration import configure
 from z3c.form.interfaces import NOT_CHANGED
-from zope.cachedescriptors import property
 from zope.component import createObject
 from zope.component import getUtility
 from zope.event import notify
@@ -107,10 +107,11 @@ class FlowSubmitForm(DefaultAddForm):
     def label(self):
         return self.context.Title()
 
-    @property.Lazy
+    @property
+    @view.memoize
     def schema(self):
         try:
-            return load_schema(self.context.schema)
+            return load_schema(aq_base(self.context).schema)
         except AttributeError:
             self.request.response.redirect(
                 u'{0}/@@design'.format(self.context.absolute_url()))

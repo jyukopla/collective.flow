@@ -9,11 +9,11 @@ from collective.flow.schema import load_schema
 from lxml import etree
 from OFS.interfaces import IItem
 from plone.dexterity.browser.edit import DefaultEditForm
+from plone.memoize import view
 from plone.schemaeditor.browser.schema.traversal import SchemaContext
 from Products.Five import BrowserView
 from venusianconfiguration import configure
 from z3c.form import button
-from zope.cachedescriptors import property
 from zope.component import queryMultiAdapter
 from zope.i18nmessageid import MessageFactory
 from zope.interface import implementer
@@ -41,10 +41,11 @@ class SchemaView(DefaultEditForm):
     def description(self):
         return self.context.description
 
-    @property.Lazy
+    @property
+    @view.memoize
     def schema(self):
         try:
-            return load_schema(self.context.schema_xml)
+            return load_schema(aq_base(self.context).schema)
         except AttributeError:
             self.request.response.redirect(
                 '{0:s}/@@design'.format(self.context.absolute_url()))
@@ -64,7 +65,7 @@ class SchemaView(DefaultEditForm):
 class FlowSchemaContext(SchemaContext):
     def __init__(self, context, request):
         try:
-            schema = load_schema(context.schema)
+            schema = load_schema(aq_base(context).schema)
         except AttributeError:
             schema = load_schema(DEFAULT_SCHEMA)
         super(FlowSchemaContext, self).__init__(
