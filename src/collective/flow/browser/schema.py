@@ -109,7 +109,7 @@ class AjaxSaveHandler(BrowserView):
                 xml_declaration=True,
                 encoding='utf8',
             )
-            load_schema(source)
+            load_schema(source, context=self.context)
         except Exception as e:
             message = e.args[0].replace('\n  File "<unknown>"', '')
             return json.dumps({

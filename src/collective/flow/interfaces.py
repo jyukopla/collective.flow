@@ -34,7 +34,7 @@ class IFlowSchema(model.Schema):
     schema = Attribute(u'XML serialized flow schema')
     schema_digest = Attribute(u'MD5 hash of the current schema')
 
-    # These should have been a protected attribute, but in the end that could
+    # These should have been a protected attributes, but in the end that could
     # have caused more issues than it would have solved.
 
 

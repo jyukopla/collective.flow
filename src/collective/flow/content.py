@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from Acquisition import aq_base
 from collective.flow.interfaces import ICollectiveFlowLayer
 from collective.flow.interfaces import IFlowAttachment
 from collective.flow.interfaces import IFlowSchema
@@ -17,7 +18,11 @@ from venusianconfiguration import configure
 from z3c.form.interfaces import IObjectFactory
 from zope.component import adapter
 from zope.interface import Interface
+from zope.interface.declarations import getObjectSpecification
+from zope.interface.declarations import implementedBy
 from zope.interface.declarations import implementer
+from zope.interface.declarations import Implements
+from zope.interface.declarations import ObjectSpecificationDescriptor
 from zope.location.interfaces import IContained
 
 
@@ -38,24 +43,43 @@ class FlowSubmission(Container):
     __providedBy__ = FlowSchemaSpecificationDescriptor()
 
 
+class FlowDataSpecificationDescriptor(ObjectSpecificationDescriptor):
+    """Assign an instance of this to an object's __providedBy__ to make it
+    dynamically declare that it provides the schema referenced in its schema.
+    """
+
+    # noinspection PyProtectedMember
+    def __get__(self, inst, cls=None):
+
+        if inst is None:
+            return getObjectSpecification(cls)
+
+        spec = getattr(inst, '__provides__', None)
+        if spec is None:
+            spec = implementedBy(cls)
+
+        if inst.__parent__ is not None and inst.__name__ is not None:
+            field = load_schema(aq_base(inst.__parent__).schema,
+                                context=inst.__parent__)[inst.__name__]
+            try:
+                schema = field.schema
+            except AttributeError:
+                schema = field.value_type.schema
+        else:
+            # Set by FlowObjectFactory
+            schema = inst._v_initial_schema
+
+        spec = Implements(schema, spec)
+
+        return spec
+
+
 @implementer(IFlowSchema, IContained)
 class FlowSubmissionData(PersistentMapping):
-    __providedBy__ = FlowSchemaSpecificationDescriptor()
+    __providedBy__ = FlowDataSpecificationDescriptor()
 
     __parent__ = None
     __name__ = None
-
-    @property
-    def _v_schema(self):
-        if self.__parent__ is not None and self.__name__ is not None:
-            field = load_schema(self.__parent__.schema)[self.__name__]
-            try:
-                return field.schema
-            except AttributeError:
-                return field.value_type.schema
-        else:
-            # Set by FlowObjectFactory
-            return self._v_initial_schema
 
     def __getattr__(self, item):
         try:

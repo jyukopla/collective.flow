@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from Acquisition import aq_base
 from collective.flow.browser.folder import save_form
 from collective.flow.interfaces import ICollectiveFlowLayer
 from collective.flow.interfaces import IFlowSchemaForm
@@ -27,7 +28,7 @@ class SubmissionView(WidgetsView):
 
     @property.Lazy
     def schema(self):
-        return load_schema(self.context.schema)
+        return load_schema(aq_base(self.context).schema, context=self.context)
 
 
 @configure.browser.page.class_(
@@ -41,7 +42,7 @@ class SubmissionEditForm(DefaultEditForm):
 
     @property.Lazy
     def schema(self):
-        return load_schema(self.context.schema)
+        return load_schema(aq_base(self.context).schema, context=self.context)
 
     additionalSchemata = ()
 

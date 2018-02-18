@@ -78,7 +78,6 @@ configparser==3.5.0
 cssmin==0.2.0
 cssselect==0.9.2
 diazo==1.2.5
-enum34==1.1.6
 feedparser==5.2.1
 five.customerize==1.1
 five.globalrequest==1.0
@@ -96,16 +95,17 @@ flake8-pep3101==1.2
 flake8-plone-api==1.4
 flake8-plone-hasattr==0.2.post0
 flake8-polyfill==1.0.2
-flake8-print==3.0.1
+flake8-print==3.1.0
 flake8-quotes==0.13.0
 flake8-string-format==0.2.3
 flake8-todo==0.7
 future==0.15.2
+futures==3.2.0
 gocept.zestreleaser.customupload==3.0
 i18ndude==4.0.1
 icalendar==3.11.4
 initgroups==2.13.0
-isort==4.2.15
+isort==4.3.4
 mailinglogger==3.8.0
 mccabe==0.6.1
 mechanize==0.2.5
@@ -217,8 +217,7 @@ robotframework-selenium2screenshots==0.7.0
 robotsuite==1.7.0
 roman==1.4.0
 sauna.reload==0.5.5
-setuptools==38.2.5
-six==1.10.0
+setuptools==36.4.0
 slimit==0.8.1
 snowballstemmer==1.2.1
 sourcecodegen==0.6.14

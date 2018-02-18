@@ -111,7 +111,8 @@ class FlowSubmitForm(DefaultAddForm):
     @view.memoize
     def schema(self):
         try:
-            return load_schema(aq_base(self.context).schema)
+            return load_schema(aq_base(self.context).schema,
+                               context=self.context)
         except AttributeError:
             self.request.response.redirect(
                 u'{0}/@@design'.format(self.context.absolute_url()))
@@ -181,7 +182,7 @@ class SubmissionView(WidgetsView):
 
     def __init__(self, context, request, content):
         self.content = content
-        self.schema = load_schema(content.schema)
+        self.schema = load_schema(aq_base(content).schema, context=content)
         super(SubmissionView, self).__init__(context, request)
 
     def getContent(self):

@@ -23,24 +23,37 @@ import logging
 import threading
 
 
-SCHEMA_MODULE = 'collective.flow.schema.generated'
-SCHEMA_CACHE = {}  # TODO: purge to limit memory usage
-
-generated = dynamic.create(SCHEMA_MODULE)
 logger = logging.getLogger('collective.flow')
-current = threading.local()  # currently processed schema
+
+# Recursive schema support by resolving additional schemata from thread local
+SCHEMA_MODULE = 'collective.flow.schema.dynamic'
+dynamic = dynamic.create(SCHEMA_MODULE)
+current = threading.local()
 
 
-def load_model(schema, additional_schemata=''):
-    digest = hashlib.md5(schema + additional_schemata).hexdigest()
+# noinspection PyProtectedMember
+def load_schema(xml, name=u'', context=None):
+    """Load named (or default) supermodel schema from XML source with optional
+    cache context (ZCA lookups requires exact schema instance to match lookups)
+    """
     try:
-        return SCHEMA_CACHE[digest]
-    except KeyError:
-        SCHEMA_CACHE[digest] = loadString(schema, policy='collective.flow')
-        return SCHEMA_CACHE[digest]
+        return aq_base(context).__getattribute__('_v_model').schemata[name]
+    except AttributeError:
+        schema, additional_schemata = split_schema(xml)
+        additional = loadString(additional_schemata, policy='collective.flow')
+        try:
+            current.model = additional
+            model = loadString(schema, policy='collective.flow')
+            model.schemata.update(additional.schemata)
+        finally:
+            current.model = None
+        if context is not None:
+            context._v_model = model
+        return model.schemata[name]
 
 
 def split_schema(xml):
+    """Split XML supermodel schema into main schema and additional schemata"""
     root = etree.fromstring(xml)
 
     stack = []
@@ -59,27 +72,6 @@ def split_schema(xml):
     additional_schemata = etree.tostring(root)
 
     return schema, additional_schemata
-
-
-def remove_attachments(xml):
-    root = etree.fromstring(xml)
-    for el in root.xpath('//supermodel:field',
-                         namespaces=dict(supermodel=XML_NAMESPACE)):
-        if el.attrib.get('type') in [
-            'plone.namedfile.field.NamedBlobFile',
-            'plone.namedfile.field.NamedBlobImage',
-        ]:
-            el.getparent().remove(el)
-    return etree.tostring(root)
-
-
-def load_schema(xml, name=u''):
-    schema, additional_schemata = split_schema(xml)
-    current.model = load_model(additional_schemata, '')
-    try:
-        return load_model(schema, additional_schemata).schemata[name]
-    finally:
-        current.model = None
 
 
 def update_schema(xml, schema):
@@ -102,6 +94,19 @@ def update_schema(xml, schema):
     )
 
 
+def remove_attachments(xml):
+    """Strip schema schema from binary fields"""
+    root = etree.fromstring(xml)
+    for el in root.xpath('//supermodel:field',
+                         namespaces=dict(supermodel=XML_NAMESPACE)):
+        if el.attrib.get('type') in [
+            'plone.namedfile.field.NamedBlobFile',
+            'plone.namedfile.field.NamedBlobImage',
+        ]:
+            el.getparent().remove(el)
+    return etree.tostring(root)
+
+
 @configure.utility.factory(name=SCHEMA_MODULE)
 @implementer(IDynamicObjectFactory)
 class FlowSchemaModuleFactory(object):
@@ -120,6 +125,7 @@ class FlowSchemaSpecificationDescriptor(ObjectSpecificationDescriptor):
     dynamically declare that it provides the schema referenced in its schema.
     """
 
+    # noinspection PyProtectedMember
     def __get__(self, inst, cls=None):
 
         if inst is None:
@@ -129,10 +135,7 @@ class FlowSchemaSpecificationDescriptor(ObjectSpecificationDescriptor):
         if spec is None:
             spec = implementedBy(cls)
 
-        try:
-            schema = inst._v_schema
-        except AttributeError:
-            schema = inst._v_schema = load_schema(inst.schema)
+        schema = load_schema(inst.schema, context=inst)
         spec = Implements(schema, spec)
 
         return spec
@@ -141,11 +144,24 @@ class FlowSchemaSpecificationDescriptor(ObjectSpecificationDescriptor):
 @configure.subscriber.handler()
 @adapter(IFlowSchemaContext, ISchemaModifiedEvent)
 def save_schema(schema_context, event):
+    # Update XML schema
     try:
         schema_context.content.schema = update_schema(
-            aq_base(schema_context.content).schema, schema_context.schema)
+            aq_base(schema_context.content).schema,
+            schema_context.schema,
+        )
     except AttributeError:
         schema_context.content.schema = serializeSchema(schema_context.schema)
+
+    # Update schema digest
+    schema_context.content.schema_digest = \
+        hashlib.md5(schema_context.content.schema).hexdigest()
+
+    # Purge cache
+    try:
+        delattr(schema_context.content, '_v_model')
+    except AttributeError:
+        pass
 
 
 @configure.utility.factory(name=u'collective.flow')
