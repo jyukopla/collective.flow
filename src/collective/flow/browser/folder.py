@@ -17,8 +17,12 @@ from plone.dexterity.utils import addContentToContainer
 from plone.memoize import view
 from plone.namedfile import NamedBlobFile
 from plone.namedfile import NamedBlobImage
+from plone.namedfile.interfaces import INamedFileField
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from venusianconfiguration import configure
+from z3c.form.interfaces import IMultiWidget
+from z3c.form.interfaces import IObjectWidget
+from z3c.form.interfaces import IWidget
 from z3c.form.interfaces import NOT_CHANGED
 from zope.component import createObject
 from zope.component import getUtility
@@ -26,6 +30,7 @@ from zope.event import notify
 from zope.i18nmessageid import MessageFactory
 from zope.interface import implementer
 from zope.location.interfaces import IContained
+from ZPublisher.HTTPRequest import FileUpload
 
 import hashlib
 import os
@@ -94,6 +99,28 @@ def extract_attachments(data, context, prefix=u''):
                     yield attachment
 
 
+def reset_fileupload_widgets(form):
+    for widget in form.widgets:
+        if not IWidget.providedBy(widget):
+            widget = form.widgets[widget]
+        if INamedFileField.providedBy(widget.field):
+            widget.value = None
+        elif IMultiWidget.providedBy(widget):
+            reset_fileupload_widgets(widget)
+        elif IObjectWidget.providedBy(widget):
+            reset_fileupload_widgets(widget.subform)
+
+
+def reset_fileupload(form):
+    for key, value in list(form.request.form.items()):
+        if not key.startswith(form.prefix):
+            continue
+        if isinstance(value, FileUpload):
+            del form.request.form[key]
+            form.request.form[key + '.action'] = 'remove'
+            reset_fileupload_widgets(form)
+
+
 @configure.browser.page.class_(
     name='view',
     for_=IFlowFolder,
@@ -128,6 +155,16 @@ class FlowSubmitForm(DefaultAddForm):
         # fire the edit begun only if no action was executed
         if len(self.actions.executedActions) == 0:
             notify(AddBegunEvent(self.context))
+
+    # noinspection PyPep8Naming
+    def extractData(self, setErrors=True):
+        data, errors = super(
+            FlowSubmitForm, self).extractData(setErrors=setErrors)
+        if errors:
+            reset_fileupload(self)  # Required until we have drafting support
+            data, errors = super(
+                FlowSubmitForm, self).extractData(setErrors=setErrors)
+        return data, errors
 
     def create(self, data):
         fti = getUtility(IDexterityFTI, name=self.portal_type)
