@@ -6,6 +6,7 @@ from collective.flow.interfaces import ICollectiveFlowLayer
 from collective.flow.interfaces import IFlowFolder
 from collective.flow.interfaces import IFlowSchemaForm
 from collective.flow.schema import load_schema
+from collective.flow.schema import remove_attachments
 from datetime import datetime
 from persistent.mapping import PersistentMapping
 from plone.autoform.view import WidgetsView
@@ -26,6 +27,7 @@ from zope.i18nmessageid import MessageFactory
 from zope.interface import implementer
 from zope.location.interfaces import IContained
 
+import hashlib
 import os
 
 
@@ -111,11 +113,11 @@ class FlowSubmitForm(DefaultAddForm):
     def schema(self):
         try:
             return load_schema(aq_base(self.context).schema,
-                               context=self.context)
+                               cache_key=aq_base(self.context).schema_digest)
         except AttributeError:
             self.request.response.redirect(
                 u'{0}/@@design'.format(self.context.absolute_url()))
-            return load_schema(DEFAULT_SCHEMA)
+            return load_schema(DEFAULT_SCHEMA, cache_key=None)
 
     additionalSchemata = ()
 
@@ -139,7 +141,9 @@ class FlowSubmitForm(DefaultAddForm):
         # and to avoid needing to reload the form schema)
         save_form(self, data, submission)
 
-        submission.schema = self.context.schema
+        # save required submission fields
+        submission.schema = remove_attachments(self.context.schema)
+        submission.schema_digest = hashlib.md5(submission.schema).hexdigest()
         submission.submission_workflow = self.context.submission_workflow
         submission.attachment_workflow = self.context.attachment_workflow
 
@@ -181,7 +185,8 @@ class SubmissionView(WidgetsView):
 
     def __init__(self, context, request, content):
         self.content = content
-        self.schema = load_schema(aq_base(content).schema, context=content)
+        self.schema = load_schema(aq_base(content).schema,
+                                  cache_key=aq_base(content).schema_digest)
         super(SubmissionView, self).__init__(context, request)
 
     def getContent(self):

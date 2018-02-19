@@ -5,6 +5,7 @@ from collective.flow.interfaces import IFlowSchemaDynamic
 from lxml import etree
 from plone.alterego import dynamic
 from plone.alterego.interfaces import IDynamicObjectFactory
+from plone.memoize.volatile import CleanupDict
 from plone.schemaeditor.interfaces import ISchemaModifiedEvent
 from plone.supermodel import loadString
 from plone.supermodel import serializeSchema
@@ -28,18 +29,20 @@ logger = logging.getLogger('collective.flow')
 
 # Recursive schema support by resolving additional schemata from thread local
 SCHEMA_MODULE = 'collective.flow.schema.dynamic'
+SCHEMA_CACHE = CleanupDict()
+SCHEMA_CACHE.cleanup_period = 60 * 60 * 12  # 12 hours
 dynamic = dynamic.create(SCHEMA_MODULE)
 current = threading.local()
 
 
 # noinspection PyProtectedMember
-def load_schema(xml, name=u'', context=None):
+def load_schema(xml, name=u'', cache_key=None):
     """Load named (or default) supermodel schema from XML source with optional
-    cache context (ZCA lookups requires exact schema instance to match lookups)
+    cache key (ZCA lookups require exact schema instance to match lookups)
     """
     try:
-        return aq_base(context).__getattribute__('_v_model').schemata[name]
-    except AttributeError:
+        return SCHEMA_CACHE[cache_key].schemata[name]
+    except KeyError:
         schema, additional_schemata = split_schema(xml)
         additional = loadString(additional_schemata, policy='collective.flow')
         try:
@@ -48,8 +51,9 @@ def load_schema(xml, name=u'', context=None):
             model.schemata.update(additional.schemata)
         finally:
             current.model = None
-        if context is not None:
-            context._v_model = model
+        if cache_key is not None:
+            SCHEMA_CACHE[cache_key] = model
+            logger.info('Cache MISS. Size {0:d}'.format(len(SCHEMA_CACHE)))
         return model.schemata[name]
 
 
@@ -136,7 +140,7 @@ class FlowSchemaSpecificationDescriptor(ObjectSpecificationDescriptor):
         if spec is None:
             spec = implementedBy(cls)
 
-        schema = load_schema(inst.schema, context=inst)
+        schema = load_schema(inst.schema, cache_key=inst.schema_digest)
         spec = Implements(schema, spec)
 
         return spec
@@ -144,25 +148,21 @@ class FlowSchemaSpecificationDescriptor(ObjectSpecificationDescriptor):
 
 @configure.subscriber.handler()
 @adapter(IFlowSchemaContext, ISchemaModifiedEvent)
-def save_schema(schema_context, event):
+def save_schema(schema_context, event=None, xml=None):
     # Update XML schema
     try:
         schema_context.content.schema = update_schema(
             aq_base(schema_context.content).schema,
-            schema_context.schema,
+            xml or schema_context.schema,
         )
     except AttributeError:
-        schema_context.content.schema = serializeSchema(schema_context.schema)
+        schema_context.content.schema = serializeSchema(
+            xml or schema_context.schema,
+        )
 
     # Update schema digest
     schema_context.content.schema_digest = \
-        hashlib.md5(schema_context.content.schema).hexdigest()
-
-    # Purge cache
-    try:
-        delattr(schema_context.content, '_v_model')
-    except AttributeError:
-        pass
+        hashlib.md5(xml or schema_context.content.schema).hexdigest()
 
 
 @configure.utility.factory(name=u'collective.flow')

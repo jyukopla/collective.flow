@@ -59,14 +59,16 @@ class FlowDataSpecificationDescriptor(ObjectSpecificationDescriptor):
             spec = implementedBy(cls)
 
         if inst.__parent__ is not None and inst.__name__ is not None:
-            field = load_schema(aq_base(inst.__parent__).schema,
-                                context=inst.__parent__)[inst.__name__]
+            field = load_schema(
+                aq_base(inst.__parent__).schema,
+                cache_key=inst.__parent__.schema_digest,
+            )[inst.__name__]
             try:
                 schema = field.schema
             except AttributeError:
                 schema = field.value_type.schema
         else:
-            # Set by FlowObjectFactory
+            # Set by FlowSubmissionDataFactory
             schema = inst._v_initial_schema
 
         spec = Implements(schema, spec)
@@ -91,7 +93,7 @@ class FlowSubmissionData(PersistentMapping):
 @configure.adapter.factory(name='{0:s}.any'.format(SCHEMA_MODULE))
 @adapter(Interface, ICollectiveFlowLayer, IFlowSchemaForm, Interface)
 @implementer(IObjectFactory)
-class FlowObjectFactory(object):
+class FlowSubmissionDataFactory(object):
     def __init__(self, context, request, form, widget):
         self.context = context
         self.request = request

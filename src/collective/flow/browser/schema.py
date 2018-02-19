@@ -6,6 +6,7 @@ from collective.flow.interfaces import ICollectiveFlowLayer
 from collective.flow.interfaces import IFlowSchema
 from collective.flow.interfaces import IFlowSchemaContext
 from collective.flow.schema import load_schema
+from collective.flow.schema import save_schema
 from lxml import etree
 from OFS.interfaces import IItem
 from plone.dexterity.browser.edit import DefaultEditForm
@@ -45,11 +46,12 @@ class SchemaView(DefaultEditForm):
     @view.memoize
     def schema(self):
         try:
-            return load_schema(aq_base(self.context).schema)
+            return load_schema(aq_base(self.context).schema,
+                               cache_key=aq_base(self.context).schema_digest)
         except AttributeError:
             self.request.response.redirect(
                 '{0:s}/@@design'.format(self.context.absolute_url()))
-            return load_schema(DEFAULT_SCHEMA)
+            return load_schema(DEFAULT_SCHEMA, cache_key=None)
 
     additionalSchemata = ()
 
@@ -65,9 +67,9 @@ class SchemaView(DefaultEditForm):
 class FlowSchemaContext(SchemaContext):
     def __init__(self, context, request):
         try:
-            schema = load_schema(aq_base(context).schema)
+            schema = load_schema(aq_base(context).schema, cache_key=None)
         except AttributeError:
-            schema = load_schema(DEFAULT_SCHEMA)
+            schema = load_schema(DEFAULT_SCHEMA, cache_key=None)
         super(FlowSchemaContext, self).__init__(
             schema, request,
             name='@@{0:s}'.format(self.__name__),
@@ -109,7 +111,7 @@ class AjaxSaveHandler(BrowserView):
                 xml_declaration=True,
                 encoding='utf8',
             )
-            load_schema(source, context=self.context)
+            load_schema(source, cache_key=None)
         except Exception as e:
             message = e.args[0].replace('\n  File "<unknown>"', '')
             return json.dumps({
@@ -117,7 +119,7 @@ class AjaxSaveHandler(BrowserView):
                 'message': u'ParseError: {0}'.format(message),
             })
 
-        self.context.content.schema = source
+        save_schema(self.context, xml=source)
 
         self.request.response.setHeader('Content-Type', 'application/json')
         return json.dumps({'success': True, 'message': _(u'Saved')})

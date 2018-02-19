@@ -12,10 +12,7 @@ from plone.autoform.form import AutoObjectSubForm
 from plone.autoform.interfaces import IAutoObjectSubForm
 from plone.autoform.view import WidgetsView
 from plone.dexterity.browser.edit import DefaultEditForm
-from plone.namedfile.interfaces import INamedField
 from plone.z3cform.fieldsets.extensible import ExtensibleForm
-from plone.z3cform.fieldsets.extensible import FormExtender
-from plone.z3cform.fieldsets.interfaces import IFormExtender
 from venusianconfiguration import configure
 from z3c.form.interfaces import IObjectWidget
 from z3c.form.interfaces import ISubformFactory
@@ -30,11 +27,10 @@ _ = MessageFactory('collective.flow')
 
 
 @implementer(IAutoObjectSubForm)
-class SubmissionObjectSubForm(ObjectSubForm, AutoObjectSubForm,
-                              ExtensibleForm):
+class SubmissionObjectSubForm(ObjectSubForm, AutoObjectSubForm):
+
     def setupFields(self):
-        super(SubmissionObjectSubForm, self).setupFields()
-        self.updateFields()
+        self.updateFieldsFromSchemata()
 
     def __call__(self):
         return u''  # never called directly
@@ -46,20 +42,6 @@ class SubmissionObjectSubForm(ObjectSubForm, AutoObjectSubForm,
          IObjectWidget, Interface, IFlowSchemaDynamic)
 class SubmissionSubFormAdapter(SubformAdapter):
     factory = SubmissionObjectSubForm
-
-
-@configure.adapter.factory(for_=(Interface, ICollectiveFlowLayer,
-                                 SubmissionObjectSubForm))
-@configure.adapter.factory(for_=(IFlowSubmission, ICollectiveFlowLayer,
-                                 Interface))
-@implementer(IFormExtender)
-class SubmissionFormExtender(FormExtender):
-    def update(self):
-        omitted = []
-        for name in self.form.fields:
-            if INamedField.providedBy(self.form.fields[name].field):
-                omitted.append(name)
-        self.form.fields = self.form.fields.omit(*omitted)
 
 
 @configure.browser.page.class_(
@@ -74,7 +56,8 @@ class SubmissionView(WidgetsView, ExtensibleForm):
 
     @property.Lazy
     def schema(self):
-        return load_schema(aq_base(self.context).schema, context=self.context)
+        return load_schema(aq_base(self.context).schema,
+                           cache_key=aq_base(self.context).schema_digest)
 
     def updateFieldsFromSchemata(self):
         super(SubmissionView, self).updateFieldsFromSchemata()
@@ -92,7 +75,8 @@ class SubmissionEditForm(DefaultEditForm):
 
     @property.Lazy
     def schema(self):
-        return load_schema(aq_base(self.context).schema, context=self.context)
+        return load_schema(aq_base(self.context).schema,
+                           cache_key=aq_base(self.context).schema_digest)
 
     additionalSchemata = ()
 
