@@ -6,7 +6,6 @@ from collective.flow.interfaces import ICollectiveFlowLayer
 from collective.flow.interfaces import IFlowFolder
 from collective.flow.interfaces import IFlowSchemaForm
 from collective.flow.schema import load_schema
-from collective.flow.schema import remove_attachments
 from datetime import datetime
 from persistent.mapping import PersistentMapping
 from plone.autoform.view import WidgetsView
@@ -140,7 +139,7 @@ class FlowSubmitForm(DefaultAddForm):
         # and to avoid needing to reload the form schema)
         save_form(self, data, submission)
 
-        submission.schema = remove_attachments(self.context.schema)
+        submission.schema = self.context.schema
         submission.submission_workflow = self.context.submission_workflow
         submission.attachment_workflow = self.context.attachment_workflow
 

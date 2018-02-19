@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from Acquisition import aq_base
 from collective.flow.interfaces import IFlowSchemaContext
+from collective.flow.interfaces import IFlowSchemaDynamic
 from lxml import etree
 from plone.alterego import dynamic
 from plone.alterego.interfaces import IDynamicObjectFactory
@@ -171,7 +172,7 @@ class FlowSchemaPolicy(object):
         return SCHEMA_MODULE
 
     def bases(self, schemaName, tree):
-        return ()
+        return IFlowSchemaDynamic,
 
     def name(self, schemaName, tree):
         # every schema should have the same name to allow generic object

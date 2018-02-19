@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from plone.app.textfield import RichText
+from plone.app.z3cform.interfaces import IPloneFormLayer
 from plone.namedfile.field import NamedBlobFile
 from plone.namedfile.field import NamedBlobImage
 from plone.schemaeditor.interfaces import ISchemaContext
@@ -24,8 +25,12 @@ DEFAULT_SCHEMA = u"""
 """
 
 
-class ICollectiveFlowLayer(IDefaultBrowserLayer):
+class ICollectiveFlowLayer(IDefaultBrowserLayer, IPloneFormLayer):
     """Marker interface that defines a browser layer."""
+
+
+class IFlowSchemaDynamic(model.Schema):
+    """Marker interface for dynamic flow schemas."""
 
 
 class IFlowSchema(model.Schema):
