@@ -11,4 +11,4 @@ class TestSupermodel(unittest.TestCase):
 
     def test_schema_loads(self):
         ob = self.layer['portal'].order
-        load_schema(ob.schema, ob.schema_digest)
+        load_schema(ob.schema, cache_key=ob.schema_digest)

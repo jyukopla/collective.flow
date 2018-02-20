@@ -25,6 +25,7 @@ from zope.i18n import translate
 from zope.i18nmessageid import MessageFactory
 
 import collective.flow
+import hashlib
 import os
 import pkg_resources
 import venusianconfiguration
@@ -82,6 +83,7 @@ def populate(portal, target_language):
         title=translate(_(u'Order'), target_language=target_language),
     )
     ob.schema = ORDER_SCHEMA
+    ob.schema_digest = hashlib.md5(ORDER_SCHEMA).hexdigest()
     ob.submission_workflow = 'intranet_workflow'
     ob.attachment_workflow = 'intranet_workflow'
     logout()
