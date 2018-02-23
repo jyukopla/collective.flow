@@ -63,6 +63,11 @@ def save_form(form, data, submission):
                     item.__parent__ = submission
 
         setattr(submission, name, value)
+    try:
+        for group in form.groups:
+            save_form(group, data, submission)
+    except AttributeError:
+        pass
 
 
 def extract_attachments(data, context, prefix=u''):
@@ -109,6 +114,11 @@ def reset_fileupload_widgets(form):
             reset_fileupload_widgets(widget)
         elif IObjectWidget.providedBy(widget):
             reset_fileupload_widgets(widget.subform)
+    try:
+        for group in form.groups:
+            reset_fileupload_widgets(group)
+    except AttributeError:
+        pass
 
 
 def reset_fileupload(form):
@@ -118,7 +128,12 @@ def reset_fileupload(form):
         if isinstance(value, FileUpload):
             del form.request.form[key]
             form.request.form[key + '.action'] = 'remove'
-            reset_fileupload_widgets(form)
+    try:
+        for group in form.groups:
+            reset_fileupload(group)
+    except AttributeError:
+        pass
+    reset_fileupload_widgets(form)
 
 
 @configure.browser.page.class_(
@@ -134,6 +149,10 @@ class FlowSubmitForm(DefaultAddForm):
 
     def label(self):
         return self.context.Title()
+
+    @property
+    def default_fieldset_label(self):
+        return self.context.default_fieldset_label
 
     @property
     @view.memoize

@@ -1,0 +1,70 @@
+.portaltype-flowsubmission.template-view {
+  .multi-widget {
+    * {
+      display: inline;
+    }
+    .required {
+      display: none;
+    }
+    .row {
+      margin: 0;
+    }
+  }
+  .multi-widget .row:first-child {
+    .object-widget {
+      padding-top: 2em;
+      .label {
+        display: block;
+        margin-top: -1.75em;
+        width: 0;
+        overflow: visible;
+        white-space: nowrap;
+      }
+    }
+  }
+  .object-widget {
+    display: flex;
+    .label {
+      display: none;
+    }
+    .widget {
+      flex-grow: 1;
+      flex-basis: 1%;
+    }
+  }
+}
+
+.portaltype-flowfolder.template-view,
+.portaltype-flowschema.template-edit,
+.portaltype-flowsubmission.template-edit {
+  .multi-widget-field, .object-widget {
+    & > * {
+      float: left;
+    }
+    &:after {
+      display: block;
+      clear: both;
+      content: "";
+    }
+  }
+  .multi-widget-field {
+    margin-bottom: 0;
+    & > label, & > input {
+      margin-right: 1em;
+      & > .required {
+        display: none;
+      }
+    }
+  }
+  .object-widget-field {
+    margin-right: 1ex;
+  }
+  .multi-widget .formControls {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    text-align: right;
+    background: transparent;
+    box-shadow: none;
+  }
+}

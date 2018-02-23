@@ -16,7 +16,7 @@ from plone.z3cform.fieldsets.extensible import ExtensibleForm
 from venusianconfiguration import configure
 from z3c.form.interfaces import IObjectWidget
 from z3c.form.interfaces import ISubformFactory
-from zope.cachedescriptors import property
+from zope.cachedescriptors.property import Lazy
 from zope.component import adapter
 from zope.i18nmessageid import MessageFactory
 from zope.interface import implementer
@@ -54,7 +54,7 @@ class SubmissionSubFormAdapter(SubformAdapter):
 @implementer(IFlowSchemaForm)
 class SubmissionView(WidgetsView, ExtensibleForm):
 
-    @property.Lazy
+    @Lazy
     def schema(self):
         return load_schema(aq_base(self.context).schema,
                            cache_key=aq_base(self.context).schema_digest)
@@ -73,7 +73,22 @@ class SubmissionView(WidgetsView, ExtensibleForm):
 @implementer(IFlowSchemaForm)
 class SubmissionEditForm(DefaultEditForm):
 
-    @property.Lazy
+    def label(self):
+        return self.context.aq_explicit.aq_acquire('title')
+
+    def description(self):
+        return self.context.aq_explicit.aq_acquire('description')
+
+    @property
+    def default_fieldset_label(self):
+        try:
+            return self.context.aq_explicit.aq_acquire(
+                'default_fieldset_label',
+            )
+        except AttributeError:
+            return _(u'Form')
+
+    @Lazy
     def schema(self):
         return load_schema(aq_base(self.context).schema,
                            cache_key=aq_base(self.context).schema_digest)

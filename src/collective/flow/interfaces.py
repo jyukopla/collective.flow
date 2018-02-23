@@ -59,9 +59,22 @@ class IFlowSchemaContext(ISchemaContext):
 class IFlowFolder(IFlowSchema):
     """Container representing a form or workflow"""
 
+    default_fieldset_label = schema.TextLine(
+        title=_(u'Default fieldset label'),
+        default=_(u'Form'),
+    )
+
     submit_label = schema.TextLine(
         title=_(u'Submit button label'),
         default=_(u'Submit'),
+    )
+
+    fieldset(
+        'instructions',
+        label=_(u'Instructions'),
+        fields=[u'form_prologue',
+                u'form_epilogue',
+                u'form_thanks'],
     )
 
     form_prologue = RichText(

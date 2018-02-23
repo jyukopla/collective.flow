@@ -3,7 +3,6 @@ from Acquisition import aq_base
 from collective.flow.interfaces import ICollectiveFlowLayer
 from collective.flow.interfaces import IFlowAttachment
 from collective.flow.interfaces import IFlowSchema
-from collective.flow.interfaces import IFlowSchemaForm
 from collective.flow.interfaces import IFlowSubmission
 from collective.flow.schema import FlowSchemaSpecificationDescriptor
 from collective.flow.schema import load_schema
@@ -91,7 +90,7 @@ class FlowSubmissionData(PersistentMapping):
 
 
 @configure.adapter.factory(name='{0:s}.any'.format(SCHEMA_MODULE))
-@adapter(Interface, ICollectiveFlowLayer, IFlowSchemaForm, Interface)
+@adapter(Interface, ICollectiveFlowLayer, Interface, Interface)
 @implementer(IObjectFactory)
 class FlowSubmissionDataFactory(object):
     def __init__(self, context, request, form, widget):

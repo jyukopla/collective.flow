@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
 from Acquisition import aq_base
+from collective.flow.interfaces import DEFAULT_SCHEMA
 from collective.flow.interfaces import IFlowSchemaContext
 from collective.flow.interfaces import IFlowSchemaDynamic
 from lxml import etree
+from lxml.etree import tostring
 from plone.alterego import dynamic
 from plone.alterego.interfaces import IDynamicObjectFactory
 from plone.memoize.volatile import CleanupDict
@@ -81,7 +83,11 @@ def split_schema(xml):
 
 def update_schema(xml, schema):
     root = etree.fromstring(xml)
-    schema_root = etree.fromstring(serializeSchema(schema))
+
+    if isinstance(schema, str):
+        schema_root = etree.fromstring(schema)
+    else:
+        schema_root = etree.fromstring(serializeSchema(schema))
 
     for el in root.findall(ns('schema')):
         if not el.attrib.get('name'):
@@ -122,6 +128,8 @@ class FlowSchemaModuleFactory(object):
             if name not in ['V', '__file__']:
                 logger.exception(
                     u'Schema "{0:s}" did not resolve:'.format(name))
+                return loadString(
+                    DEFAULT_SCHEMA, policy='collective.flow').schemata['']
             return None
 
 
@@ -149,20 +157,23 @@ class FlowSchemaSpecificationDescriptor(ObjectSpecificationDescriptor):
 @configure.subscriber.handler()
 @adapter(IFlowSchemaContext, ISchemaModifiedEvent)
 def save_schema(schema_context, event=None, xml=None):
-    # Update XML schema
-    try:
-        schema_context.content.schema = update_schema(
-            aq_base(schema_context.content).schema,
-            xml or schema_context.schema,
-        )
-    except AttributeError:
-        schema_context.content.schema = serializeSchema(
-            xml or schema_context.schema,
-        )
+    if xml is None:
+        # Update XML schema (got update from model designer)
+        schema = schema_context.schema
+        try:
+            schema_context.content.schema = update_schema(
+                aq_base(schema_context.content).schema,
+                schema,
+            )
+        except AttributeError:
+            schema_context.content.schema = serializeSchema(schema)
+    else:
+        # Override with new XML (got update from modelxml editor)
+        schema_context.content.schema = xml
 
     # Update schema digest
     schema_context.content.schema_digest = \
-        hashlib.md5(xml or schema_context.content.schema).hexdigest()
+        hashlib.md5(schema_context.content.schema).hexdigest()
 
 
 @configure.utility.factory(name=u'collective.flow')
@@ -172,7 +183,10 @@ class FlowSchemaPolicy(object):
         return SCHEMA_MODULE
 
     def bases(self, schemaName, tree):
-        return IFlowSchemaDynamic,
+        if 'IFlowSchemaDynamic' not in tostring(tree):
+            return IFlowSchemaDynamic,
+        else:
+            return ()
 
     def name(self, schemaName, tree):
         # every schema should have the same name to allow generic object

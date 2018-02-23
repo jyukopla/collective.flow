@@ -1,15 +1,65 @@
-.portaltype-flowsubmission.template-view .multi-widget span.required {
-    display: none;
-}
-
+.portaltype-flowsubmission.template-view .multi-widget * {
+  display: inline; }
+.portaltype-flowsubmission.template-view .multi-widget .required {
+  display: none; }
 .portaltype-flowsubmission.template-view .multi-widget .row {
-    margin: 0;
-}
+  margin: 0; }
+.portaltype-flowsubmission.template-view .multi-widget .row:first-child .object-widget {
+  padding-top: 2em; }
+  .portaltype-flowsubmission.template-view .multi-widget .row:first-child .object-widget .label {
+    display: block;
+    margin-top: -1.75em;
+    width: 0;
+    overflow: visible;
+    white-space: nowrap; }
+.portaltype-flowsubmission.template-view .object-widget {
+  display: flex; }
+  .portaltype-flowsubmission.template-view .object-widget .label {
+    display: none; }
+  .portaltype-flowsubmission.template-view .object-widget .widget {
+    flex-grow: 1;
+    flex-basis: 1%; }
 
-.portaltype-flowsubmission.template-view .object-widget > div {
-    display: inline;
-}
-
-.portaltype-flowsubmission.template-view .object-widget > div.label {
-    margin-left: 1em;
-}
+.portaltype-flowfolder.template-view .multi-widget-field > *, .portaltype-flowfolder.template-view .object-widget > *,
+.portaltype-flowschema.template-edit .multi-widget-field > *,
+.portaltype-flowschema.template-edit .object-widget > *,
+.portaltype-flowsubmission.template-edit .multi-widget-field > *,
+.portaltype-flowsubmission.template-edit .object-widget > * {
+  float: left; }
+.portaltype-flowfolder.template-view .multi-widget-field:after, .portaltype-flowfolder.template-view .object-widget:after,
+.portaltype-flowschema.template-edit .multi-widget-field:after,
+.portaltype-flowschema.template-edit .object-widget:after,
+.portaltype-flowsubmission.template-edit .multi-widget-field:after,
+.portaltype-flowsubmission.template-edit .object-widget:after {
+  display: block;
+  clear: both;
+  content: ""; }
+.portaltype-flowfolder.template-view .multi-widget-field,
+.portaltype-flowschema.template-edit .multi-widget-field,
+.portaltype-flowsubmission.template-edit .multi-widget-field {
+  margin-bottom: 0; }
+  .portaltype-flowfolder.template-view .multi-widget-field > label, .portaltype-flowfolder.template-view .multi-widget-field > input,
+  .portaltype-flowschema.template-edit .multi-widget-field > label,
+  .portaltype-flowschema.template-edit .multi-widget-field > input,
+  .portaltype-flowsubmission.template-edit .multi-widget-field > label,
+  .portaltype-flowsubmission.template-edit .multi-widget-field > input {
+    margin-right: 1em; }
+    .portaltype-flowfolder.template-view .multi-widget-field > label > .required, .portaltype-flowfolder.template-view .multi-widget-field > input > .required,
+    .portaltype-flowschema.template-edit .multi-widget-field > label > .required,
+    .portaltype-flowschema.template-edit .multi-widget-field > input > .required,
+    .portaltype-flowsubmission.template-edit .multi-widget-field > label > .required,
+    .portaltype-flowsubmission.template-edit .multi-widget-field > input > .required {
+      display: none; }
+.portaltype-flowfolder.template-view .object-widget-field,
+.portaltype-flowschema.template-edit .object-widget-field,
+.portaltype-flowsubmission.template-edit .object-widget-field {
+  margin-right: 1ex; }
+.portaltype-flowfolder.template-view .multi-widget .formControls,
+.portaltype-flowschema.template-edit .multi-widget .formControls,
+.portaltype-flowsubmission.template-edit .multi-widget .formControls {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  text-align: right;
+  background: transparent;
+  box-shadow: none; }
