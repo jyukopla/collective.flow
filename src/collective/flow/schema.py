@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from Acquisition import aq_base
 from collective.flow.interfaces import DEFAULT_SCHEMA
+from collective.flow.interfaces import IFlowFolder
 from collective.flow.interfaces import IFlowSchemaContext
 from collective.flow.interfaces import IFlowSchemaDynamic
 from lxml import etree
@@ -16,11 +17,15 @@ from plone.supermodel.interfaces import XML_NAMESPACE
 from plone.supermodel.utils import ns
 from venusianconfiguration import configure
 from zope.component import adapter
+from zope.event import notify
 from zope.interface import implementedBy
 from zope.interface import implementer
 from zope.interface.declarations import getObjectSpecification
 from zope.interface.declarations import Implements
 from zope.interface.declarations import ObjectSpecificationDescriptor
+from zope.lifecycleevent import Attributes
+from zope.lifecycleevent import ObjectModifiedEvent
+from zope.schema import Object
 
 import hashlib
 import logging
@@ -35,6 +40,11 @@ SCHEMA_CACHE = CleanupDict()
 SCHEMA_CACHE.cleanup_period = 60 * 60 * 12  # 12 hours
 dynamic = dynamic.create(SCHEMA_MODULE)
 current = threading.local()
+
+CUSTOMIZABLE_TAGS = [
+    ns('default'),
+    ns('values'),
+]
 
 
 # noinspection PyProtectedMember
@@ -81,20 +91,20 @@ def split_schema(xml):
     return schema, additional_schemata
 
 
-def update_schema(xml, schema):
+def update_schema(xml, schema, name=u''):
     root = etree.fromstring(xml)
 
     if isinstance(schema, str):
         schema_root = etree.fromstring(schema)
     else:
-        schema_root = etree.fromstring(serializeSchema(schema))
+        schema_root = etree.fromstring(serializeSchema(schema, name))
 
     for el in root.findall(ns('schema')):
-        if not el.attrib.get('name'):
+        if el.attrib.get('name', u'') == name:
             root.remove(el)
 
     for el in schema_root.findall(ns('schema')):
-        if not el.attrib.get('name'):
+        if el.attrib.get('name', u'') == name:
             root.append(el)
 
     return etree.tostring(
@@ -103,6 +113,51 @@ def update_schema(xml, schema):
         xml_declaration=True,
         encoding='utf8',
     )
+
+
+def customized_schema(original, custom):
+    root = etree.fromstring(custom)
+    fields = {}
+
+    # copy customizable data from customized schema
+    for schema in root.findall(ns('schema')):
+        if schema.attrib.get('name', u'') != u'':
+            continue
+        for field in schema.xpath(
+            'supermodel:field',
+            namespaces=dict(supermodel=XML_NAMESPACE),
+        ):
+            name = field.attrib['name']
+            for node in [child for child in field.getchildren()
+                         if child.tag in CUSTOMIZABLE_TAGS]:
+                fields.setdefault(name, {})
+                fields[name][node.tag] = node
+
+    # apply customizations for copy of original schema
+    root = etree.fromstring(original)
+    for schema in root.findall(ns('schema')):
+        if schema.attrib.get('name', u'') != u'':
+            continue
+        for name in fields:
+            for field in schema.xpath(
+                'supermodel:field[@name="{0:s}"]'.format(name),
+                namespaces=dict(supermodel=XML_NAMESPACE),
+            ):
+                for node in [child for child in field.getchildren()
+                             if child.tag in fields[name]]:
+                    field.replace(node, fields[name].pop(node.tag))
+                for node in fields[name].values():
+                    field.append(node)
+
+    # serialize
+    customized = etree.tostring(
+        root,
+        pretty_print=True,
+        xml_declaration=True,
+        encoding='utf8',
+    )
+
+    return customized
 
 
 def remove_attachments(xml):
@@ -154,26 +209,37 @@ class FlowSchemaSpecificationDescriptor(ObjectSpecificationDescriptor):
         return spec
 
 
-@configure.subscriber.handler()
-@adapter(IFlowSchemaContext, ISchemaModifiedEvent)
-def save_schema(schema_context, event=None, xml=None):
-    if xml is None:
+def save_schema(context, schema=None, xml=None):
+    if schema:
         # Update XML schema (got update from model designer)
-        schema = schema_context.schema
         try:
-            schema_context.content.schema = update_schema(
-                aq_base(schema_context.content).schema,
-                schema,
-            )
+            context.schema = update_schema(aq_base(context).schema, schema)
         except AttributeError:
-            schema_context.content.schema = serializeSchema(schema)
+            context.schema = serializeSchema(schema)
+        for name in schema:
+            value_type = getattr(schema[name], 'value_type', None)
+            if isinstance(value_type, Object):
+                context.schema = update_schema(aq_base(context).schema,
+                                               value_type.schema, name=name)
     else:
         # Override with new XML (got update from modelxml editor)
-        schema_context.content.schema = xml
+        context.schema = xml
 
     # Update schema digest
-    schema_context.content.schema_digest = \
-        hashlib.md5(schema_context.content.schema).hexdigest()
+    context.schema_digest = hashlib.md5(context.schema).hexdigest()
+
+    # Notify that object has been modified
+    notify(ObjectModifiedEvent(
+        context,
+        Attributes(IFlowFolder, 'schema', 'schema_digest'),
+    ))
+
+
+@configure.subscriber.handler()
+@adapter(IFlowSchemaContext, ISchemaModifiedEvent)
+def save_schema_from_schema_context(schema_context, event=None):
+    assert event
+    save_schema(schema_context.content, schema=schema_context.schema)
 
 
 @configure.utility.factory(name=u'collective.flow')

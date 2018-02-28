@@ -155,6 +155,18 @@ class FlowSubmitForm(DefaultAddForm):
         return self.context.default_fieldset_label
 
     @property
+    def submit_label(self):
+        return self.context.submit_label
+
+    @property
+    def submission_workflow(self):
+        return self.context.submission_workflow
+
+    @property
+    def attachment_workflow(self):
+        return self.context.attachment_workflow
+
+    @property
     @view.memoize
     def schema(self):
         try:
@@ -200,8 +212,8 @@ class FlowSubmitForm(DefaultAddForm):
         # save required submission fields
         submission.schema = remove_attachments(self.context.schema)
         submission.schema_digest = hashlib.md5(submission.schema).hexdigest()
-        submission.submission_workflow = self.context.submission_workflow
-        submission.attachment_workflow = self.context.attachment_workflow
+        submission.submission_workflow = self.submission_workflow
+        submission.attachment_workflow = self.attachment_workflow
 
         submission.title = u'{0:s} {1:s}'.format(
             context.title, datetime.utcnow().strftime('%Y-%#m-%#d'),
@@ -228,7 +240,7 @@ class FlowSubmitForm(DefaultAddForm):
     def updateActions(self):
         # override to re-title save button and remove the cancel button
         super(FlowSubmitForm, self).updateActions()
-        self.buttons['save'].title = self.context.submit_label
+        self.buttons['save'].title = self.submit_label
         if 'cancel' in self.buttons:
             del self.buttons['cancel']
 

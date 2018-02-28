@@ -119,7 +119,7 @@ class AjaxSaveHandler(BrowserView):
                 'message': u'ParseError: {0}'.format(message),
             })
 
-        save_schema(self.context, xml=source)
+        save_schema(self.context.content, xml=source)
 
         self.request.response.setHeader('Content-Type', 'application/json')
         return json.dumps({'success': True, 'message': _(u'Saved')})
