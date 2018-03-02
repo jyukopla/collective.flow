@@ -8,6 +8,15 @@ from venusianconfiguration import configure
 from venusianconfiguration import scan
 
 
+# BBB: Plone < 5.1
+try:
+    # noinspection PyUnresolvedReferences
+    from collective.flow.browser import submission_subform
+    scan(submission_subform)
+except ImportError:
+    pass
+
+
 scan(folder)
 scan(subfolder)
 scan(schema)
