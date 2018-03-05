@@ -31,6 +31,11 @@ def on_flow_change_customize_schemata(context, event):
     for brain in catalog(object_provides=IFlowSubFolder.__identifier__,
                          path='/'.join(context.getPhysicalPath())):
         ob = brain.getObject()
+        try:
+            assert aq_base(ob).schema
+        except AttributeError:
+            # called when uninitialized flow folder is added onto flow
+            continue
         save_schema(ob, xml=customized_schema(
             aq_base(context).schema,
             aq_base(ob).schema,
