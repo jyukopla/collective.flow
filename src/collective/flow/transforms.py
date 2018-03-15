@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 from collective.flow.browser.folder import FlowSubmitForm
-from collective.flow.browser.subfolder import SubFlowSubmitForm
 from collective.flow.browser.submission import SubmissionEditForm
 from collective.flow.browser.submission import SubmissionView
 from collective.flow.interfaces import ICollectiveFlowLayer
@@ -20,15 +19,11 @@ from zope.interface import implementer
 )
 @configure.adapter.factory(
     name='collective.flow.inlineinject',
-    for_=(SubFlowSubmitForm, ICollectiveFlowLayer),
+    for_=(SubmissionView, ICollectiveFlowLayer),
 )
 @configure.adapter.factory(
     name='collective.flow.inlineinject',
     for_=(SubmissionEditForm, ICollectiveFlowLayer),
-)
-@configure.adapter.factory(
-    name='collective.flow.inlineinject',
-    for_=(SubmissionView, ICollectiveFlowLayer),
 )
 @implementer(ITransform)
 class InjectInlineStylesAndScripts(object):
