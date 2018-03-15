@@ -1,7 +1,7 @@
 Changelog
 =========
 
-0.1.1 (unreleased)
+0.1.1 (2018-03-15)
 ------------------
 
 - Try to fix issue where schemaeditor JS did not work with webpack built JS
