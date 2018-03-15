@@ -69,28 +69,28 @@ class IFlowFolder(IFlowSchema):
         default=_(u'Submit'),
     )
 
-    fieldset(
-        'instructions',
-        label=_(u'Instructions'),
-        fields=[u'form_prologue',
-                u'form_epilogue',
-                u'form_thanks'],
-    )
+#   fieldset(
+#       'instructions',
+#       label=_(u'Instructions'),
+#       fields=[u'form_prologue',
+#               u'form_epilogue',
+#               u'form_thanks'],
+#   )
 
-    form_prologue = RichText(
-        title=_(u'Form prologue'),
-        required=False,
-    )
+#   form_prologue = RichText(
+#       title=_(u'Form prologue'),
+#       required=False,
+#   )
 
-    form_epilogue = RichText(
-        title=_(u'Form epilogue'),
-        required=False,
-    )
+#   form_epilogue = RichText(
+#       title=_(u'Form epilogue'),
+#       required=False,
+#   )
 
-    form_thanks = RichText(
-        title=_(u'Thank you message'),
-        required=False,
-    )
+#   form_thanks = RichText(
+#       title=_(u'Thank you message'),
+#       required=False,
+#   )
 
     fieldset(
         'workflow',

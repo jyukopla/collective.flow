@@ -4,6 +4,7 @@ from collective.flow import browser
 from collective.flow import content
 from collective.flow import fields
 from collective.flow import schema
+from collective.flow import transforms
 from plone import api
 from Products.CMFPlone.interfaces import INonInstallable
 from venusianconfiguration import configure
@@ -18,6 +19,7 @@ configure.i18n.registerTranslations(directory='locales')
 scan(content)
 scan(schema)
 scan(fields)
+scan(transforms)
 
 configure.include(package=browser, file='__init__.py')
 
@@ -48,6 +50,14 @@ configure.gs.upgradeDepends(
     description=u'Update portal types',
     profile='collective.flow:default',
     import_steps='typeinfo plone.app.registry',
+)
+
+configure.gs.registerProfile(
+    name=u'uninstall',
+    title=_(u'Forms, workflows and everything'),
+    description=_(u'Deactivates collective.flow'),
+    directory=u'profiles/uninstall',
+    provides=u'Products.GenericSetup.interfaces.EXTENSION',
 )
 
 
