@@ -1,4 +1,14 @@
-/*globals require */
+var require = null;
+
+if(window.require === undefined){
+  require = function(reqs, torun){
+    'use strict';
+    return torun(window.jQuery);
+  };
+} else {
+  require = window.require;
+}
+
 require(['jquery'], function($) {
     'use strict';
 
