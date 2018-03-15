@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <object name="FlowSchemaRepository" meta_type="Dexterity FTI"
-        i18n:domain="plone"
+        i18n:domain="collective.flow"
         xmlns:i18n="http://xml.zope.org/namespaces/i18n">
   <property name="title" i18n:translate="">Schema folder</property>
   <property name="description"
