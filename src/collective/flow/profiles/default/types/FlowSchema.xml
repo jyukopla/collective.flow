@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<object name="FlowSchema" meta_type="Dexterity FTI" i18n:domain="plone"
+<object name="FlowSchema" meta_type="Dexterity FTI" i18n:domain="collective.flow"
         xmlns:i18n="http://xml.zope.org/namespaces/i18n">
   <property name="title" i18n:translate="">Flow schema</property>
   <property name="description" i18n:translate="">Editable schema</property>

@@ -18,6 +18,7 @@ from plone.memoize import view
 from plone.namedfile import NamedBlobFile
 from plone.namedfile import NamedBlobImage
 from plone.namedfile.interfaces import INamedFileField
+from plone.z3cform.fieldsets.group import Group
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from venusianconfiguration import configure
 from z3c.form.interfaces import IMultiWidget
@@ -136,6 +137,11 @@ def reset_fileupload(form):
     reset_fileupload_widgets(form)
 
 
+# noinspection PyAbstractClass
+class FlowSubmitFormGroup(Group):
+    pass
+
+
 @configure.browser.page.class_(
     name='view',
     for_=IFlowFolder,
@@ -146,6 +152,7 @@ class FlowSubmitForm(DefaultAddForm):
     portal_type = 'FlowSubmission'
     description = u''
     content = None
+    group_class = FlowSubmitFormGroup
 
     def label(self):
         return self.context.Title()

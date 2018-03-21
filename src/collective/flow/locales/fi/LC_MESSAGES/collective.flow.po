@@ -1,0 +1,146 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"POT-Creation-Date: 2018-03-15 21:00+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI +ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0\n"
+"Language-Code: en\n"
+"Language-Name: English\n"
+"Preferred-Encodings: utf-8 latin1\n"
+"Domain: DOMAIN\n"
+
+#: collective/flow/configure.py:30
+msgid "Activates collective.flow"
+msgstr ""
+
+#: collective/flow/interfaces.py:124
+msgid "Attachment transition"
+msgstr ""
+
+#: collective/flow/interfaces.py:118
+msgid "Attachment workflow"
+msgstr ""
+
+#: collective/flow/profiles/default/types/FlowSchemaRepository.xml
+msgid "Container for editable schemas"
+msgstr ""
+
+#: collective/flow/interfaces.py:131
+msgid "Custom CSS"
+msgstr ""
+
+#: collective/flow/interfaces.py:142
+msgid "Custom JavaScript"
+msgstr ""
+
+#: collective/flow/configure.py:58
+msgid "Deactivates collective.flow"
+msgstr ""
+
+#: collective/flow/interfaces.py:63
+msgid "Default fieldset label"
+msgstr ""
+
+#: collective/flow/profiles/default/types/FlowSchema.xml
+msgid "Editable schema"
+msgstr ""
+
+#: collective/flow/interfaces.py:178
+msgid "File"
+msgstr ""
+
+#: collective/flow/profiles/default/types/FlowAttachment.xml
+msgid "Flow file"
+msgstr "Liitetiedosto"
+
+#: collective/flow/profiles/default/types/FlowFolder.xml
+#: collective/flow/profiles/default/types/FlowSubFolder.xml
+msgid "Flow folder"
+msgstr "Räätälöinti"
+
+#: collective/flow/profiles/default/types/FlowSchema.xml
+msgid "Flow schema"
+msgstr "Lomaketyönkulku"
+
+#: collective/flow/configure.py:42
+msgid "Flow schemata"
+msgstr "Lomakepohja"
+
+#: collective/flow/profiles/default/types/FlowSubmission.xml
+msgid "Flow submission"
+msgstr "Täytetty lomake"
+
+#: collective/flow/profiles/default/types/FlowAttachment.xml
+msgid "Flow submission attachment"
+msgstr "Täytetyn lomakkeen liite"
+
+#: collective/flow/browser/submission.py:62
+#: collective/flow/interfaces.py:64
+msgid "Form"
+msgstr "Lomake"
+
+#: collective/flow/configure.py:29
+msgid "Forms, workflows and everything"
+msgstr "Lomakepohjaiset työnkulut"
+
+#: collective/flow/interfaces.py:184
+msgid "Image"
+msgstr ""
+
+#: collective/flow/fields.py:33
+msgid "Instruction"
+msgstr ""
+
+#: collective/flow/testing.py:83
+msgid "Order"
+msgstr ""
+
+#: collective/flow/browser/schema.py:125
+msgid "Saved"
+msgstr ""
+
+#: collective/flow/profiles/default/types/FlowSchemaRepository.xml
+msgid "Schema folder"
+msgstr "Lomakepohjakansio"
+
+#: collective/flow/interfaces.py:148
+msgid "Scripts"
+msgstr ""
+
+#: collective/flow/interfaces.py:137
+msgid "Styles"
+msgstr ""
+
+#: collective/flow/interfaces.py:105
+msgid "Submission workflow"
+msgstr ""
+
+#: collective/flow/interfaces.py:69
+msgid "Submit"
+msgstr ""
+
+#: collective/flow/interfaces.py:68
+msgid "Submit button label"
+msgstr ""
+
+#: collective/flow/interfaces.py:111
+msgid "Submit transition"
+msgstr ""
+
+#: collective/flow/interfaces.py:192
+msgid "Text"
+msgstr ""
+
+#: collective/flow/interfaces.py:97
+msgid "Workflows"
+msgstr ""
+
+#: collective/flow/browser/schema.py:76
+#: collective/flow/browser/subfolder.py:63
+msgid "design"
+msgstr ""

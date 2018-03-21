@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<object name="FlowSubFolder" meta_type="Dexterity FTI" i18n:domain="plone"
+<object name="FlowSubFolder" meta_type="Dexterity FTI" i18n:domain="collective.flow"
         xmlns:i18n="http://xml.zope.org/namespaces/i18n">
   <property name="title" i18n:translate="">Flow folder</property>
   <property name="description"
@@ -48,9 +48,14 @@
           url_expr="string:${object_url}/@@edit" visible="True">
     <permission value="Modify portal content"/>
   </action>
-  <action title="Design" action_id="design" category="object" condition_expr=""
+  <action title="Fields" action_id="design" category="object" condition_expr=""
           description="" icon_expr="" link_target=""
           url_expr="string:${object_url}/@@design" visible="True">
+    <permission value="Modify portal content"/>
+  </action>
+  <action title="XML" action_id="modeleditor" category="object" condition_expr=""
+          description="" icon_expr="" link_target=""
+          url_expr="string:${object_url}/@@design/@@modeleditor" visible="True">
     <permission value="Modify portal content"/>
   </action>
 </object>

@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 from Acquisition import aq_base
+from collective.flow.browser.folder import FlowSubmitForm
+from collective.flow.browser.folder import FlowSubmitFormGroup
 from collective.flow.interfaces import ICollectiveFlowLayer
 from collective.flow.interfaces import IFlowAttachment
 from collective.flow.interfaces import IFlowSchema
@@ -14,7 +16,9 @@ from plone.dexterity.content import Container
 from Products.CMFPlone.interfaces import IPloneBaseTool
 from Products.CMFPlone.interfaces import IWorkflowChain
 from venusianconfiguration import configure
+from z3c.form.interfaces import IMultiWidget
 from z3c.form.interfaces import IObjectFactory
+from z3c.form.interfaces import IValue
 from zope.component import adapter
 from zope.interface import Interface
 from zope.interface.declarations import getObjectSpecification
@@ -106,6 +110,34 @@ class FlowSubmissionDataFactory(object):
         ob.update(value)
         ob._v_initial_schema = self.widget.field.schema
         return ob
+
+
+@configure.adapter.factory(
+    name='default',
+    for_=(Interface, Interface, FlowSubmitForm, Interface, IMultiWidget),
+)
+@configure.adapter.factory(
+    name='default',
+    for_=(Interface, Interface, FlowSubmitFormGroup, Interface, IMultiWidget),
+)
+@implementer(IValue)
+class DefaultRoot(object):
+    def __init__(self, context, request, form, field, widget):
+        self.context = context
+        self.request = request
+        self.form = form
+        self.field = field
+        self.widget = widget
+
+    def get(self):
+        value = []
+        for i in range(3):
+            ob = FlowSubmissionData()
+            ob._v_initial_schema = self.field.value_type.schema
+            for name in ob._v_initial_schema.names():
+                ob[name] = None
+            value.append(ob)
+        return value
 
 
 @configure.adapter.factory(for_=IFlowSchema)

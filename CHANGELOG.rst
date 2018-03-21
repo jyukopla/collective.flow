@@ -1,11 +1,17 @@
 Changelog
 =========
 
-0.1.2 (unreleased)
+0.1.3 (unreleased)
 ------------------
 
 - Nothing changed yet.
 
+
+0.1.2 (2018-03-15)
+------------------
+
+- Add three empty lines as default values for multi-line fields
+  [datakurre]
 
 0.1.1 (2018-03-15)
 ------------------
