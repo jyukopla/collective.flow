@@ -249,7 +249,7 @@ class SubmissionView(WidgetsView):
     ignoreRequest = True
 
     index = ViewPageTemplateFile(
-        os.path.join('folder_templates', 'view.pt'))
+        os.path.join('folder_templates', 'view_submission.pt'))
 
     def __init__(self, context, request, content):
         self.content = content

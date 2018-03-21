@@ -8,6 +8,7 @@
 <body>
 
 <metal:main fill-slot="main">
+  <div class="portaltype-flowsubmission template-view">
 
   <h1 class="documentFirstHeading" tal:content="context/Title"></h1>
 
@@ -18,13 +19,7 @@
     </div>
   </tal:block>
 
-  <fieldset id="folder-listing" tal:condition="view/context/objectIds|nothing">
-    <legend i18n:translate="" i18n:domain="plone">Contents</legend>
-    <tal:block define="view nocall:context/folder_listing; listing_macro view/macros/listing">
-      <metal:use_macro use-macro="listing_macro" />
-    </tal:block>
-  </fieldset>
-
+  </div>
 </metal:main>
 
 </body>

@@ -1,21 +1,29 @@
+.portaltype-flowschema.template-view .multi-widget *,
 .portaltype-flowsubmission.template-view .multi-widget * {
   display: inline; }
+.portaltype-flowschema.template-view .multi-widget .required,
 .portaltype-flowsubmission.template-view .multi-widget .required {
   display: none; }
+.portaltype-flowschema.template-view .multi-widget .row,
 .portaltype-flowsubmission.template-view .multi-widget .row {
   margin: 0; }
+.portaltype-flowschema.template-view .multi-widget .row:first-child .object-widget,
 .portaltype-flowsubmission.template-view .multi-widget .row:first-child .object-widget {
   padding-top: 2em; }
+  .portaltype-flowschema.template-view .multi-widget .row:first-child .object-widget .label,
   .portaltype-flowsubmission.template-view .multi-widget .row:first-child .object-widget .label {
     display: block;
     margin-top: -1.75em;
     width: 0;
     overflow: visible;
     white-space: nowrap; }
+.portaltype-flowschema.template-view .object-widget,
 .portaltype-flowsubmission.template-view .object-widget {
   display: flex; }
+  .portaltype-flowschema.template-view .object-widget .label,
   .portaltype-flowsubmission.template-view .object-widget .label {
     display: none; }
+  .portaltype-flowschema.template-view .object-widget .widget,
   .portaltype-flowsubmission.template-view .object-widget .widget {
     flex-grow: 1;
     flex-basis: 1%; }
