@@ -11,6 +11,7 @@ from repoze.xmliter.serializer import XMLSerializer
 from scss import Scss
 from venusianconfiguration import configure
 from zope.interface import implementer
+from zope.lifecycleevent import IObjectModifiedEvent
 
 
 @configure.adapter.factory(
@@ -74,3 +75,14 @@ class InjectInlineStylesAndScripts(object):
             return None
 
         return self.transform(result, encoding)
+
+
+# noinspection PyPep8Naming
+@configure.subscriber.handler(
+    for_=(IFlowFolder, IObjectModifiedEvent),
+)
+def purgeTransformCache(ob, event):
+    try:
+        delattr(ob, '_v_css')
+    except AttributeError:
+        pass
