@@ -9,6 +9,7 @@ from collective.flow.schema import load_schema
 from collective.flow.schema import remove_attachments
 from datetime import datetime
 from persistent.mapping import PersistentMapping
+from plone import api
 from plone.autoform.view import WidgetsView
 from plone.dexterity.browser.add import DefaultAddForm
 from plone.dexterity.events import AddBegunEvent
@@ -153,9 +154,30 @@ class FlowSubmitForm(DefaultAddForm):
     description = u''
     content = None
     group_class = FlowSubmitFormGroup
+    view_template = ViewPageTemplateFile(
+        os.path.join('folder_templates', 'folder_listing.pt'))
+
+    def __call__(self):
+        if 'disable_border' in self.request.form:
+            del self.request.form['disable_border']
+
+        pc = api.portal.get_tool('portal_catalog')
+        path = '/'.join(self.context.getPhysicalPath())
+        if (len(pc.unrestrictedSearchResults(
+            path=path,
+            portal_type=['FlowFolder', 'FlowSubFolder']
+        )) > 1):
+            return self.view_template(self)
+        else:
+            return super(FlowSubmitForm, self).__call__()
 
     def label(self):
         return self.context.Title()
+
+    # noinspection PyRedeclaration
+    @property
+    def description(self):
+        return self.context.Description()
 
     @property
     def default_fieldset_label(self):
@@ -187,8 +209,6 @@ class FlowSubmitForm(DefaultAddForm):
     additionalSchemata = ()
 
     def update(self):
-        if 'disable_border' in self.request.form:
-            del self.request.form['disable_border']
         super(DefaultAddForm, self).update()
         # fire the edit begun only if no action was executed
         if len(self.actions.executedActions) == 0:
@@ -256,7 +276,7 @@ class SubmissionView(WidgetsView):
     ignoreRequest = True
 
     index = ViewPageTemplateFile(
-        os.path.join('folder_templates', 'view_submission.pt'))
+        os.path.join('folder_templates', 'submission_view.pt'))
 
     def __init__(self, context, request, content):
         self.content = content

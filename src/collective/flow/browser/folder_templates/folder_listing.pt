@@ -1,0 +1,27 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+      lang="en"
+   metal:use-macro="context/main_template/macros/master"
+   i18n:domain="plone.dexterity">
+<body>
+
+<metal:main fill-slot="main">
+
+  <h1 class="documentFirstHeading" tal:content="view/context/Title">Title</h1>
+
+  <div class="documentDescription" tal:content="view/context/Description"
+       tal:condition="view/context/Description|nothing">Description</div>
+
+  <fieldset id="folder-listing" tal:condition="view/context/objectIds|nothing">
+    <legend i18n:translate="" i18n:domain="plone">Contents</legend>
+    <tal:block define="view nocall:context/folder_listing; listing_macro view/macros/listing">
+      <metal:use_macro use-macro="listing_macro" />
+    </tal:block>
+  </fieldset>
+
+</metal:main>
+
+</body>
+</html>
