@@ -1,12 +1,12 @@
-var require = null;
+/* globals require */
 
 if(window.require === undefined){
-  require = function(reqs, torun){
+  require = function(reqs, torun){ // jshint ignore:line
     'use strict';
     return torun(window.jQuery);
   };
 } else {
-  require = window.require;
+  require = window.require; // jshint ignore:line
 }
 
 require(['jquery'], function($) {
