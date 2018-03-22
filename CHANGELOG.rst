@@ -1,7 +1,7 @@
 Changelog
 =========
 
-0.1.3 (unreleased)
+0.2.0 (2018-03-22)
 ------------------
 
 - Change folder view to be folder listing when folder has sub folders
