@@ -155,14 +155,14 @@ class NameFromTitle(object):
 @configure.adapter.factory(for_=(IFlowSubmission, IPloneBaseTool))
 @implementer(IWorkflowChain)
 def getFlowSubmissionWorkflowChain(ob, tool):
-    return ob.submission_workflow,
+    return tuple((ob.submission_workflow,))
 
 
 @configure.adapter.factory(for_=(IFlowAttachment, IPloneBaseTool))
 @implementer(IWorkflowChain)
 def getFlowAttachmentWorkflowChain(ob, tool):
     for parent in parents(ob, iface=IFlowSubmission):
-        return parent.attachment_workflow,
+        return tuple((parent.attachment_workflow,))
     assert False, u'FlowFolder not found for "{0:s}"'.format(
         '/'.join(ob.getPhysicalPath()),
     )

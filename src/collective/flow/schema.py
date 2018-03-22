@@ -250,7 +250,7 @@ class FlowSchemaPolicy(object):
 
     def bases(self, schemaName, tree):
         if 'IFlowSchemaDynamic' not in tostring(tree):
-            return IFlowSchemaDynamic,
+            return tuple((IFlowSchemaDynamic,))
         else:
             return ()
 
