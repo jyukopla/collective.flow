@@ -29,12 +29,16 @@
     flex-basis: 1%; }
 
 .portaltype-flowfolder.template-view .multi-widget-field > *, .portaltype-flowfolder.template-view .object-widget > *,
+.portaltype-flowsubfolder.template-view .multi-widget-field > *,
+.portaltype-flowsubfolder.template-view .object-widget > *,
 .portaltype-flowschema.template-edit .multi-widget-field > *,
 .portaltype-flowschema.template-edit .object-widget > *,
 .portaltype-flowsubmission.template-edit .multi-widget-field > *,
 .portaltype-flowsubmission.template-edit .object-widget > * {
   float: left; }
 .portaltype-flowfolder.template-view .multi-widget-field:after, .portaltype-flowfolder.template-view .object-widget:after,
+.portaltype-flowsubfolder.template-view .multi-widget-field:after,
+.portaltype-flowsubfolder.template-view .object-widget:after,
 .portaltype-flowschema.template-edit .multi-widget-field:after,
 .portaltype-flowschema.template-edit .object-widget:after,
 .portaltype-flowsubmission.template-edit .multi-widget-field:after,
@@ -43,26 +47,33 @@
   clear: both;
   content: ""; }
 .portaltype-flowfolder.template-view .multi-widget-field,
+.portaltype-flowsubfolder.template-view .multi-widget-field,
 .portaltype-flowschema.template-edit .multi-widget-field,
 .portaltype-flowsubmission.template-edit .multi-widget-field {
   margin-bottom: 0; }
   .portaltype-flowfolder.template-view .multi-widget-field > label, .portaltype-flowfolder.template-view .multi-widget-field > input,
+  .portaltype-flowsubfolder.template-view .multi-widget-field > label,
+  .portaltype-flowsubfolder.template-view .multi-widget-field > input,
   .portaltype-flowschema.template-edit .multi-widget-field > label,
   .portaltype-flowschema.template-edit .multi-widget-field > input,
   .portaltype-flowsubmission.template-edit .multi-widget-field > label,
   .portaltype-flowsubmission.template-edit .multi-widget-field > input {
     margin-right: 1em; }
     .portaltype-flowfolder.template-view .multi-widget-field > label > .required, .portaltype-flowfolder.template-view .multi-widget-field > input > .required,
+    .portaltype-flowsubfolder.template-view .multi-widget-field > label > .required,
+    .portaltype-flowsubfolder.template-view .multi-widget-field > input > .required,
     .portaltype-flowschema.template-edit .multi-widget-field > label > .required,
     .portaltype-flowschema.template-edit .multi-widget-field > input > .required,
     .portaltype-flowsubmission.template-edit .multi-widget-field > label > .required,
     .portaltype-flowsubmission.template-edit .multi-widget-field > input > .required {
       display: none; }
 .portaltype-flowfolder.template-view .object-widget-field,
+.portaltype-flowsubfolder.template-view .object-widget-field,
 .portaltype-flowschema.template-edit .object-widget-field,
 .portaltype-flowsubmission.template-edit .object-widget-field {
   margin-right: 1ex; }
 .portaltype-flowfolder.template-view .multi-widget .formControls,
+.portaltype-flowsubfolder.template-view .multi-widget .formControls,
 .portaltype-flowschema.template-edit .multi-widget .formControls,
 .portaltype-flowsubmission.template-edit .multi-widget .formControls {
   margin: 0;
