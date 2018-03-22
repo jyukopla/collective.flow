@@ -165,7 +165,7 @@ class FlowSubmitForm(DefaultAddForm):
         path = '/'.join(self.context.getPhysicalPath())
         if (len(pc.unrestrictedSearchResults(
             path=path,
-            portal_type=['FlowFolder', 'FlowSubFolder']
+            portal_type=['FlowFolder', 'FlowSubFolder'],
         )) > 1):
             return self.view_template(self)
         else:
