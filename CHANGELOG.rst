@@ -4,8 +4,8 @@ Changelog
 0.2.1 (unreleased)
 ------------------
 
-- Nothing changed yet.
-
+- Fix issue with requirejs patch
+  [Asko Soukka]
 
 0.2.0 (2018-03-22)
 ------------------
