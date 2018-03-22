@@ -4,8 +4,14 @@ Changelog
 0.1.3 (unreleased)
 ------------------
 
-- Nothing changed yet.
-
+- Change folder view to be folder listing when folder has sub folders
+  [Asko Soukka]
+- Disable customization of vocabulary values for now
+  [Asko Soukka]
+- Fix issue where CSS cache was not purged after folder was updated
+  [Asko Soukka]
+- Fix datagrid styles when submission has occurred
+  [Asko Soukka]
 
 0.1.2 (2018-03-15)
 ------------------
