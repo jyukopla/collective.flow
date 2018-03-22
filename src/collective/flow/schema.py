@@ -43,7 +43,6 @@ current = threading.local()
 
 CUSTOMIZABLE_TAGS = [
     ns('default'),
-    ns('values'),
 ]
 
 
