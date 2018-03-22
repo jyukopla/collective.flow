@@ -1,12 +1,17 @@
 # -*- coding: utf-8 -*-
+from collective.flow.content import FlowSubmissionData
 from collective.flow.schema import SCHEMA_MODULE
 from plone.supermodel.interfaces import IToUnicode
 from venusianconfiguration import configure
 from zope.component import adapter
+from zope.dottedname.resolve import resolve
 from zope.interface import implementer
+from zope.schema._bootstrapinterfaces import IFromUnicode
 from zope.schema.interfaces import IInterfaceField
+from zope.schema.interfaces import IObject
 
 import inspect
+import json
 import os
 import plone.supermodel
 
@@ -45,3 +50,22 @@ class InterfaceFieldToUnicode(object):
                 frame = frame.f_back
 
         return ret
+
+
+@configure.adapter.factory()
+@implementer(IFromUnicode)
+@adapter(IObject)
+class ObjectFromUnicode(object):
+
+    def __init__(self, context):
+        self.context = context
+
+    def fromUnicode(self, value):
+        try:
+            obj = resolve(value)
+        except ImportError:
+            obj = FlowSubmissionData()
+            obj._v_initial_schema = self.context.schema
+            obj.update(json.loads(value))
+        self.context.validate(obj)
+        return obj

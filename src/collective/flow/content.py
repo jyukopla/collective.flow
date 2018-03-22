@@ -13,6 +13,7 @@ from collective.flow.utils import parents
 from persistent.mapping import PersistentMapping
 from plone.app.content.interfaces import INameFromTitle
 from plone.dexterity.content import Container
+from plone.supermodel.interfaces import IToUnicode
 from Products.CMFPlone.interfaces import IPloneBaseTool
 from Products.CMFPlone.interfaces import IWorkflowChain
 from venusianconfiguration import configure
@@ -27,6 +28,9 @@ from zope.interface.declarations import implementer
 from zope.interface.declarations import Implements
 from zope.interface.declarations import ObjectSpecificationDescriptor
 from zope.location.interfaces import IContained
+from zope.schema.interfaces import IObject
+
+import json
 
 
 try:
@@ -93,6 +97,20 @@ class FlowSubmissionData(PersistentMapping):
             raise AttributeError
 
 
+@configure.adapter.factory()
+@implementer(IToUnicode)
+@adapter(IObject)
+class ObjectToUnicode(object):
+
+    def __init__(self, context):
+        self.context = context
+
+    def toUnicode(self, value):
+        if isinstance(value, FlowSubmissionData):
+            return json.dumps(dict(value))
+        raise NotImplementedError()
+
+
 @configure.adapter.factory(name='{0:s}.any'.format(SCHEMA_MODULE))
 @adapter(Interface, ICollectiveFlowLayer, Interface, Interface)
 @implementer(IObjectFactory)
@@ -130,8 +148,8 @@ class DefaultRoot(object):
         self.widget = widget
 
     def get(self):
-        value = []
-        for i in range(3):
+        value = self.field.default or []
+        for i in range(3 - len(value)):
             ob = FlowSubmissionData()
             ob._v_initial_schema = self.field.value_type.schema
             for name in ob._v_initial_schema.names():
