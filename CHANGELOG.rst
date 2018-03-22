@@ -1,7 +1,7 @@
 Changelog
 =========
 
-0.2.1 (unreleased)
+0.2.1 (2018-03-22)
 ------------------
 
 - Fix issue with requirejs patch
