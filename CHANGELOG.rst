@@ -4,8 +4,8 @@ Changelog
 0.2.3 (unreleased)
 ------------------
 
-- Nothing changed yet.
-
+- Add support for default values for repeating items
+  [Asko Soukka]
 
 0.2.2 (2018-03-22)
 ------------------
