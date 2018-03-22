@@ -1,7 +1,7 @@
 Changelog
 =========
 
-0.2.3 (unreleased)
+0.2.3 (2018-03-22)
 ------------------
 
 - Add support for default values for repeating items
