@@ -149,7 +149,7 @@ class DefaultRoot(object):
 
     def get(self):
         value = self.field.default or []
-        for i in range(3 - len(value)):
+        for i in range((self.field.min_length or 0) - len(value)):
             ob = FlowSubmissionData()
             ob._v_initial_schema = self.field.value_type.schema
             for name in ob._v_initial_schema.names():

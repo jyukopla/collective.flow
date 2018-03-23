@@ -1,12 +1,14 @@
 # -*- coding: utf-8 -*-
 from plone.app.textfield import RichText
 from plone.app.z3cform.interfaces import IPloneFormLayer
+from plone.autoform.directives import widget
 from plone.namedfile.field import NamedBlobFile
 from plone.namedfile.field import NamedBlobImage
 from plone.schemaeditor.interfaces import ISchemaContext
 from plone.supermodel import model
 from plone.supermodel.directives import fieldset
 from plone.supermodel.directives import primary
+from z3c.form.browser.textarea import TextAreaWidget
 from z3c.form.interfaces import IWidget
 from zope import schema
 from zope.i18nmessageid import MessageFactory
@@ -127,6 +129,7 @@ class IFlowFolder(IFlowSchema):
         required=False,
     )
 
+    widget('css', TextAreaWidget, klass='pat-texteditor')
     css = schema.Text(
         title=_(u'Custom CSS'),
         required=False,

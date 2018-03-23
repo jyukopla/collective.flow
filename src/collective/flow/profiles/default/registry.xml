@@ -1,5 +1,6 @@
 <?xml version="1.0"?>
 <registry>
+
   <records prefix="plone.bundles/collective.flow"
            interface='Products.CMFPlone.interfaces.IBundleRegistry'>
     <value key="jscompilation">++plone++collective.flow/scripts.js</value>
@@ -10,4 +11,9 @@
     <value key="enabled">true</value>
     <value key="merge_with">default</value>
   </records>
+
+  <record name="plone.resources/plone-logged-in.js">
+    <value>++plone++collective.flow/plone-logged-in.js</value>
+  </record>
+
 </registry>
