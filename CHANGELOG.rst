@@ -4,8 +4,8 @@ Changelog
 0.2.4 (unreleased)
 ------------------
 
-- Nothing changed yet.
-
+- Enable pat-texteditor
+  [Asko Soukka]
 
 0.2.3 (2018-03-22)
 ------------------
