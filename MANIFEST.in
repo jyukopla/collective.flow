@@ -2,4 +2,4 @@ graft src/collective
 graft docs
 include setup.* *.nix *.rst *.txt
 global-exclude *.pyc
-exclude *.sh result Makefile* Dockerfile* buildout*
+exclude .* *.sh result Makefile* Dockerfile* buildout*
