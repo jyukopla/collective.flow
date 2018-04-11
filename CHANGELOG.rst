@@ -1,7 +1,7 @@
 Changelog
 =========
 
-0.2.4 (unreleased)
+0.2.4 (2018-04-11)
 ------------------
 
 - Enable pat-texteditor
