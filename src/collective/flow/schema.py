@@ -43,6 +43,8 @@ current = threading.local()
 
 CUSTOMIZABLE_TAGS = [
     ns('default'),
+    ns('defaultFactory'),
+    ns('values'),
 ]
 
 
@@ -144,7 +146,12 @@ def customized_schema(original, custom):
             ):
                 for node in [child for child in field.getchildren()
                              if child.tag in fields[name]]:
-                    field.replace(node, fields[name].pop(node.tag))
+                    if (node.text or u'').strip() or node.getchildren():
+                        # if master has value, drop the customization
+                        del fields[name][node.tag]
+                    else:
+                        # if master is empty, apply the customization
+                        field.replace(node, fields[name].pop(node.tag))
                 for node in fields[name].values():
                     field.append(node)
 
