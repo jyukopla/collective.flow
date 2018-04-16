@@ -5,6 +5,7 @@ from collective.flow.browser.submission import SubmissionView
 from collective.flow.interfaces import ICollectiveFlowLayer
 from collective.flow.interfaces import IFlowFolder
 from collective.flow.utils import parents
+from lxml.etree import CDATA
 from lxml.html import builder
 from plone.transformchain.interfaces import ITransform
 from repoze.xmliter.serializer import XMLSerializer
@@ -44,7 +45,8 @@ class InjectInlineStylesAndScripts(object):
                 '_v_css',
                 Scss().compile(parent.css or u''),
             )
-            javascript = parent.javascript
+            javascript =\
+                (parent.javascript or u'').strip().replace(u'\r\n', u'\n')
             break
 
         root = result.tree.getroot()
@@ -57,10 +59,11 @@ class InjectInlineStylesAndScripts(object):
 
         if javascript:
             body = root.find('body')
-            body.append(builder.SCRIPT(
-                javascript,
-                type='application/javascript',
-            ))
+            # trick LXML to render script with //<!CDATA[[
+            script = builder.SCRIPT(u'\n//', type='application/javascript')
+            script.append(builder.S(CDATA(u'\n' + javascript + u'\n//')))
+            script.getchildren()[0].tail = u'\n'
+            body.append(script)
 
         return result
 
