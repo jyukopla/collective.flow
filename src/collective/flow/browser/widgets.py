@@ -4,7 +4,6 @@ from Products.Five.browser.metaconfigure import ViewMixinForTemplates
 from venusianconfiguration import configure
 from z3c.form.browser.widget import addFieldClass
 from z3c.form.browser.widget import HTMLFormElement
-from z3c.form.interfaces import IField
 from z3c.form.interfaces import IFieldWidget
 from z3c.form.interfaces import IFormLayer
 from z3c.form.interfaces import IWidget
@@ -16,6 +15,7 @@ from zope.interface import Attribute
 from zope.interface import implementer
 from zope.interface import implementer_only
 from zope.interface import Interface
+from zope.schema.interfaces import IField
 
 import os
 
