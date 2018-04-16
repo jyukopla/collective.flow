@@ -1,19 +1,69 @@
 <?xml version="1.0"?>
 <registry>
 
-  <records prefix="plone.bundles/collective.flow"
+  <!-- this line can be removed once upgraded at production -->
+  <record name="plone.resources/plone-logged-in.js">
+    <value>++resource++plone-logged-in.js</value>
+  </record>
+
+  <records prefix="plone.resources/flow-default"
+           interface='Products.CMFPlone.interfaces.IResourceRegistry'>
+    <value key="js">++plone++collective.flow/default.js</value>
+    <value key="css">
+      <element>++plone++collective.flow/default.less</element>
+    </value>
+  </records>
+
+  <records prefix="plone.resources/flow-logged-in"
+           interface='Products.CMFPlone.interfaces.IResourceRegistry'>
+    <value key="js">++plone++collective.flow/logged-in.js</value>
+    <value key="css">
+      <element>++plone++collective.flow/logged-in.less</element>
+    </value>
+  </records>
+
+  <records prefix="plone.resources/flow-patterns-script-editor"
+           interface='Products.CMFPlone.interfaces.IResourceRegistry'>
+    <value key="js">++plone++collective.flow/patterns.script-editor.js</value>
+    <value key="css">
+      <element>++plone++collective.flow/patterns.script-editor.less</element>
+    </value>
+  </records>
+
+  <records prefix="plone.resources/flow-patterns-style-editor"
+           interface='Products.CMFPlone.interfaces.IResourceRegistry'>
+    <value key="js">++plone++collective.flow/patterns.style-editor.js</value>
+    <value key="css">
+      <element>++plone++collective.flow/patterns.style-editor.less</element>
+    </value>
+  </records>
+
+  <records prefix="plone.bundles/flow-default"
            interface='Products.CMFPlone.interfaces.IBundleRegistry'>
-    <value key="jscompilation">++plone++collective.flow/scripts.js</value>
-    <value key="csscompilation">++plone++collective.flow/styles.css</value>
-    <value key="last_compilation">2018-02-01 00:00:00</value>
-    <value key="compile">false</value>
+    <value key="resources">
+      <element>flow-default</element>
+    </value>
+    <value key="compile">true</value>
     <value key="depends">plone</value>
     <value key="enabled">true</value>
     <value key="merge_with">default</value>
   </records>
 
-  <record name="plone.resources/plone-logged-in.js">
-    <value>++plone++collective.flow/plone-logged-in.js</value>
-  </record>
+  <records prefix="plone.bundles/flow-logged-in"
+           interface='Products.CMFPlone.interfaces.IBundleRegistry'>
+    <value key="resources">
+      <element>flow-patterns-script-editor</element>
+      <element>flow-patterns-style-editor</element>
+      <element>flow-logged-in</element>
+    </value>
+    <value key="stub_js_modules">
+      <element>jquery</element>
+      <element>pat-base</element>
+    </value>
+    <value key="compile">true</value>
+    <value key="depends">plone</value>
+    <value key="enabled">true</value>
+    <value key="merge_with">logged-in</value>
+  </records>
 
 </registry>

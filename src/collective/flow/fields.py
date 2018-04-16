@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from collective.flow.interfaces import IRichTextLabel
+from collective.flow.browser.widgets import IRichTextLabel
 from plone.schemaeditor.fields import FieldFactory
 from plone.supermodel.exportimport import BaseHandler
 from venusianconfiguration import configure

@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<registry>
+
+  <records prefix="plone.resources/flow-default"
+           interface='Products.CMFPlone.interfaces.IResourceRegistry'
+           remove="true"/>
+
+  <records prefix="plone.resources/flow-logged-in"
+           interface='Products.CMFPlone.interfaces.IResourceRegistry'
+           remove="true"/>
+
+  <records prefix="plone.resources/flow-patterns-script-editor"
+           interface='Products.CMFPlone.interfaces.IResourceRegistry'
+           remove="true"/>
+
+  <records prefix="plone.resources/flow-patterns-style-editor"
+           interface='Products.CMFPlone.interfaces.IResourceRegistry'
+           remove="true"/>
+
+  <records prefix="plone.bundles/flow-default"
+           interface='Products.CMFPlone.interfaces.IBundleRegistry'
+           remove="true"/>
+
+  <records prefix="plone.bundles/flow-logged-in"
+           interface='Products.CMFPlone.interfaces.IBundleRegistry'
+           remove="true"/>
+
+</registry>

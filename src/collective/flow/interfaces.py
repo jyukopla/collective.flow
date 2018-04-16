@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from plone.app.textfield import RichText
 from plone.app.z3cform.interfaces import IPloneFormLayer
 from plone.autoform.directives import widget
 from plone.namedfile.field import NamedBlobFile
@@ -9,12 +8,10 @@ from plone.supermodel import model
 from plone.supermodel.directives import fieldset
 from plone.supermodel.directives import primary
 from z3c.form.browser.textarea import TextAreaWidget
-from z3c.form.interfaces import IWidget
 from zope import schema
 from zope.i18nmessageid import MessageFactory
 from zope.interface import Attribute
 from zope.publisher.interfaces.browser import IDefaultBrowserLayer
-from zope.schema.interfaces import IField
 
 
 _ = MessageFactory('collective.flow')
@@ -71,7 +68,7 @@ class IFlowFolder(IFlowSchema):
         default=_(u'Submit'),
     )
 
-#   fieldset(
+#   fieldset(    klass = u'textarea-widget pat-foobar'
 #       'instructions',
 #       label=_(u'Instructions'),
 #       fields=[u'form_prologue',
@@ -129,7 +126,7 @@ class IFlowFolder(IFlowSchema):
         required=False,
     )
 
-    widget('css', TextAreaWidget, klass='pat-texteditor')
+    widget('css', TextAreaWidget, klass='pat-style-editor')
     css = schema.Text(
         title=_(u'Custom CSS'),
         required=False,
@@ -141,6 +138,7 @@ class IFlowFolder(IFlowSchema):
         fields=[u'css'],
     )
 
+    widget('javascript', TextAreaWidget, klass='pat-script-editor')
     javascript = schema.Text(
         title=_(u'Custom JavaScript'),
         required=False,
@@ -187,18 +185,3 @@ class IFlowAttachment(model.Schema):
         title=_(u'Image'),
         required=False,
     )
-
-
-class IRichTextLabel(model.Schema, IField):
-    """Rich text label field"""
-    text = RichText(
-        title=_(u'Text'),
-        default=u'',
-        missing_value=u'',
-    )
-    description = Attribute(u'Labels don\'t need to be described.')
-    required = Attribute(u'Labels don\'t require any input value.')
-
-
-class IRichTextLabelWidget(IWidget):
-    """Rich text label widget"""
