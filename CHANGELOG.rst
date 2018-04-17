@@ -1,11 +1,15 @@
 Changelog
 =========
 
-0.3.1 (unreleased)
+0.4.0 (2018-04-18)
 ------------------
 
-- Nothing changed yet.
-
+- Add support for defaultFactory
+  [Asko Soukka]
+- Add custom validator
+  [Asko Soukka]
+- Add useful defaultFactories
+  [Asko Soukka]
 
 0.3.0 (2018-04-17)
 ------------------
