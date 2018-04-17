@@ -4,7 +4,8 @@ Changelog
 0.4.2 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Fix issue where submission thanks view showed default values for intentionally missing values
+  [Asko Soukka]
 
 
 0.4.1 (2018-04-18)
