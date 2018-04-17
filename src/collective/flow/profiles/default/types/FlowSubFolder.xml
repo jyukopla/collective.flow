@@ -3,7 +3,7 @@
         xmlns:i18n="http://xml.zope.org/namespaces/i18n">
   <property name="title" i18n:translate="">Flow folder</property>
   <property name="description"
-            i18n:translate="">Flow folder
+            i18n:translate="Flow sub-folder">Flow folder
   </property>
   <property name="icon_expr">string:${portal_url}/document_icon.png</property>
   <property name="factory">FlowSubFolder</property>

@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2018-03-15 21:00+0000\n"
+"POT-Creation-Date: 2018-04-17 06:30+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI +ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,11 +18,11 @@ msgstr ""
 msgid "Activates collective.flow"
 msgstr ""
 
-#: collective/flow/interfaces.py:124
+#: collective/flow/interfaces.py:123
 msgid "Attachment transition"
 msgstr ""
 
-#: collective/flow/interfaces.py:118
+#: collective/flow/interfaces.py:117
 msgid "Attachment workflow"
 msgstr ""
 
@@ -34,15 +34,15 @@ msgstr ""
 msgid "Custom CSS"
 msgstr ""
 
-#: collective/flow/interfaces.py:142
+#: collective/flow/interfaces.py:143
 msgid "Custom JavaScript"
 msgstr ""
 
-#: collective/flow/configure.py:58
+#: collective/flow/configure.py:66
 msgid "Deactivates collective.flow"
 msgstr ""
 
-#: collective/flow/interfaces.py:63
+#: collective/flow/interfaces.py:62
 msgid "Default fieldset label"
 msgstr ""
 
@@ -50,7 +50,7 @@ msgstr ""
 msgid "Editable schema"
 msgstr ""
 
-#: collective/flow/interfaces.py:178
+#: collective/flow/interfaces.py:179
 msgid "File"
 msgstr ""
 
@@ -71,6 +71,11 @@ msgstr ""
 msgid "Flow schemata"
 msgstr ""
 
+#. Default: "Flow folder"
+#: collective/flow/profiles/default/types/FlowSubFolder.xml
+msgid "Flow sub-folder"
+msgstr ""
+
 #: collective/flow/profiles/default/types/FlowSubmission.xml
 msgid "Flow submission"
 msgstr ""
@@ -80,7 +85,7 @@ msgid "Flow submission attachment"
 msgstr ""
 
 #: collective/flow/browser/submission.py:62
-#: collective/flow/interfaces.py:64
+#: collective/flow/interfaces.py:63
 msgid "Form"
 msgstr ""
 
@@ -88,7 +93,7 @@ msgstr ""
 msgid "Forms, workflows and everything"
 msgstr ""
 
-#: collective/flow/interfaces.py:184
+#: collective/flow/interfaces.py:185
 msgid "Image"
 msgstr ""
 
@@ -108,7 +113,7 @@ msgstr ""
 msgid "Schema folder"
 msgstr ""
 
-#: collective/flow/interfaces.py:148
+#: collective/flow/interfaces.py:149
 msgid "Scripts"
 msgstr ""
 
@@ -116,27 +121,27 @@ msgstr ""
 msgid "Styles"
 msgstr ""
 
-#: collective/flow/interfaces.py:105
+#: collective/flow/interfaces.py:104
 msgid "Submission workflow"
 msgstr ""
 
-#: collective/flow/interfaces.py:69
+#: collective/flow/interfaces.py:68
 msgid "Submit"
 msgstr ""
 
-#: collective/flow/interfaces.py:68
+#: collective/flow/interfaces.py:67
 msgid "Submit button label"
 msgstr ""
 
-#: collective/flow/interfaces.py:111
+#: collective/flow/interfaces.py:110
 msgid "Submit transition"
 msgstr ""
 
-#: collective/flow/interfaces.py:192
+#: collective/flow/browser/widgets.py:29
 msgid "Text"
 msgstr ""
 
-#: collective/flow/interfaces.py:97
+#: collective/flow/interfaces.py:96
 msgid "Workflows"
 msgstr ""
 
