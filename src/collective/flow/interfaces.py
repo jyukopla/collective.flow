@@ -150,6 +150,19 @@ class IFlowFolder(IFlowSchema):
         fields=[u'javascript'],
     )
 
+    widget('validator', TextAreaWidget, klass='pat-python-editor')
+    validator = schema.Text(
+        title=_(u'Custom validator'),
+        description=u"errors['fieldname'] = 'error' if not data['fieldname']",
+        required=False,
+    )
+
+    fieldset(
+        'validation',
+        label=_(u'Validation'),
+        fields=[u'validator'],
+    )
+
 
 class IFlowSubFolder(model.Schema):
     """Flow folder"""
