@@ -4,8 +4,8 @@ Changelog
 0.4.1 (unreleased)
 ------------------
 
-- Nothing changed yet.
-
+- Update default factories
+  [Asko Soukka]
 
 0.4.0 (2018-04-18)
 ------------------
