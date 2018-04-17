@@ -37,6 +37,12 @@ class SubmissionView(WidgetsView, ExtensibleForm):
         super(SubmissionView, self).updateFieldsFromSchemata()
         self.updateFields()
 
+        # disable default values
+        for group in ([self] + self.groups):
+            for name in group.fields:
+                # noinspection PyPep8Naming
+                group.fields[name].showDefault = False
+
 
 @configure.browser.page.class_(
     name='edit',

@@ -12,6 +12,11 @@ from venusianconfiguration import i18n_domain
 from venusianconfiguration import scan
 from zope.interface import implementer
 
+import plone.supermodel.exportimport
+
+
+# We implement good enough write support for defaultFactory
+del plone.supermodel.exportimport.BaseHandler.filteredAttributes['defaultFactory']  # noqa
 
 i18n_domain('collective.flow')
 configure.i18n.registerTranslations(directory='locales')
