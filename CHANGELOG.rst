@@ -1,7 +1,7 @@
 Changelog
 =========
 
-0.2.5 (unreleased)
+0.3.0 (2018-04-17)
 ------------------
 
 - Restore customization of vocabularies when original vocabulary was empty
