@@ -357,3 +357,12 @@ class SubmissionView(WidgetsView):
 
     def getContent(self):
         return self.content
+
+    def updateFieldsFromSchemata(self):
+        super(SubmissionView, self).updateFieldsFromSchemata()
+
+        # disable default values
+        for group in ([self] + self.groups):
+            for name in group.fields:
+                # noinspection PyPep8Naming
+                group.fields[name].showDefault = False
