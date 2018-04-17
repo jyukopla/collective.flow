@@ -4,8 +4,14 @@ Changelog
 0.2.5 (unreleased)
 ------------------
 
-- Nothing changed yet.
-
+- Restore customization of vocabularies when original vocabulary was empty
+  [Asko Soukka]
+- Fix regression caused by wrong import
+  [Asko Soukka]
+- Reimplement ACE editor integration as custom pattern
+  [Asko Soukka]
+- Fix issue where custom JavaScript was not renderd as CDATA
+  [Asko Soukka]
 
 0.2.4 (2018-04-11)
 ------------------
