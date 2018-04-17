@@ -43,7 +43,7 @@ class user(object):
         if member is None:
             return None
         value = (member.getProperty('fullname') or u'').strip()
-        return safe_unicode(value or member.getId())
+        return safe_unicode(value.split(u' ', 1)[0] or member.getId())
 
     @staticmethod
     @provider(IContextAwareDefaultFactory)
@@ -52,7 +52,7 @@ class user(object):
         if member is None:
             return None
         value = (member.getProperty('fullname') or u'').strip()
-        return safe_unicode(value.split(u' ', 1)[0] or member.getId())
+        return safe_unicode(value.split(u' ', 1)[-1] or member.getId())
 
     @staticmethod
     @provider(IContextAwareDefaultFactory)
@@ -61,7 +61,7 @@ class user(object):
         if member is None:
             return None
         value = (member.getProperty('fullname') or u'').strip()
-        return safe_unicode(value.split(u' ', 1)[-1] or member.getId())
+        return safe_unicode(value or member.getId())
 
     @staticmethod
     @provider(IContextAwareDefaultFactory)
