@@ -52,6 +52,14 @@ configure.gs.upgradeDepends(
     import_steps='typeinfo plone.app.registry',
 )
 
+configure.gs.upgradeDepends(
+    source='1001', destination='1002', sortkey='1001',
+    title=u'Upgrade collective.flow from 1001 to 1002',
+    description=u'Update resource bundles',
+    profile='collective.flow:default',
+    import_steps='typeinfo plone.app.registry',
+)
+
 configure.gs.registerProfile(
     name=u'uninstall',
     title=_(u'Forms, workflows and everything'),
