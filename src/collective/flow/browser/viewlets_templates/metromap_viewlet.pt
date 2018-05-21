@@ -1,0 +1,29 @@
+<ul class="workflow-metromap" tal:condition="view/steps"
+    i18n:domain="plone">
+  <tal:repeat repeat="step view/steps">
+    <li tal:attributes="class step/className|nothing"
+        tal:condition="step/backward|nothing">
+      <form method="POST"
+          tal:attributes="action step/backward/action">
+        <input type="submit"
+            tal:attributes="value step/backward/title"
+            i18n:attributes="value" />
+      </form>
+    </li>
+    <li tal:attributes="class step/className|nothing"
+        tal:condition="step/forward|nothing">
+      <form method="POST"
+            tal:attributes="action step/forward/action">
+        <input type="submit"
+            tal:attributes="value step/forward/title"
+            i18n:attributes="value" />
+      </form>
+    </li>
+    <li tal:attributes="class step/className|nothing"
+        tal:condition="step/title|nothing">
+      <span tal:content="step/title" i18n:translate="">
+      State
+      </span>
+    </li>
+  </tal:repeat>
+</ul>
