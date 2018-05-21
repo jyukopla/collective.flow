@@ -18,16 +18,20 @@ make = git archive HEAD | docker run -i $(DOCKER_RUN_ARGS) \
        PYBOT_ARGS='-v REMOTE_URL:http://selenium:4444/wd/hub -v ZOPE_HOST:\`hostname -i\`' \
        BUILDOUT_ARGS='-c $(BUILDOUT_FILENAME) -N' $1"
 
+.PHONY: all
 all: build check
 
+.PHONY: show
 show:
 	$(INIT_CACHE)
 	$(call make,show)
 
+.PHONY: build
 build:
 	$(INIT_CACHE)
 	$(call make,build)
 
+.PHONY: test
 test: DOCKER_RUN_ARGS_EXTRA = --volumes-from=$(BUILD) --link=$(SELENIUM):selenium
 test:
 	$(INIT_CACHE)
@@ -39,6 +43,7 @@ test:
 	  docker rm -f -v $(BUILD); \
 	  exit $$status
 
+.PHONY: docs
 docs: DOCKER_RUN_ARGS_EXTRA = --volumes-from=$(BUILD) --link=$(SELENIUM):selenium
 docs:
 	$(INIT_CACHE)
@@ -50,24 +55,30 @@ docs:
 	  docker rm -f -v $(BUILD); \
 	  exit $$status
 
+.PHONY: check
 check: test
 
+.PHONY: dist
 dist:
 	$(INIT_CACHE)
 	$(call make,dist)
 
+.PHONY: dist-docs
 dist-docs:
 	docker build --rm --no-cache \
 		-t $(IMAGE_NAME_DOCS):$(IMAGE_TAG_DOCS) \
 		-f Dockerfile.docs .
 
+.PHONY: push-docs
 push-docs:
 	docker push $(IMAGE_NAME_DOCS):$(IMAGE_TAG_DOCS)
 
+.PHONY: deploy
 deploy:
 	$(INIT_CACHE)
 	$(call make,deploy)
 
+.PHONY: deploy-docs
 deploy-docs:
 ifndef TOWER_JOB_ID_DOCS
 	$(error Missing TOWER_JOB_ID_DOCS)
@@ -76,11 +87,10 @@ endif
 		--job-template=$(TOWER_JOB_ID_DOCS) \
 		--extra-vars="limit_app: $(TOWER_APP_NAME_DOCS)"
 
-###
-
-.PHONY: all show build docs test check dist deploy
-
+.PHONY: html
 html: docs
+
+###
 
 INIT_CACHE = \
   docker volume ls | grep $(CACHE_VOLUME) \
