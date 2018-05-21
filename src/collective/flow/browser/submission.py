@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from Acquisition import aq_base
 from collective.flow.browser.folder import save_form
+from collective.flow.browser.folder import validate
 from collective.flow.interfaces import ICollectiveFlowLayer
 from collective.flow.interfaces import IFlowSchemaForm
 from collective.flow.interfaces import IFlowSubmission
@@ -36,6 +37,12 @@ class SubmissionView(WidgetsView, ExtensibleForm):
         super(SubmissionView, self).updateFieldsFromSchemata()
         self.updateFields()
 
+        # disable default values
+        for group in ([self] + self.groups):
+            for name in group.fields:
+                # noinspection PyPep8Naming
+                group.fields[name].showDefault = False
+
 
 @configure.browser.page.class_(
     name='edit',
@@ -52,6 +59,9 @@ class SubmissionEditForm(DefaultEditForm):
     def description(self):
         return self.context.aq_explicit.aq_acquire('description')
 
+    def validator(self):
+        return self.context.aq_explicit.aq_acquire('validator')
+
     @property
     def default_fieldset_label(self):
         try:
@@ -67,6 +77,16 @@ class SubmissionEditForm(DefaultEditForm):
                            cache_key=aq_base(self.context).schema_digest)
 
     additionalSchemata = ()
+
+    # noinspection PyPep8Naming
+    def extractData(self, setErrors=True):
+        data, errors = super(
+            SubmissionEditForm, self).extractData(setErrors=setErrors)
+        if not errors:
+            validator = self.validator()
+            if validator:
+                errors = validate(self, validator, data)
+        return data, errors
 
     def applyChanges(self, data):
         save_form(self, data, self.context)

@@ -21,6 +21,7 @@ from z3c.form.interfaces import IMultiWidget
 from z3c.form.interfaces import IObjectFactory
 from z3c.form.interfaces import IValue
 from zope.component import adapter
+from zope.dottedname.resolve import resolve
 from zope.interface import Interface
 from zope.interface.declarations import getObjectSpecification
 from zope.interface.declarations import implementedBy
@@ -28,6 +29,7 @@ from zope.interface.declarations import implementer
 from zope.interface.declarations import Implements
 from zope.interface.declarations import ObjectSpecificationDescriptor
 from zope.location.interfaces import IContained
+from zope.schema.interfaces import IContextAwareDefaultFactory
 from zope.schema.interfaces import IObject
 
 import json
@@ -97,6 +99,29 @@ class FlowSubmissionData(PersistentMapping):
             raise AttributeError
 
 
+def dottedname(value):
+    prefix = value.__module__
+    name = value.__name__
+    try:
+        candidate = prefix + '.' + name
+        if resolve(candidate) is value:
+            return candidate
+    except ImportError:
+        pass
+
+    module = resolve(prefix)
+    for key in dir(module):
+        if key.startswith('_'):
+            continue
+        try:
+            candidate = prefix + '.' + key + '.' + name
+            if resolve(candidate) is value:
+                return candidate
+        except ImportError:
+            pass
+    return value
+
+
 @configure.adapter.factory()
 @implementer(IToUnicode)
 @adapter(IObject)
@@ -108,6 +133,8 @@ class ObjectToUnicode(object):
     def toUnicode(self, value):
         if isinstance(value, FlowSubmissionData):
             return json.dumps(dict(value))
+        if IContextAwareDefaultFactory.providedBy(value):
+            return dottedname(value)
         raise NotImplementedError()
 
 

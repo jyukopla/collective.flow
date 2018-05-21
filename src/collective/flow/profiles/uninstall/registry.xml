@@ -9,6 +9,10 @@
            interface='Products.CMFPlone.interfaces.IResourceRegistry'
            remove="true"/>
 
+  <records prefix="plone.resources/flow-patterns-python-editor"
+           interface='Products.CMFPlone.interfaces.IResourceRegistry'
+           remove="true"/>
+
   <records prefix="plone.resources/flow-patterns-script-editor"
            interface='Products.CMFPlone.interfaces.IResourceRegistry'
            remove="true"/>

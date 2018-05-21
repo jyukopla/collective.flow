@@ -1,11 +1,34 @@
 Changelog
 =========
 
-0.3.1 (unreleased)
+0.4.3 (unreleased)
 ------------------
 
 - Nothing changed yet.
 
+
+0.4.2 (2018-04-18)
+------------------
+
+- Fix issue where submission thanks view showed default values for intentionally missing values
+  [Asko Soukka]
+
+
+0.4.1 (2018-04-18)
+------------------
+
+- Update default factories
+  [Asko Soukka]
+
+0.4.0 (2018-04-18)
+------------------
+
+- Add support for defaultFactory
+  [Asko Soukka]
+- Add custom validator
+  [Asko Soukka]
+- Add useful defaultFactories
+  [Asko Soukka]
 
 0.3.0 (2018-04-17)
 ------------------

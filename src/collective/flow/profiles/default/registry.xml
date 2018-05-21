@@ -38,6 +38,14 @@
     </value>
   </records>
 
+  <records prefix="plone.resources/flow-patterns-python-editor"
+           interface='Products.CMFPlone.interfaces.IResourceRegistry'>
+    <value key="js">++plone++collective.flow/patterns.python-editor.js</value>
+    <value key="css">
+      <element>++plone++collective.flow/patterns.python-editor.less</element>
+    </value>
+  </records>
+
   <records prefix="plone.bundles/flow-default"
            interface='Products.CMFPlone.interfaces.IBundleRegistry'>
     <value key="resources">
@@ -52,6 +60,7 @@
   <records prefix="plone.bundles/flow-logged-in"
            interface='Products.CMFPlone.interfaces.IBundleRegistry'>
     <value key="resources">
+      <element>flow-patterns-python-editor</element>
       <element>flow-patterns-script-editor</element>
       <element>flow-patterns-style-editor</element>
       <element>flow-logged-in</element>

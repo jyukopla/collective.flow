@@ -7,6 +7,7 @@ from collective.flow.interfaces import IFlowFolder
 from collective.flow.interfaces import IFlowSchemaForm
 from collective.flow.schema import load_schema
 from collective.flow.schema import remove_attachments
+from collective.flow.utils import prepare_restricted_function
 from datetime import datetime
 from persistent.mapping import PersistentMapping
 from plone import api
@@ -22,33 +23,48 @@ from plone.namedfile.interfaces import INamedFileField
 from plone.z3cform.fieldsets.group import Group
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from venusianconfiguration import configure
+from z3c.form.interfaces import IErrorViewSnippet
 from z3c.form.interfaces import IMultiWidget
 from z3c.form.interfaces import IObjectWidget
+from z3c.form.interfaces import IValue
 from z3c.form.interfaces import IWidget
 from z3c.form.interfaces import NOT_CHANGED
 from zope.component import createObject
+from zope.component import getMultiAdapter
 from zope.component import getUtility
+from zope.component import queryMultiAdapter
 from zope.event import notify
 from zope.i18nmessageid import MessageFactory
 from zope.interface import implementer
+from zope.interface import Invalid
 from zope.location.interfaces import IContained
 from ZPublisher.HTTPRequest import FileUpload
 
 import hashlib
+import new
 import os
 
 
 _ = MessageFactory('collective.flow')
 
 
-def save_form(form, data, submission):
+def save_form(form, data, submission, default_values=False):
     for name, field in form.fields.items():
         if name == 'schema':
             continue
+        elif name not in data and default_values:
+            value = field.field.default
+            adapter = queryMultiAdapter(
+                (form.context, form.request,
+                 form, field.field, form.widgets[name]),
+                IValue, name='default',
+            )
+            if adapter:
+                value = adapter.get()
         elif name not in data:
             continue
-
-        value = data[name]
+        else:
+            value = data[name]
         if value is NOT_CHANGED:
             continue
 
@@ -67,9 +83,60 @@ def save_form(form, data, submission):
         setattr(submission, name, value)
     try:
         for group in form.groups:
-            save_form(group, data, submission)
+            save_form(group, data, submission, default_values)
     except AttributeError:
         pass
+
+
+def validate(form, code, data):
+    # errors
+    errors = {}
+
+    # build re-usable restricted function components like in PythonScript
+    path = 'undefined.py'
+    code, g, defaults = prepare_restricted_function(
+        'context, data, errors',
+        code,
+        'validate',
+        path,
+        [],
+    )
+
+    # update globals
+    g = g.copy()
+    g['__file__'] = path
+
+    # validate
+    new.function(code, g, None, defaults)(form.context, data, errors)
+
+    # set errors
+    for name, message in errors.items():
+
+        # resolve field
+        widget = None
+        try:
+            widget = form.widgets[name]
+        except KeyError:
+            for group in (form.groups or ()):
+                try:
+                    widget = group.widgets[name]
+                    break
+                except KeyError:
+                    pass
+        if widget is None:
+            continue
+
+        # set error
+        error = Invalid(message)
+        snippet = getMultiAdapter(
+            (error, form.request, widget, widget.field,
+             form, form.context), IErrorViewSnippet)
+        snippet.update()
+        widget.error = snippet
+        errors[name] = snippet
+
+    # return errors
+    return errors
 
 
 def extract_attachments(data, context, prefix=u''):
@@ -222,6 +289,10 @@ class FlowSubmitForm(DefaultAddForm):
             reset_fileupload(self)  # Required until we have drafting support
             data, errors = super(
                 FlowSubmitForm, self).extractData(setErrors=setErrors)
+        if not errors:
+            validator = (self.context.validator or u'').strip()
+            if validator:
+                errors = validate(self, validator, data)
         return data, errors
 
     def create(self, data):
@@ -234,7 +305,7 @@ class FlowSubmitForm(DefaultAddForm):
 
         # save form data (bypass data manager for speed
         # and to avoid needing to reload the form schema)
-        save_form(self, data, submission)
+        save_form(self, data, submission, default_values=True)
 
         # save required submission fields
         submission.schema = remove_attachments(self.context.schema)
@@ -286,3 +357,12 @@ class SubmissionView(WidgetsView):
 
     def getContent(self):
         return self.content
+
+    def updateFieldsFromSchemata(self):
+        super(SubmissionView, self).updateFieldsFromSchemata()
+
+        # disable default values
+        for group in ([self] + self.groups):
+            for name in group.fields:
+                # noinspection PyPep8Naming
+                group.fields[name].showDefault = False

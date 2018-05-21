@@ -12,6 +12,11 @@ from venusianconfiguration import i18n_domain
 from venusianconfiguration import scan
 from zope.interface import implementer
 
+import plone.supermodel.exportimport
+
+
+# We implement good enough write support for defaultFactory
+del plone.supermodel.exportimport.BaseHandler.filteredAttributes['defaultFactory']  # noqa
 
 i18n_domain('collective.flow')
 configure.i18n.registerTranslations(directory='locales')
@@ -55,6 +60,14 @@ configure.gs.upgradeDepends(
 configure.gs.upgradeDepends(
     source='1001', destination='1002', sortkey='1001',
     title=u'Upgrade collective.flow from 1001 to 1002',
+    description=u'Update resource bundles',
+    profile='collective.flow:default',
+    import_steps='typeinfo plone.app.registry',
+)
+
+configure.gs.upgradeDepends(
+    source='1002', destination='1003', sortkey='1002',
+    title=u'Upgrade collective.flow from 1002 to 1003',
     description=u'Update resource bundles',
     profile='collective.flow:default',
     import_steps='typeinfo plone.app.registry',
