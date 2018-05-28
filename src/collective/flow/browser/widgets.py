@@ -63,7 +63,7 @@ def RichTextLabelFieldWidget(field, request):
     for_=IRichTextLabelWidget,
     permission='zope.Public',
     allowed_interface=IRichTextLabelWidget,
-    template=os.path.join('widgets_templates', 'richtextlabel.pt'),
+    template=os.path.join('widgets_templates', 'richtextlabel_input.pt'),
 )
 class RichLabelRenderWidget(ViewMixinForTemplates):
     pass
@@ -87,5 +87,5 @@ configure.z3c.widgetTemplate(
     mode=u'display',
     widget=IRichTextLabelWidget,
     layer=IFormLayer,
-    template=os.path.join('widgets_templates', 'empty.pt'),
+    template=os.path.join('widgets_templates', 'richtextlabel_display.pt'),
 )

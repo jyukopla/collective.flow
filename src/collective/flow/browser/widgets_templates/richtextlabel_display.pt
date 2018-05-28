@@ -1,17 +1,7 @@
 <div metal:define-macro="widget-wrapper"
-     tal:define="widget nocall:context;
-                 hidden python:widget.mode == 'hidden';
-                 error widget/error;
-                 error_class python:error and ' error' or '';
-                 fieldname_class string:kssattr-fieldname-${widget/name};"
-     tal:attributes="class string:field ${fieldname_class}${error_class};
-                     data-fieldname widget/name;
-                     id string:formfield-${widget/id};"
+     tal:attributes="class string:field;
+                     id string:formfield-${view/id};"
      i18n:domain="plone">
-  <label for="" class="horizontal"
-         tal:attributes="for widget/id"
-         tal:condition="not:hidden">
-    <span tal:replace="structure python:widget.field.text.output_relative_to(widget.context)"
-          tal:on-error="nothing">Label</span>
-  </label>
+  <div tal:replace="structure python:view.field.text.output_relative_to(view.context)"
+       tal:on-error="nothing">Label</div>
 </div>
