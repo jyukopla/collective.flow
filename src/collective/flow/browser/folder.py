@@ -21,6 +21,7 @@ from plone.namedfile import NamedBlobFile
 from plone.namedfile import NamedBlobImage
 from plone.namedfile.interfaces import INamedFileField
 from plone.uuid.interfaces import IMutableUUID
+from plone.uuid.interfaces import IUUID
 from plone.z3cform.fieldsets.group import Group
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from uuid import uuid4
@@ -320,6 +321,7 @@ class FlowSubmitForm(DefaultAddForm):
         context = aq_inner(self.context)
         submission = createObject(fti.factory).__of__(context)
         IMutableUUID(submission).set(uuid4())
+        submission.title = IUUID(submission)  # noqa: P001
 
         # extract attachments to be saved into separate objects
         attachments = tuple(extract_attachments(data, context))
@@ -333,11 +335,6 @@ class FlowSubmitForm(DefaultAddForm):
         submission.schema_digest = hashlib.md5(submission.schema).hexdigest()
         submission.submission_workflow = self.submission_workflow
         submission.attachment_workflow = self.attachment_workflow
-
-        submission.title = u'{0:s} {1:s}'.format(
-            context.title,
-            datetime.utcnow().strftime('%Y-%#m-%#d'),
-        )
 
         return aq_base(submission), attachments
 
@@ -355,6 +352,10 @@ class FlowSubmitForm(DefaultAddForm):
                 attachment,
                 checkConstraints=False,
             )
+        submission.title = u'{0:s} {1:s}'.format(
+            self.context.title,
+            datetime.utcnow().strftime('%Y-%#m-%#d'),
+        )
         self.content = submission.__of__(self.context)
 
     def render(self):
