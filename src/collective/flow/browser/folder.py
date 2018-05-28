@@ -20,8 +20,10 @@ from plone.memoize import view
 from plone.namedfile import NamedBlobFile
 from plone.namedfile import NamedBlobImage
 from plone.namedfile.interfaces import INamedFileField
+from plone.uuid.interfaces import IMutableUUID
 from plone.z3cform.fieldsets.group import Group
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+from uuid import uuid4
 from venusianconfiguration import configure
 from z3c.form.interfaces import IErrorViewSnippet
 from z3c.form.interfaces import IMultiWidget
@@ -55,9 +57,15 @@ def save_form(form, data, submission, default_values=False):
         elif name not in data and default_values:
             value = field.field.default
             adapter = queryMultiAdapter(
-                (form.context, form.request,
-                 form, field.field, form.widgets[name]),
-                IValue, name='default',
+                (
+                    form.context,
+                    form.request,
+                    form,
+                    field.field,
+                    form.widgets[name],
+                ),
+                IValue,
+                name='default',
             )
             if adapter:
                 value = adapter.get()
@@ -129,8 +137,9 @@ def validate(form, code, data):
         # set error
         error = Invalid(message)
         snippet = getMultiAdapter(
-            (error, form.request, widget, widget.field,
-             form, form.context), IErrorViewSnippet)
+            (error, form.request, widget, widget.field, form, form.context),
+            IErrorViewSnippet,
+        )
         snippet.update()
         widget.error = snippet
         errors[name] = snippet
@@ -143,8 +152,8 @@ def extract_attachments(data, context, prefix=u''):
     if isinstance(data, list) or isinstance(data, tuple):
         for i in range(len(data)):
             for attachment in extract_attachments(
-                    data[i], context,
-                    prefix=u'{0:s}{1:02d}-'.format(prefix, i + 1)):
+                    data[i], context, prefix=u'{0:s}{1:02d}-'.format(prefix,
+                                                                     i + 1)):
                 yield attachment
         return
     elif isinstance(data, dict) or isinstance(data, PersistentMapping):
@@ -155,7 +164,10 @@ def extract_attachments(data, context, prefix=u''):
                 attachment.image = None
                 attachment.file = value
                 attachment.file.filename = u'{0:s}{1:s}-{2:s}'.format(
-                    prefix, name, attachment.file.filename)
+                    prefix,
+                    name,
+                    attachment.file.filename,
+                )
                 del data[name]
                 yield aq_base(attachment)
             elif isinstance(value, NamedBlobImage):
@@ -163,13 +175,16 @@ def extract_attachments(data, context, prefix=u''):
                 attachment.file = None
                 attachment.image = value
                 attachment.image.filename = u'{0:s}{1:s}-{2:s}'.format(
-                    prefix, name, attachment.image.filename)
+                    prefix,
+                    name,
+                    attachment.image.filename,
+                )
                 del data[name]
                 yield aq_base(attachment)
             elif value:
                 for attachment in extract_attachments(
-                        value, context,
-                        prefix=u'{0:s}{1:s}-'.format(prefix, name)):
+                        value, context, prefix=u'{0:s}{1:s}-'.format(prefix,
+                                                                     name)):
                     yield attachment
 
 
@@ -214,7 +229,8 @@ class FlowSubmitFormGroup(Group):
     name='view',
     for_=IFlowFolder,
     layer=ICollectiveFlowLayer,
-    permission='zope2.View')
+    permission='zope2.View',
+)
 @implementer(IFlowSchemaForm)
 class FlowSubmitForm(DefaultAddForm):
     portal_type = 'FlowSubmission'
@@ -222,7 +238,8 @@ class FlowSubmitForm(DefaultAddForm):
     content = None
     group_class = FlowSubmitFormGroup
     view_template = ViewPageTemplateFile(
-        os.path.join('folder_templates', 'folder_listing.pt'))
+        os.path.join('folder_templates', 'folder_listing.pt'),
+    )
 
     def __call__(self):
         if 'disable_border' in self.request.form:
@@ -231,8 +248,8 @@ class FlowSubmitForm(DefaultAddForm):
         pc = api.portal.get_tool('portal_catalog')
         path = '/'.join(self.context.getPhysicalPath())
         if (len(pc.unrestrictedSearchResults(
-            path=path,
-            portal_type=['FlowFolder', 'FlowSubFolder'],
+                path=path,
+                portal_type=['FlowFolder', 'FlowSubFolder'],
         )) > 1):
             return self.view_template(self)
         else:
@@ -266,11 +283,14 @@ class FlowSubmitForm(DefaultAddForm):
     @view.memoize
     def schema(self):
         try:
-            return load_schema(aq_base(self.context).schema,
-                               cache_key=aq_base(self.context).schema_digest)
+            return load_schema(
+                aq_base(self.context).schema,
+                cache_key=aq_base(self.context).schema_digest,
+            )
         except AttributeError:
             self.request.response.redirect(
-                u'{0}/@@design'.format(self.context.absolute_url()))
+                u'{0}/@@design'.format(self.context.absolute_url()),
+            )
             return load_schema(DEFAULT_SCHEMA, cache_key=None)
 
     additionalSchemata = ()
@@ -283,12 +303,12 @@ class FlowSubmitForm(DefaultAddForm):
 
     # noinspection PyPep8Naming
     def extractData(self, setErrors=True):
-        data, errors = super(
-            FlowSubmitForm, self).extractData(setErrors=setErrors)
+        data, errors = super(FlowSubmitForm,
+                             self).extractData(setErrors=setErrors)
         if errors:
             reset_fileupload(self)  # Required until we have drafting support
-            data, errors = super(
-                FlowSubmitForm, self).extractData(setErrors=setErrors)
+            data, errors = super(FlowSubmitForm,
+                                 self).extractData(setErrors=setErrors)
         if not errors:
             validator = (self.context.validator or u'').strip()
             if validator:
@@ -299,6 +319,7 @@ class FlowSubmitForm(DefaultAddForm):
         fti = getUtility(IDexterityFTI, name=self.portal_type)
         context = aq_inner(self.context)
         submission = createObject(fti.factory).__of__(context)
+        IMutableUUID(submission).set(uuid4())
 
         # extract attachments to be saved into separate objects
         attachments = tuple(extract_attachments(data, context))
@@ -314,7 +335,8 @@ class FlowSubmitForm(DefaultAddForm):
         submission.attachment_workflow = self.attachment_workflow
 
         submission.title = u'{0:s} {1:s}'.format(
-            context.title, datetime.utcnow().strftime('%Y-%#m-%#d'),
+            context.title,
+            datetime.utcnow().strftime('%Y-%#m-%#d'),
         )
 
         return aq_base(submission), attachments
@@ -323,16 +345,21 @@ class FlowSubmitForm(DefaultAddForm):
         submission, attachments = submission_with_attachments
         form = aq_inner(self.context)
         submission = addContentToContainer(
-            form, submission, checkConstraints=False)
+            form,
+            submission,
+            checkConstraints=False,
+        )
         for attachment in attachments:
             addContentToContainer(
-                submission, attachment, checkConstraints=False)
+                submission,
+                attachment,
+                checkConstraints=False,
+            )
         self.content = submission.__of__(self.context)
 
     def render(self):
         if self._finishedAdd:
-            return SubmissionView(
-                self.context, self.request, self.content)()
+            return SubmissionView(self.context, self.request, self.content)()
         return super(FlowSubmitForm, self).render()
 
     def updateActions(self):
@@ -347,12 +374,15 @@ class SubmissionView(WidgetsView):
     ignoreRequest = True
 
     index = ViewPageTemplateFile(
-        os.path.join('folder_templates', 'submission_view.pt'))
+        os.path.join('folder_templates', 'submission_view.pt'),
+    )
 
     def __init__(self, context, request, content):
         self.content = content
-        self.schema = load_schema(aq_base(content).schema,
-                                  cache_key=aq_base(content).schema_digest)
+        self.schema = load_schema(
+            aq_base(content).schema,
+            cache_key=aq_base(content).schema_digest,
+        )
         super(SubmissionView, self).__init__(context, request)
 
     def getContent(self):
