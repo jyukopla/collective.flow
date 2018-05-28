@@ -2,6 +2,7 @@
 from Acquisition import aq_base
 from collective.flow.browser.folder import save_form
 from collective.flow.browser.folder import validate
+from collective.flow.browser.widgets import RichTextLabelWidget
 from collective.flow.interfaces import ICollectiveFlowLayer
 from collective.flow.interfaces import IFlowSchemaForm
 from collective.flow.interfaces import IFlowSubmission
@@ -27,21 +28,29 @@ _ = MessageFactory('collective.flow')
 )
 @implementer(IFlowSchemaForm)
 class SubmissionView(WidgetsView, ExtensibleForm):
-
     @Lazy
     def schema(self):
-        return load_schema(aq_base(self.context).schema,
-                           cache_key=aq_base(self.context).schema_digest)
+        return load_schema(
+            aq_base(self.context).schema,
+            cache_key=aq_base(self.context).schema_digest,
+        )
 
     def updateFieldsFromSchemata(self):
         super(SubmissionView, self).updateFieldsFromSchemata()
         self.updateFields()
 
         # disable default values
-        for group in ([self] + self.groups):
+        for group in ([self] + list(self.groups)):
             for name in group.fields:
                 # noinspection PyPep8Naming
                 group.fields[name].showDefault = False
+
+    def update(self):
+        super(SubmissionView, self).update()
+        for group in ([self] + list(self.groups)):
+            for widget in group.widgets.values():
+                if isinstance(widget, RichTextLabelWidget):
+                    widget.label = u''
 
 
 @configure.browser.page.class_(
@@ -52,7 +61,6 @@ class SubmissionView(WidgetsView, ExtensibleForm):
 )
 @implementer(IFlowSchemaForm)
 class SubmissionEditForm(DefaultEditForm):
-
     def label(self):
         return self.context.aq_explicit.aq_acquire('title')
 
@@ -73,15 +81,17 @@ class SubmissionEditForm(DefaultEditForm):
 
     @Lazy
     def schema(self):
-        return load_schema(aq_base(self.context).schema,
-                           cache_key=aq_base(self.context).schema_digest)
+        return load_schema(
+            aq_base(self.context).schema,
+            cache_key=aq_base(self.context).schema_digest,
+        )
 
     additionalSchemata = ()
 
     # noinspection PyPep8Naming
     def extractData(self, setErrors=True):
-        data, errors = super(
-            SubmissionEditForm, self).extractData(setErrors=setErrors)
+        data, errors = super(SubmissionEditForm,
+                             self).extractData(setErrors=setErrors)
         if not errors:
             validator = self.validator()
             if validator:
