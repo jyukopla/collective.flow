@@ -32,6 +32,10 @@ class IFlowSchemaDynamic(model.Schema):
     """Marker interface for dynamic flow schemas."""
 
 
+class IAddFlowSchemaDynamic(IFlowSchemaDynamic):
+    """Marker interface for dynamic flow schemas."""
+
+
 class IFlowSchema(model.Schema):
     """Editable schema"""
 
@@ -68,36 +72,38 @@ class IFlowFolder(IFlowSchema):
         default=_(u'Submit'),
     )
 
-#   fieldset(    klass = u'textarea-widget pat-foobar'
-#       'instructions',
-#       label=_(u'Instructions'),
-#       fields=[u'form_prologue',
-#               u'form_epilogue',
-#               u'form_thanks'],
-#   )
+    #   fieldset(    klass = u'textarea-widget pat-foobar'
+    #       'instructions',
+    #       label=_(u'Instructions'),
+    #       fields=[u'form_prologue',
+    #               u'form_epilogue',
+    #               u'form_thanks'],
+    #   )
 
-#   form_prologue = RichText(
-#       title=_(u'Form prologue'),
-#       required=False,
-#   )
+    #   form_prologue = RichText(
+    #       title=_(u'Form prologue'),
+    #       required=False,
+    #   )
 
-#   form_epilogue = RichText(
-#       title=_(u'Form epilogue'),
-#       required=False,
-#   )
+    #   form_epilogue = RichText(
+    #       title=_(u'Form epilogue'),
+    #       required=False,
+    #   )
 
-#   form_thanks = RichText(
-#       title=_(u'Thank you message'),
-#       required=False,
-#   )
+    #   form_thanks = RichText(
+    #       title=_(u'Thank you message'),
+    #       required=False,
+    #   )
 
     fieldset(
         'workflow',
         label=_(u'Workflows'),
-        fields=[u'submission_workflow',
-                u'submission_transition',
-                u'attachment_workflow',
-                u'attachment_transition'],
+        fields=[
+            u'submission_workflow',
+            u'submission_transition',
+            u'attachment_workflow',
+            u'attachment_transition',
+        ],
     )
 
     submission_workflow = schema.Choice(

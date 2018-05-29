@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
 from Acquisition import aq_base
 from Acquisition import aq_inner
+from collective.flow.browser.widgets import RichTextLabelWidget
 from collective.flow.interfaces import DEFAULT_SCHEMA
+from collective.flow.interfaces import IAddFlowSchemaDynamic
 from collective.flow.interfaces import ICollectiveFlowLayer
 from collective.flow.interfaces import IFlowFolder
 from collective.flow.interfaces import IFlowSchemaForm
@@ -38,6 +40,7 @@ from zope.component import getUtility
 from zope.component import queryMultiAdapter
 from zope.event import notify
 from zope.i18nmessageid import MessageFactory
+from zope.interface import alsoProvides
 from zope.interface import implementer
 from zope.interface import Invalid
 from zope.location.interfaces import IContained
@@ -284,10 +287,19 @@ class FlowSubmitForm(DefaultAddForm):
     @view.memoize
     def schema(self):
         try:
-            return load_schema(
-                aq_base(self.context).schema,
-                cache_key=aq_base(self.context).schema_digest,
-            )
+            try:
+                schema = load_schema(
+                    aq_base(self.context).schema,
+                    name='++add++',
+                    cache_key=aq_base(self.context).schema_digest,
+                )
+                alsoProvides(schema, IAddFlowSchemaDynamic)
+                return schema
+            except KeyError:
+                return load_schema(
+                    aq_base(self.context).schema,
+                    cache_key=aq_base(self.context).schema_digest,
+                )
         except AttributeError:
             self.request.response.redirect(
                 u'{0}/@@design'.format(self.context.absolute_url()),
@@ -359,7 +371,12 @@ class FlowSubmitForm(DefaultAddForm):
         self.content = submission.__of__(self.context)
 
     def render(self):
-        if self._finishedAdd:
+        if self._finishedAdd and IAddFlowSchemaDynamic.providedBy(self.schema):
+            self.request.response.redirect(
+                self.content.absolute_url() + u'/@@edit',
+            )
+            return u''
+        elif self._finishedAdd:
             return SubmissionView(self.context, self.request, self.content)()
         return super(FlowSubmitForm, self).render()
 
@@ -397,3 +414,10 @@ class SubmissionView(WidgetsView):
             for name in group.fields:
                 # noinspection PyPep8Naming
                 group.fields[name].showDefault = False
+
+    def update(self):
+        super(SubmissionView, self).update()
+        for group in ([self] + list(self.groups)):
+            for widget in group.widgets.values():
+                if isinstance(widget, RichTextLabelWidget):
+                    widget.label = u''
