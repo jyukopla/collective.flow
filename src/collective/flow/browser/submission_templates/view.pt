@@ -7,9 +7,14 @@
    i18n:domain="plone.dexterity">
 <body>
 
-<metal:main fill-slot="main">
-
+<metal:title-core fill-slot="content-title">
   <h1 class="documentFirstHeading" tal:content="context/Title"></h1>
+</metal:title-core>
+
+<metal:title-core fill-slot="content-description">
+</metal:title-core>
+
+<metal:content-core fill-slot="content-core">
 
   <tal:block repeat="widget view/widgets/values">
     <div class="field">
@@ -38,7 +43,7 @@
     </tal:block>
   </fieldset>
 
-</metal:main>
+</metal:content-core>
 
 </body>
 </html>

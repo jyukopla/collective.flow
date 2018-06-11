@@ -12,12 +12,25 @@
 
   <h1 class="documentFirstHeading" tal:content="context/Title"></h1>
 
-  <tal:block repeat="widget view/widgets/values">
-    <div class="field">
-      <label tal:content="widget/label"></label><br/>
-      <div tal:content="structure widget/render"></div>
-    </div>
-  </tal:block>
+    <tal:block repeat="widget view/widgets/values">
+      <div class="field">
+        <tal:label condition="widget/label|nothing">
+          <label tal:content="widget/label"></label><br/>
+        </tal:label>
+        <div tal:content="structure widget/render"></div>
+      </div>
+    </tal:block>
+
+    <tal:block repeat="group view/groups">
+      <tal:block repeat="widget group/widgets/values">
+        <div class="field">
+          <tal:label condition="widget/label|nothing">
+            <label tal:content="widget/label"></label><br/>
+          </tal:label>
+          <div tal:content="structure widget/render"></div>
+        </div>
+      </tal:block>
+    </tal:block>
 
   </div>
 </metal:main>
