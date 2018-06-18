@@ -96,14 +96,38 @@ class IFlowFolder(IFlowSchema):
     #   )
 
     fieldset(
-        'workflow',
-        label=_(u'Workflows'),
+        'advanced',
+        label=_(u'Advanced'),
         fields=[
+            u'submission_title_template',
+            u'submission_path_template',
             u'submission_workflow',
             u'submission_transition',
             u'attachment_workflow',
             u'attachment_transition',
         ],
+    )
+
+    submission_title_template = schema.TextLine(
+        title=_(u'Submission title template'),
+        description=_(
+            u'submission_title_help',
+            default=u''
+            u'Customize submission titles to enhance their '
+            u'discoverability in listings.',
+        ),
+        default=u'${parent_title} ${created}',
+    )
+
+    submission_path_template = schema.BytesLine(
+        title=_(u'Submission filing template'),
+        description=_(
+            u'submission_path_help',
+            default=u''
+            u'Customize submission filing sub-paths to '
+            u'allow delegation submission reviewer roles.',
+        ),
+        required=False,
     )
 
     submission_workflow = schema.Choice(
@@ -170,7 +194,7 @@ class IFlowFolder(IFlowSchema):
     )
 
 
-class IFlowSubFolder(model.Schema):
+class IFlowSubFolder(IFlowSchema):
     """Flow folder"""
 
 

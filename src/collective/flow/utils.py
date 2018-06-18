@@ -1,4 +1,8 @@
 # -*- coding: utf-8 -*-
+from AccessControl import getSecurityManager
+from AccessControl.SecurityManagement import newSecurityManager
+from AccessControl.SecurityManagement import setSecurityManager
+from AccessControl.users import UnrestrictedUser
 from AccessControl.ZopeGuards import get_safe_globals
 from AccessControl.ZopeGuards import guarded_getattr
 from Acquisition import aq_inner
@@ -10,6 +14,21 @@ import logging
 
 
 logger = logging.getLogger('collective.flow')
+
+
+def unrestricted(func):
+    def wrapper(self, *args, **kwargs):
+        old_security_manager = getSecurityManager()  # noqa: P001
+        newSecurityManager(  # noqa: P001
+            None,
+            UnrestrictedUser('manager', '', ['Manager'], []),
+        )
+        try:
+            return func(self, *args, **kwargs)
+        finally:
+            setSecurityManager(old_security_manager)  # noqa: P001
+
+    return wrapper
 
 
 @forever.memoize

@@ -10,6 +10,7 @@ from plone.alterego import dynamic
 from plone.alterego.interfaces import IDynamicObjectFactory
 from plone.memoize.volatile import CleanupDict
 from plone.schemaeditor.interfaces import ISchemaModifiedEvent
+from plone.stringinterp.interfaces import IStringInterpolator
 from plone.supermodel import loadString
 from plone.supermodel import serializeSchema
 from plone.supermodel.interfaces import ISchemaPolicy
@@ -18,6 +19,7 @@ from plone.supermodel.utils import ns
 from venusianconfiguration import configure
 from zope.component import adapter
 from zope.event import notify
+from zope.globalrequest import getRequest
 from zope.interface import implementedBy
 from zope.interface import implementer
 from zope.interface.declarations import getObjectSpecification
@@ -30,6 +32,7 @@ from zope.schema import Object
 import hashlib
 import logging
 import threading
+import zope.i18n
 
 
 logger = logging.getLogger('collective.flow')
@@ -53,6 +56,8 @@ def load_schema(xml, name=u'', cache_key=None):
     """Load named (or default) supermodel schema from XML source with optional
     cache key (ZCA lookups require exact schema instance to match lookups)
     """
+    if name:
+        name = name.strip()
     try:
         return SCHEMA_CACHE[cache_key].schemata[name]
     except KeyError:
@@ -95,6 +100,8 @@ def split_schema(xml):
 def update_schema(xml, schema, name=u''):
     root = etree.fromstring(xml)
 
+    if name:
+        name = name.strip()
     if isinstance(schema, str):
         schema_root = etree.fromstring(schema)
     else:
@@ -125,8 +132,8 @@ def customized_schema(original, custom):
         if schema.attrib.get('name', u'') != u'':
             continue
         for field in schema.xpath(
-            'supermodel:field',
-            namespaces=dict(supermodel=XML_NAMESPACE),
+                'supermodel:field',
+                namespaces=dict(supermodel=XML_NAMESPACE),
         ):
             name = field.attrib['name']
             for node in [child for child in field.getchildren()
@@ -141,8 +148,8 @@ def customized_schema(original, custom):
             continue
         for name in fields:
             for field in schema.xpath(
-                'supermodel:field[@name="{0:s}"]'.format(name),
-                namespaces=dict(supermodel=XML_NAMESPACE),
+                    'supermodel:field[@name="{0:s}"]'.format(name),
+                    namespaces=dict(supermodel=XML_NAMESPACE),
             ):
                 for node in [child for child in field.getchildren()
                              if child.tag in fields[name]]:
@@ -172,8 +179,8 @@ def remove_attachments(xml):
     for el in root.xpath('//supermodel:field',
                          namespaces=dict(supermodel=XML_NAMESPACE)):
         if el.attrib.get('type') in [
-            'plone.namedfile.field.NamedBlobFile',
-            'plone.namedfile.field.NamedBlobImage',
+                'plone.namedfile.field.NamedBlobFile',
+                'plone.namedfile.field.NamedBlobImage',
         ]:
             el.getparent().remove(el)
     return etree.tostring(root)
@@ -183,14 +190,19 @@ def remove_attachments(xml):
 @implementer(IDynamicObjectFactory)
 class FlowSchemaModuleFactory(object):
     def __call__(self, name, module):
+        if name:
+            name = name.strip()
         try:
             return current.model.schemata[name]
         except (AttributeError, KeyError):
             if name not in ['V', '__file__']:
                 logger.exception(
-                    u'Schema "{0:s}" did not resolve:'.format(name))
+                    u'Schema "{0:s}" did not resolve:'.format(name),
+                )
                 return loadString(
-                    DEFAULT_SCHEMA, policy='collective.flow').schemata['']
+                    DEFAULT_SCHEMA,
+                    policy='collective.flow',
+                ).schemata['']
             return None
 
 
@@ -225,8 +237,11 @@ def save_schema(context, schema=None, xml=None):
         for name in schema:
             value_type = getattr(schema[name], 'value_type', None)
             if isinstance(value_type, Object):
-                context.schema = update_schema(aq_base(context).schema,
-                                               value_type.schema, name=name)
+                context.schema = update_schema(
+                    aq_base(context).schema,
+                    value_type.schema,
+                    name=name,
+                )
     else:
         # Override with new XML (got update from modelxml editor)
         context.schema = xml
@@ -235,10 +250,12 @@ def save_schema(context, schema=None, xml=None):
     context.schema_digest = hashlib.md5(context.schema).hexdigest()
 
     # Notify that object has been modified
-    notify(ObjectModifiedEvent(
-        context,
-        Attributes(IFlowFolder, 'schema', 'schema_digest'),
-    ))
+    notify(
+        ObjectModifiedEvent(
+            context,
+            Attributes(IFlowFolder, 'schema', 'schema_digest'),
+        ),
+    )
 
 
 @configure.subscriber.handler()
@@ -256,7 +273,7 @@ class FlowSchemaPolicy(object):
 
     def bases(self, schemaName, tree):
         if 'IFlowSchemaDynamic' not in tostring(tree):
-            return tuple((IFlowSchemaDynamic,))
+            return tuple((IFlowSchemaDynamic, ))
         else:
             return ()
 
@@ -264,3 +281,27 @@ class FlowSchemaPolicy(object):
         # every schema should have the same name to allow generic object
         # factory adapter in ./content.py
         return 'any'
+
+
+def interpolate(template, ob, request=None):
+    if request is None:
+        request = getRequest()
+    schema = load_schema(
+        aq_base(ob).schema,
+        cache_key=aq_base(ob).schema_digest,
+    )
+    mapping = {}
+    for name in schema.names():
+        field = schema[name]
+        bound = field.bind(ob)
+        value = bound.get(ob)
+        try:
+            mapping[name] = zope.i18n.translate(
+                bound.vocabulary.getTerm(value).title,
+                context=request,
+            )
+        except (AttributeError, LookupError):
+            mapping[name] = value
+    interpolator = IStringInterpolator(ob)
+    value = interpolator(zope.i18n.interpolate(template, mapping))
+    return value

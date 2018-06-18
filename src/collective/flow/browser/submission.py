@@ -54,6 +54,17 @@ class SubmissionView(WidgetsView, ExtensibleForm):
 
 
 @configure.browser.page.class_(
+    name='metadata',
+    for_=IFlowSubmission,
+    layer=ICollectiveFlowLayer,
+    permission='cmf.ModifyPortalContent',
+)
+@implementer(IFlowSchemaForm)
+class SubmissionMetadataForm(DefaultEditForm):
+    pass
+
+
+@configure.browser.page.class_(
     name='edit',
     for_=IFlowSubmission,
     layer=ICollectiveFlowLayer,

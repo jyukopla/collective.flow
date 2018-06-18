@@ -36,10 +36,13 @@ def on_flow_change_customize_schemata(context, event):
         except AttributeError:
             # called when uninitialized flow folder is added onto flow
             continue
-        save_schema(ob, xml=customized_schema(
-            aq_base(context).schema,
-            aq_base(ob).schema,
-        ))
+        save_schema(
+            ob,
+            xml=customized_schema(
+                aq_base(context).schema,
+                aq_base(ob).schema,
+            ),
+        )
 
 
 @configure.browser.page.class_(
@@ -53,14 +56,21 @@ def on_flow_change_customize_schemata(context, event):
 class SubFlowSchemaContext(SchemaContext):
     def __init__(self, context, request):
         try:
-            schema = load_schema(aq_base(context).schema, cache_key=None)
+            schema = load_schema(
+                aq_base(context).schema,
+                cache_key=None,
+            )
         except AttributeError:
             schema = load_schema(
-                context.aq_explicit.aq_acquire('schema'), cache_key=None)
+                context.aq_explicit.aq_acquire('schema'),
+                cache_key=None,
+            )
         super(SubFlowSchemaContext, self).__init__(
-            schema, request,
+            schema,
+            request,
             name='@@{0:s}'.format(self.__name__),
-            title=_(u'design'))
+            title=_(u'design'),
+        )
         self.content = context
 
 
@@ -68,16 +78,24 @@ class SubFlowSchemaContext(SchemaContext):
     name='view',
     for_=IFlowSubFolder,
     layer=ICollectiveFlowLayer,
-    permission='zope2.View')
+    permission='zope2.View',
+)
 @implementer(IFlowSchemaForm)
 class SubFlowSubmitForm(FlowSubmitForm):
-
     def label(self):
         return self.context.aq_explicit.aq_acquire('title')
 
     @property
     def default_fieldset_label(self):
         return self.context.aq_explicit.aq_acquire('default_fieldset_label')
+
+    @property
+    def submission_title_template(self):
+        return self.context.aq_explicit.aq_acquire('submission_title_template')
+
+    @property
+    def submission_path_template(self):
+        return self.context.aq_explicit.aq_acquire('submission_path_template')
 
     @property
     def submission_workflow(self):
@@ -91,9 +109,12 @@ class SubFlowSubmitForm(FlowSubmitForm):
     @view.memoize
     def schema(self):
         try:
-            return load_schema(aq_base(self.context).schema,
-                               cache_key=aq_base(self.context).schema_digest)
+            return load_schema(
+                aq_base(self.context).schema,
+                cache_key=aq_base(self.context).schema_digest,
+            )
         except AttributeError:
             self.request.response.redirect(
-                u'{0}/@@design'.format(self.context.absolute_url()))
+                u'{0}/@@design'.format(self.context.absolute_url()),
+            )
             return load_schema(DEFAULT_SCHEMA, cache_key=None)

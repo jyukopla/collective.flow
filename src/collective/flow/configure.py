@@ -16,7 +16,9 @@ import plone.supermodel.exportimport
 
 
 # We implement good enough write support for defaultFactory
-del plone.supermodel.exportimport.BaseHandler.filteredAttributes['defaultFactory']  # noqa
+del plone.supermodel.exportimport.BaseHandler.filteredAttributes[
+    'defaultFactory'
+]  # noqa
 
 i18n_domain('collective.flow')
 configure.i18n.registerTranslations(directory='locales')
@@ -34,7 +36,8 @@ configure.include(package=browser, file='__init__.py')
     title=_(u'Forms, workflows and everything'),
     description=_(u'Activates collective.flow'),
     directory=u'profiles/default',
-    provides=u'Products.GenericSetup.interfaces.EXTENSION')
+    provides=u'Products.GenericSetup.interfaces.EXTENSION',
+)
 def setup(context):
     portal = api.portal.get()
     if 'schemata' in portal.objectIds():
@@ -50,7 +53,9 @@ def setup(context):
 
 
 configure.gs.upgradeDepends(
-    source='1000', destination='1001', sortkey='1000',
+    source='1000',
+    destination='1001',
+    sortkey='1000',
     title=u'Upgrade collective.flow from 1000 to 1001',
     description=u'Update portal types',
     profile='collective.flow:default',
@@ -58,7 +63,9 @@ configure.gs.upgradeDepends(
 )
 
 configure.gs.upgradeDepends(
-    source='1001', destination='1002', sortkey='1001',
+    source='1001',
+    destination='1002',
+    sortkey='1001',
     title=u'Upgrade collective.flow from 1001 to 1002',
     description=u'Update resource bundles',
     profile='collective.flow:default',
@@ -66,12 +73,28 @@ configure.gs.upgradeDepends(
 )
 
 configure.gs.upgradeDepends(
-    source='1002', destination='1003', sortkey='1002',
+    source='1002',
+    destination='1003',
+    sortkey='1002',
     title=u'Upgrade collective.flow from 1002 to 1003',
     description=u'Update resource bundles',
     profile='collective.flow:default',
     import_steps='typeinfo plone.app.registry',
 )
+
+
+@configure.gs.upgradeStep.handler(
+    source='1003',
+    destination='1004',
+    sortkey='1003',
+    title=u'Migrate FlowFolder content objects',
+    description=u'',
+    profile='collective.flow:default',
+)
+def addMissingAttributes(context):
+    # pc = api.portal.get_tool('portal_catalog')
+    pass
+
 
 configure.gs.registerProfile(
     name=u'uninstall',
@@ -82,8 +105,7 @@ configure.gs.registerProfile(
 )
 
 
-@configure.utility.factory(
-    name='collective.flow.HiddenProfiles')
+@configure.utility.factory(name='collective.flow.HiddenProfiles')
 @implementer(INonInstallable)
 class HiddenProfiles(object):
     def getNonInstallableProfiles(self):

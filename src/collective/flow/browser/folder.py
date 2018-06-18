@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from AccessControl.interfaces import IOwned
 from Acquisition import aq_base
 from Acquisition import aq_inner
 from collective.flow.browser.widgets import RichTextLabelWidget
@@ -7,9 +8,12 @@ from collective.flow.interfaces import IAddFlowSchemaDynamic
 from collective.flow.interfaces import ICollectiveFlowLayer
 from collective.flow.interfaces import IFlowFolder
 from collective.flow.interfaces import IFlowSchemaForm
+from collective.flow.schema import interpolate
 from collective.flow.schema import load_schema
 from collective.flow.schema import remove_attachments
+from collective.flow.utils import parents
 from collective.flow.utils import prepare_restricted_function
+from collective.flow.utils import unrestricted
 from datetime import datetime
 from persistent.mapping import PersistentMapping
 from plone import api
@@ -18,6 +22,8 @@ from plone.dexterity.browser.add import DefaultAddForm
 from plone.dexterity.events import AddBegunEvent
 from plone.dexterity.interfaces import IDexterityFTI
 from plone.dexterity.utils import addContentToContainer
+from plone.dexterity.utils import createContent
+from plone.i18n.normalizer import IIDNormalizer
 from plone.memoize import view
 from plone.namedfile import NamedBlobFile
 from plone.namedfile import NamedBlobImage
@@ -224,6 +230,44 @@ def reset_fileupload(form):
     reset_fileupload_widgets(form)
 
 
+@unrestricted
+def get_submission_container(container, submission):
+    try:
+        template = submission.aq_explicit.aq_acquire(
+            'submission_path_template',
+        )
+    except AttributeError:
+        return container
+    path = datetime.utcnow().strftime(interpolate(template, submission))
+    normalizer = getUtility(IIDNormalizer)
+    for title in path.split('/'):
+        id_ = normalizer.normalize(title)
+        try:
+            container = container[id_]
+        except KeyError:
+            content = createContent('FlowSubFolder', title=title)
+            IOwned(content).changeOwnership(IOwned(container).getOwner())
+            content.id = id_
+            content.schema = container.schema
+            content.schema_digest = container.schema_digest
+            addContentToContainer(container, content, checkConstraints=False)
+            container = container[id_]
+    return container
+
+
+def get_submission_title(form, submission):
+    try:
+        template = submission.aq_explicit.aq_acquire(
+            'submission_title_template',
+        )
+        return datetime.utcnow().strftime(interpolate(template, submission))
+    except AttributeError:
+        return u'{0:s} {1:s}'.format(
+            form.title,
+            datetime.utcnow().strftime('%Y-%#m-%#d'),
+        )
+
+
 # noinspection PyAbstractClass
 class FlowSubmitFormGroup(Group):
     pass
@@ -253,10 +297,11 @@ class FlowSubmitForm(DefaultAddForm):
 
         pc = api.portal.get_tool('portal_catalog')
         path = '/'.join(self.context.getPhysicalPath())
-        if (len(pc.unrestrictedSearchResults(
-                path=path,
-                portal_type=['FlowFolder', 'FlowSubFolder'],
-        )) > 1):
+        if (not self.submission_path_template
+                and len(pc.unrestrictedSearchResults(  # noqa: W503
+                    path=path,
+                    portal_type=['FlowFolder', 'FlowSubFolder'],
+                )) > 1):
             return self.view_template(self)
         else:
             return super(FlowSubmitForm, self).__call__()
@@ -276,6 +321,14 @@ class FlowSubmitForm(DefaultAddForm):
     @property
     def submit_label(self):
         return self.context.submit_label
+
+    @property
+    def submission_title_template(self):
+        return self.context.submission_title_template
+
+    @property
+    def submission_path_template(self):
+        return self.context.submission_path_template
 
     @property
     def submission_workflow(self):
@@ -354,9 +407,16 @@ class FlowSubmitForm(DefaultAddForm):
 
     def add(self, submission_with_attachments):
         submission, attachments = submission_with_attachments
-        form = aq_inner(self.context)
+        folder = self.context
+        for folder in parents(folder, IFlowFolder):
+            # Traverse from IFlowSubFolders to IFlowFolder
+            break
+        container = get_submission_container(
+            folder,
+            submission.__of__(self.context),
+        )
         submission = addContentToContainer(
-            form,
+            container,
             submission,
             checkConstraints=False,
         )
@@ -366,11 +426,10 @@ class FlowSubmitForm(DefaultAddForm):
                 attachment,
                 checkConstraints=False,
             )
-        submission.title = u'{0:s} {1:s}'.format(
-            self.context.title,
-            datetime.utcnow().strftime('%Y-%#m-%#d'),
-        )
-        self.content = submission.__of__(self.context)
+        content = submission.__of__(self.context)
+        submission.title = get_submission_title(folder, content)
+        submission.reindexObject(idxs=['title'])
+        self.content = content
 
     def render(self):
         if self._finishedAdd and IAddFlowSchemaDynamic.providedBy(self.schema):

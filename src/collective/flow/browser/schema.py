@@ -46,11 +46,14 @@ class SchemaView(DefaultEditForm):
     @view.memoize
     def schema(self):
         try:
-            return load_schema(aq_base(self.context).schema,
-                               cache_key=aq_base(self.context).schema_digest)
+            return load_schema(
+                aq_base(self.context).schema,
+                cache_key=aq_base(self.context).schema_digest,
+            )
         except AttributeError:
             self.request.response.redirect(
-                '{0:s}/@@design'.format(self.context.absolute_url()))
+                '{0:s}/@@design'.format(self.context.absolute_url()),
+            )
             return load_schema(DEFAULT_SCHEMA, cache_key=None)
 
     additionalSchemata = ()
@@ -71,9 +74,11 @@ class FlowSchemaContext(SchemaContext):
         except AttributeError:
             schema = load_schema(DEFAULT_SCHEMA, cache_key=None)
         super(FlowSchemaContext, self).__init__(
-            schema, request,
+            schema,
+            request,
             name='@@{0:s}'.format(self.__name__),
-            title=_(u'design'))
+            title=_(u'design'),
+        )
         self.content = context
 
 
