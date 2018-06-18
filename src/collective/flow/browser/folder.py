@@ -244,6 +244,8 @@ class FlowSubmitForm(DefaultAddForm):
     view_template = ViewPageTemplateFile(
         os.path.join('folder_templates', 'folder_listing.pt'),
     )
+    enable_form_tabbing = False
+    form_css = 'pat-folding-fieldsets'
 
     def __call__(self):
         if 'disable_border' in self.request.form:
