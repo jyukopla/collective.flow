@@ -100,3 +100,54 @@
   background: transparent;
   box-shadow: none;
 }
+ul.workflow-metromap {
+  padding: 0;
+  list-style: none;
+}
+ul.workflow-metromap li {
+  float: left;
+  color: black;
+  position: relative;
+  margin-right: 3em;
+  text-align: center;
+  min-height: 50px;
+}
+ul.workflow-metromap li > * {
+  float: left;
+}
+ul.workflow-metromap li > * + * {
+  margin-left: 1ex;
+}
+ul.workflow-metromap li > span {
+  margin-top: 5px;
+}
+ul.workflow-metromap li:last-child {
+  margin-right: 0;
+}
+ul.workflow-metromap li.active {
+  font-weight: bold;
+}
+ul.workflow-metromap li.in-future span {
+  opacity: 0.333;
+  min-height: 2em;
+}
+ul.workflow-metromap li:after {
+  content: ' \21E8 ';
+  font-weight: normal;
+  position: absolute;
+  top: 5px;
+  right: -2em;
+  color: black;
+}
+ul.workflow-metromap li:last-child:after {
+  display: none;
+}
+ul.workflow-metromap li form + span {
+  display: block;
+  white-space: nowrap;
+  overflow: visible;
+}
+ul.workflow-metromap li form input {
+  display: block;
+  min-width: 100%;
+}

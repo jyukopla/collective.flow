@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from AccessControl.interfaces import IOwned
+from AccessControl.security import checkPermission
 from Acquisition import aq_base
 from Acquisition import aq_inner
 from collective.flow.browser.widgets import RichTextLabelWidget
@@ -240,7 +241,7 @@ def get_submission_container(container, submission):
         return container
     path = datetime.utcnow().strftime(interpolate(template, submission))
     normalizer = getUtility(IIDNormalizer)
-    for title in path.split('/'):
+    for title in filter(bool, path.split('/')):
         id_ = normalizer.normalize(title)
         try:
             container = container[id_]
@@ -260,7 +261,9 @@ def get_submission_title(form, submission):
         template = submission.aq_explicit.aq_acquire(
             'submission_title_template',
         )
-        return datetime.utcnow().strftime(interpolate(template, submission))
+        return datetime.utcnow().strftime(
+            interpolate(template, submission).encode('utf-8', 'ignore'),
+        ).decode('utf-8', 'ignore')
     except AttributeError:
         return u'{0:s} {1:s}'.format(
             form.title,
@@ -432,13 +435,29 @@ class FlowSubmitForm(DefaultAddForm):
         self.content = content
 
     def render(self):
-        if self._finishedAdd and IAddFlowSchemaDynamic.providedBy(self.schema):
-            self.request.response.redirect(
-                self.content.absolute_url() + u'/@@edit',
+        if self._finishedAdd:
+            can_view = checkPermission(  # noqa: P001
+                'zope2.View',
+                self.content,
             )
-            return u''
-        elif self._finishedAdd:
-            return SubmissionView(self.context, self.request, self.content)()
+            can_edit = checkPermission(  # noqa: P001
+                'cmf.ModifyPortalContent',
+                self.content,
+            )
+            if IAddFlowSchemaDynamic.providedBy(self.schema) and can_edit:
+                self.request.response.redirect(
+                    self.content.absolute_url() + u'/@@edit',
+                )
+                return u''
+            elif can_view:
+                self.request.response.redirect(self.content.absolute_url())
+                return u''
+            else:
+                return SubmissionView(
+                    self.context,
+                    self.request,
+                    self.content,
+                )()
         return super(FlowSubmitForm, self).render()
 
     def updateActions(self):

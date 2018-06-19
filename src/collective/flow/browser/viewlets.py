@@ -2,7 +2,8 @@
 from collective.flow.interfaces import IFlowSubmission
 from plone import api
 from plone.app.layout.globals.interfaces import IViewView
-from plone.app.layout.viewlets.interfaces import IBelowContentTitle
+from plone.app.layout.viewlets.interfaces import IAboveContentTitle
+from plone.app.layout.viewlets.interfaces import IBelowContentBody
 from plone.memoize import view
 from Products.CMFCore.Expression import getExprContext
 from Products.Five import BrowserView
@@ -16,12 +17,76 @@ import os.path
 import re
 
 
-@configure.browser.viewlet.class_(
-    name='jyu.ytolapp.metromap',
+def get_default_metromap(wf):
+    states = {}
+    transitions = {}
+    for state_id in wf.states:
+        transition_ids = wf.states[state_id].transitions
+        states[state_id] = {
+            'state': state_id,
+            'next_transition': list(transition_ids),
+            'reopen_transition': [],
+        }
+        for transition_id in transition_ids:
+            transitions.setdefault(transition_id, 0)
+            transitions[transition_id] += 1
+
+    for transition_id in wf.transitions:
+        states[wf.transitions[transition_id].new_state_id
+               ]['reopen_transition'].append(transition_id)
+
+    metro = []
+    stack = [states.pop(wf.initial_state)]
+    while stack:
+        state = stack.pop()
+        state['reopen_transition'] = sorted(
+            set(transitions).intersection(set(state['reopen_transition'])),
+            key=lambda x: transitions[x],
+        )[:1]
+        for transition_id in state['reopen_transition']:
+            transitions.pop(transition_id)
+        state['next_transition'] = sorted(
+            set(transitions).intersection(set(state['next_transition'])),
+            key=lambda x: transitions[x],
+        )[:1]
+        for transition_id in state['next_transition']:
+            transitions.pop(transition_id)
+            state_id = wf.transitions[transition_id].new_state_id
+            if state_id in states:
+                stack.append(states.pop(state_id))
+        metro.append(state)
+
+    for state in metro:
+        state['next_transition'] = ','.join(state['next_transition'])
+        state['reopen_transition'] = ','.join(state['reopen_transition'])
+
+    return metro
+
+
+configure.browser.viewlet(
+    name='collective.flow.submission.edit',
     for_=IFlowSubmission,
     view=IViewView,
-    manager=IBelowContentTitle,
+    manager=IBelowContentBody,
+    permission='cmf.ModifyPortalContent',
+    template=os.path.join('viewlets_templates', 'submission_edit_viewlet.pt'),
+)
+
+
+@configure.browser.viewlet.class_(
+    name='jyu.ytolapp.metromap.requester',
+    for_=IFlowSubmission,
+    view=IViewView,
+    manager=IAboveContentTitle,
     permission='cmf.RequestReview',
+    template=os.path.join('viewlets_templates', 'metromap_viewlet.pt'),
+)
+@configure.browser.viewlet.class_(
+    name='jyu.ytolapp.metromap.reviewer',
+    for_=IFlowSubmission,
+    view=IViewView,
+    manager=IAboveContentTitle,
+    permission='cmf.ReviewPortalContent',
     template=os.path.join('viewlets_templates', 'metromap_viewlet.pt'),
 )
 @implementer(IViewlet)
@@ -61,7 +126,7 @@ class MetroMapViewlet(BrowserView):
         try:
             metro = metro_expression.default_expr(getExprContext(self.context))
         except AttributeError:
-            return
+            metro = get_default_metromap(wf)
 
         # Build data for our metro map
         forward = None

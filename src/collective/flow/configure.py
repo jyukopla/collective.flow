@@ -99,7 +99,7 @@ def addMissingAttributes(context):
         try:
             assert aq_base(ob).submission_title_template is not None
         except (AttributeError, AssertionError):
-            ob.submission_title_template = u''
+            ob.submission_title_template = u'${parent_title} ${modified}'
         try:
             assert aq_base(ob).submission_path_template is not None
         except (AttributeError, AssertionError):

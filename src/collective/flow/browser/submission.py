@@ -73,7 +73,7 @@ class SubmissionMetadataForm(DefaultEditForm):
 @implementer(IFlowSchemaForm)
 class SubmissionEditForm(DefaultEditForm):
     enable_form_tabbing = False
-    form_css = 'pat-folding-fieldsets'
+    css_class = 'pat-folding-fieldsets'
 
     def label(self):
         return self.context.aq_explicit.aq_acquire('title')

@@ -1,0 +1,16 @@
+.pat-folding-fieldsets legend a {
+  display: block;
+  position: relative;
+  margin-left: 1em;
+}
+.pat-folding-fieldsets legend a[aria-controls]:after {
+  display: inline-block;
+  content: ">";
+  position: absolute;
+  left: -1em;
+  font-weight: bold;
+  transition: transform 0.1s linear;
+}
+.pat-folding-fieldsets legend a[aria-expanded="true"]:after {
+  transform: rotate(90deg);
+}

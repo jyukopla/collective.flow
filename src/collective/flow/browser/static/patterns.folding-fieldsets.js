@@ -17,7 +17,7 @@ define([
         $legend.attr('aria-expanded', 'true');
         $fields.attr('aria-hidden', 'false');
 
-        $legend.click(function(e) {
+        var toggle = function(e) {
           e.preventDefault();
           if ($legend.attr('aria-expanded') === 'true') {
             $fields.hide();
@@ -28,11 +28,20 @@ define([
             $fields.attr('aria-hidden', 'false');
             $legend.attr('aria-expanded', 'true');
           }
-        });
+        };
 
+        $legend.on('click', toggle);
         if ($fields.find('.error').length === 0) {
           $legend.click();
         }
+
+        // a11y
+        $legend.on('keyup', function(e) {});
+        $legend.on('keydown', function(e) {
+          if (e.keyCode === 27) {
+            toggle.apply(this, [e]);
+          }
+        });
       });
 
       if ($el.find('.error').length === 0) {
