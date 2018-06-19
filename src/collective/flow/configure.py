@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from Acquisition import aq_base
 from collective.flow import _
 from collective.flow import browser
 from collective.flow import content
@@ -77,7 +78,7 @@ configure.gs.upgradeDepends(
     destination='1003',
     sortkey='1002',
     title=u'Upgrade collective.flow from 1002 to 1003',
-    description=u'Update resource bundles',
+    description=u'Update resource bundles and content types',
     profile='collective.flow:default',
     import_steps='typeinfo plone.app.registry',
 )
@@ -92,9 +93,28 @@ configure.gs.upgradeDepends(
     profile='collective.flow:default',
 )
 def addMissingAttributes(context):
-    # pc = api.portal.get_tool('portal_catalog')
-    pass
+    pc = api.portal.get_tool('portal_catalog')
+    for brain in pc.unrestrictedSearchResults(portal_type='FlowFolder'):
+        ob = brain._unrestrictedGetObject()
+        try:
+            assert aq_base(ob).submission_title_template is not None
+        except (AttributeError, AssertionError):
+            ob.submission_title_template = u''
+        try:
+            assert aq_base(ob).submission_path_template is not None
+        except (AttributeError, AssertionError):
+            ob.submission_path_template = ''
 
+
+configure.gs.upgradeDepends(
+    source='1004',
+    destination='1005',
+    sortkey='1004',
+    title=u'Upgrade collective.flow from 1004 to 1005',
+    description=u'Update resource bundles and content types',
+    profile='collective.flow:default',
+    import_steps='typeinfo plone.app.registry',
+)
 
 configure.gs.registerProfile(
     name=u'uninstall',

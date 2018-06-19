@@ -40,7 +40,7 @@ Products.PlonePAS==5.0.15
 Products.PluggableAuthService==1.11.0
 Products.PluginRegistry==1.4
 Products.PortalTransforms==3.1.2
-Products.PrintingMailHost==1.0
+Products.PrintingMailHost==1.1.0
 Products.PythonScripts==2.13.2
 Products.ResourceRegistries==3.0.7
 Products.Sessions==3.0
@@ -223,7 +223,7 @@ sphinx-rtd-theme==0.2.4
 sphinxcontrib-robotframework==0.7.0
 sphinxcontrib-websupport==1.0.1
 tempstorage==4.0.1
-testfixtures==6.0.2
+testfixtures==6.2.0
 tqdm==4.19.4
 transaction==2.1.2
 trollius==2.1

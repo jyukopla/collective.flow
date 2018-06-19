@@ -46,6 +46,14 @@
     </value>
   </records>
 
+  <records prefix="plone.resources/flow-patterns-folding-fieldsets"
+           interface='Products.CMFPlone.interfaces.IResourceRegistry'>
+    <value key="js">++plone++collective.flow/patterns.folding-fieldsets.js</value>
+    <value key="css">
+      <element>++plone++collective.flow/patterns.folding-fieldsets.less</element>
+    </value>
+  </records>
+
   <records prefix="plone.bundles/flow-default"
            interface='Products.CMFPlone.interfaces.IBundleRegistry'>
     <value key="resources">
@@ -60,6 +68,7 @@
   <records prefix="plone.bundles/flow-logged-in"
            interface='Products.CMFPlone.interfaces.IBundleRegistry'>
     <value key="resources">
+      <element>flow-patterns-folding-fieldsets</element>
       <element>flow-patterns-python-editor</element>
       <element>flow-patterns-script-editor</element>
       <element>flow-patterns-style-editor</element>
