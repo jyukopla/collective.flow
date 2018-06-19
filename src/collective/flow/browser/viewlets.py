@@ -51,9 +51,10 @@ def get_default_metromap(wf):
         )[:1]
         for transition_id in state['next_transition']:
             transitions.pop(transition_id)
-            state_id = wf.transitions[transition_id].new_state_id
-            if state_id in states:
-                stack.append(states.pop(state_id))
+            if transition_id in wf.transitions:
+                state_id = wf.transitions[transition_id].new_state_id
+                if state_id in states:
+                    stack.append(states.pop(state_id))
         metro.append(state)
 
     for state in metro:
@@ -141,7 +142,7 @@ class MetroMapViewlet(BrowserView):
             if future:
                 classes.append('in-future')
 
-            if state.id == status.get('review_state'):
+            if status and state.id == status.get('review_state'):
                 classes.append('active')
                 future = True
 
@@ -160,6 +161,9 @@ class MetroMapViewlet(BrowserView):
 
             for action_id in step.get('next_transition', '').split(','):
                 forward = forward or actions.get(action_id)
+
+        if len(self.steps) < 2:
+            self.steps = []
 
     def render(self):
         return self.index()

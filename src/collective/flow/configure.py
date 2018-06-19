@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from Acquisition import aq_base
 from collective.flow import _
+from collective.flow import behaviors
 from collective.flow import browser
 from collective.flow import content
 from collective.flow import fields
@@ -24,9 +25,10 @@ del plone.supermodel.exportimport.BaseHandler.filteredAttributes[
 i18n_domain('collective.flow')
 configure.i18n.registerTranslations(directory='locales')
 
+scan(behaviors)
 scan(content)
-scan(schema)
 scan(fields)
+scan(schema)
 scan(transforms)
 
 configure.include(package=browser, file='__init__.py')

@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from plone.app.z3cform.interfaces import IPloneFormLayer
+from plone.app.z3cform.widget import SelectFieldWidget
 from plone.autoform.directives import widget
 from plone.namedfile.field import NamedBlobFile
 from plone.namedfile.field import NamedBlobImage
@@ -101,6 +102,7 @@ class IFlowFolder(IFlowSchema):
         fields=[
             u'submission_title_template',
             u'submission_path_template',
+            u'submission_behaviors',
             u'submission_workflow',
             u'submission_transition',
             u'attachment_workflow',
@@ -128,6 +130,14 @@ class IFlowFolder(IFlowSchema):
             u'allow delegation submission reviewer roles.',
         ),
         required=False,
+    )
+
+    widget('submission_behaviors', SelectFieldWidget)
+    submission_behaviors = schema.List(
+        title=_(u'Submission behaviors'),
+        value_type=schema.Choice(
+            vocabulary='collective.flow.submission.behaviors',
+        ),
     )
 
     submission_workflow = schema.Choice(
@@ -201,16 +211,12 @@ class IFlowSubFolder(IFlowSchema):
 class IFlowSubmission(IFlowSchema):
     """Flow submission"""
 
-    submission_workflow = schema.Choice(
-        title=_(u'Submission workflow'),
-        vocabulary='plone.app.vocabularies.Workflows',
-        default='always_private_workflow',
-    )
-
-    attachment_workflow = schema.Choice(
-        title=_(u'Attachment workflow'),
-        vocabulary='plone.app.vocabularies.Workflows',
-        default='always_private_workflow',
+    submission_behaviors = schema.List(
+        title=_(u'Submission behaviors'),
+        value_type=schema.Choice(
+            vocabulary='collective.flow.submission.behaviors',
+        ),
+        readonly=True,
     )
 
 

@@ -9,7 +9,6 @@ from collective.flow.interfaces import IFlowSubmission
 from collective.flow.schema import FlowSchemaSpecificationDescriptor
 from collective.flow.schema import load_schema
 from collective.flow.schema import SCHEMA_MODULE
-from collective.flow.utils import parents
 from persistent.mapping import PersistentMapping
 from plone.app.content.interfaces import INameFromTitle
 from plone.dexterity.content import Container
@@ -81,7 +80,6 @@ class FlowDataSpecificationDescriptor(ObjectSpecificationDescriptor):
             schema = inst._v_initial_schema
 
         spec = Implements(schema, spec)
-
         return spec
 
 
@@ -126,7 +124,6 @@ def dottedname(value):
 @implementer(IToUnicode)
 @adapter(IObject)
 class ObjectToUnicode(object):
-
     def __init__(self, context):
         self.context = context
 
@@ -197,20 +194,32 @@ class NameFromTitle(object):
         return self.context.title
 
 
+# noinspection PyPep8Naming
 @configure.adapter.factory(for_=(IFlowSubmission, IPloneBaseTool))
 @implementer(IWorkflowChain)
 def getFlowSubmissionWorkflowChain(ob, tool):
-    return tuple((ob.submission_workflow,))
+    try:
+        wf_id = ob.aq_explicit.aq_acquire('submission_workflow')
+    except AttributeError:
+        wf_id = None
+    if wf_id:
+        return tuple((wf_id, ))
+    else:
+        return ()
 
 
+# noinspection PyPep8Naming
 @configure.adapter.factory(for_=(IFlowAttachment, IPloneBaseTool))
 @implementer(IWorkflowChain)
 def getFlowAttachmentWorkflowChain(ob, tool):
-    for parent in parents(ob, iface=IFlowSubmission):
-        return tuple((parent.attachment_workflow,))
-    assert False, u'FlowFolder not found for "{0:s}"'.format(
-        '/'.join(ob.getPhysicalPath()),
-    )
+    try:
+        wf_id = ob.aq_explicit.aq_acquire('attachment_workflow')
+    except AttributeError:
+        wf_id = None
+    if wf_id:
+        return tuple((wf_id, ))
+    else:
+        return ()
 
 
 if HAS_PLACEFUL_WORKFLOW:

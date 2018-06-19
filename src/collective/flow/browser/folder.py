@@ -300,8 +300,8 @@ class FlowSubmitForm(DefaultAddForm):
 
         pc = api.portal.get_tool('portal_catalog')
         path = '/'.join(self.context.getPhysicalPath())
-        if (not self.submission_path_template
-                and len(pc.unrestrictedSearchResults(  # noqa: W503
+        if (not self.submission_path_template and
+                len(pc.unrestrictedSearchResults(  # noqa: W503
                     path=path,
                     portal_type=['FlowFolder', 'FlowSubFolder'],
                 )) > 1):
@@ -332,6 +332,10 @@ class FlowSubmitForm(DefaultAddForm):
     @property
     def submission_path_template(self):
         return self.context.submission_path_template
+
+    @property
+    def submission_behaviors(self):
+        return self.context.submission_behaviors
 
     @property
     def submission_workflow(self):
@@ -403,8 +407,7 @@ class FlowSubmitForm(DefaultAddForm):
         # save required submission fields
         submission.schema = remove_attachments(self.context.schema)
         submission.schema_digest = hashlib.md5(submission.schema).hexdigest()
-        submission.submission_workflow = self.submission_workflow
-        submission.attachment_workflow = self.attachment_workflow
+        submission.submission_behaviors = self.submission_behaviors
 
         return aq_base(submission), attachments
 

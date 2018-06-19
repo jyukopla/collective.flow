@@ -98,6 +98,10 @@ class SubFlowSubmitForm(FlowSubmitForm):
         return self.context.aq_explicit.aq_acquire('submission_path_template')
 
     @property
+    def submission_behaviors(self):
+        return self.context.aq_explicit.aq_acquire('submission_behaviors')
+
+    @property
     def submission_workflow(self):
         return self.context.aq_explicit.aq_acquire('submission_workflow')
 

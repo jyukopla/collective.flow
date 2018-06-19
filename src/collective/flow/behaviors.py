@@ -1,40 +1,21 @@
 # -*- coding: utf-8 -*-
-"""WIP"""
 from Acquisition import aq_base
-from collective.flow.interfaces import IFlowSchemaDynamic
 from collective.flow.interfaces import IFlowSubmission
-from collective.flow.schema import load_schema
-from plone.autoform.interfaces import IFormFieldProvider
 from plone.behavior.interfaces import IBehavior
 from plone.behavior.interfaces import IBehaviorAssignable
 from plone.dexterity.behavior import DexterityBehaviorAssignable
-# from venusianconfiguration import configure
+from venusianconfiguration import configure
 from zope.component import adapter
-from zope.interface import alsoProvides
+from zope.component import ComponentLookupError
+from zope.component import getUtilitiesFor
+from zope.component import getUtility
 from zope.interface import implementer
-from zope.interface import Interface
+from zope.schema.interfaces import IVocabularyFactory
+from zope.schema.vocabulary import SimpleTerm
+from zope.schema.vocabulary import SimpleVocabulary
 
 
-class IFlowSchemaDynamicFields(Interface):
-    """Dynamic marker interface for providing dynamic fields"""
-
-
-alsoProvides(IFlowSchemaDynamic, IFlowSchemaDynamicFields)
-
-
-@implementer(IBehavior)
-class FlowSchemaBehaviorRegistration(object):
-    title = None
-    description = None
-    interface = None
-    marker = None
-    factory = None
-
-    def __init__(self, iface):
-        self.interface = iface
-
-
-# @configure.adapter.factory()
+@configure.adapter.factory()
 @adapter(IFlowSubmission)
 @implementer(IBehaviorAssignable)
 class FlowSubmissionBehaviorAssignable(DexterityBehaviorAssignable):
@@ -42,16 +23,31 @@ class FlowSubmissionBehaviorAssignable(DexterityBehaviorAssignable):
         for behavior in super(FlowSubmissionBehaviorAssignable,
                               self).enumerateBehaviors():
             yield behavior
-        schema = load_schema(
-            aq_base(self.context).schema,
-            cache_key=aq_base(self.context).schema_digest,
-        )
-        alsoProvides(schema, IFlowSchemaDynamicFields)
-        yield FlowSchemaBehaviorRegistration(schema)
+        try:
+            behaviors = aq_base(self.context.submission_behaviors)
+        except AttributeError:
+            behaviors = []
+        for behavior in behaviors:
+            try:
+                yield getUtility(IBehavior, name=behavior)
+            except ComponentLookupError:
+                pass
 
 
-# @configure.adapter.factory()
-@implementer(IFormFieldProvider)
-@adapter(IFlowSchemaDynamicFields)
-def dynamic_form_fields(context):
-    return context
+@configure.utility.factory(
+    name='collective.flow.submission.behaviors',
+    provides=IVocabularyFactory,
+)
+class SubmissionBehaviorsVocabulary(object):
+    def __call__(self, context=None):
+        terms = []
+        for reg in getUtilitiesFor(IBehavior):
+            if reg[0].startswith('submission_'):
+                terms.append(
+                    SimpleTerm(
+                        value=reg[0],
+                        token=reg[0],
+                        title=reg[1].title,
+                    ),
+                )
+        return SimpleVocabulary(terms)

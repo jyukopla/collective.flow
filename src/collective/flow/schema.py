@@ -8,6 +8,7 @@ from lxml import etree
 from lxml.etree import tostring
 from plone.alterego import dynamic
 from plone.alterego.interfaces import IDynamicObjectFactory
+from plone.behavior.interfaces import IBehaviorAssignable
 from plone.memoize.volatile import CleanupDict
 from plone.schemaeditor.interfaces import ISchemaModifiedEvent
 from plone.stringinterp.interfaces import IStringInterpolator
@@ -222,8 +223,24 @@ class FlowSchemaSpecificationDescriptor(ObjectSpecificationDescriptor):
             spec = implementedBy(cls)
 
         schema = load_schema(inst.schema, cache_key=inst.schema_digest)
-        spec = Implements(schema, spec)
 
+        if getattr(self, '__recursion__', False):
+            return Implements(schema, spec)
+
+        self.__recursion__ = True
+        dynamically_provided = []
+        try:
+            assignable = IBehaviorAssignable(inst, None)
+            if assignable is not None:
+                for behavior_registration in assignable.enumerateBehaviors():
+                    if behavior_registration.marker:
+                        dynamically_provided.append(
+                            behavior_registration.marker,
+                        )
+        finally:
+            del self.__recursion__
+
+        spec = Implements(schema, spec, *dynamically_provided)
         return spec
 
 
