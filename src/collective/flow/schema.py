@@ -8,7 +8,10 @@ from lxml import etree
 from lxml.etree import tostring
 from plone.alterego import dynamic
 from plone.alterego.interfaces import IDynamicObjectFactory
+from plone.app.dexterity.permissions import DXFieldPermissionChecker
+from plone.app.widgets.interfaces import IFieldPermissionChecker
 from plone.behavior.interfaces import IBehaviorAssignable
+from plone.dexterity.utils import iterSchemata
 from plone.memoize.volatile import CleanupDict
 from plone.schemaeditor.interfaces import ISchemaModifiedEvent
 from plone.stringinterp.interfaces import IStringInterpolator
@@ -242,6 +245,25 @@ class FlowSchemaSpecificationDescriptor(ObjectSpecificationDescriptor):
 
         spec = Implements(schema, spec, *dynamically_provided)
         return spec
+
+
+@configure.adapter.factory()
+@implementer(IFieldPermissionChecker)
+@adapter(IFlowSchemaDynamic)
+class FlowSchemaFieldPermissionChecker(DXFieldPermissionChecker):
+    DEFAULT_PERMISSION = 'Modify portal content'
+
+    def _get_schemata(self):
+        schemata = tuple(iterSchemata(self.context))
+        try:
+            schema = load_schema(
+                aq_base(self.context).schema,
+                cache_key=aq_base(self.context).schema_digest,
+            )
+            schemata = schemata + tuple((schema, ))
+        except AttributeError:
+            pass
+        return schemata
 
 
 def save_schema(context, schema=None, xml=None):
