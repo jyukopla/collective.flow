@@ -4,7 +4,42 @@ Changelog
 0.4.3 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Add re-usable supermodel compatible default value factories
+  [Asko Soukka]
+
+- Implement DX permission checker for flow schemas
+  [Asko Soukka]
+
+- Add support for submission behaviors
+  [Asko Soukka]
+
+- Add folding fieldsets; Add generic metromap; Add edit-button
+  [Asko Soukka]
+
+- Add customizable title and filing structure
+  [Asko Soukka]
+
+- Add form flow workflow
+  [Asko Soukka]
+
+- Fix issue where flow submission did not show all fieldsets
+  [Asko Soukka]
+
+- Add support for customized schema for add forms
+  [Asko Soukka]
+
+- Hide richtextlabel labels when viewing submission; show all fieldsets for
+  submissions
+  [Asko Soukka]
+
+- Add display widget for richtextlabel
+  [Asko Soukka]
+
+- Change submission id to be its UUID
+  [Asko Soukka]
+
+- Fix issue where new submissions were misssing UUID
+  [Asko Soukka]
 
 
 0.4.2 (2018-04-18)
