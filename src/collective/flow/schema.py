@@ -311,7 +311,11 @@ def interpolate(template, ob, request=None):
     for name in schema.names():
         field = schema[name]
         bound = field.bind(ob)
-        value = bound.get(ob)
+        try:
+            value = bound.get(ob)
+        except AttributeError:
+            mapping[name] = ''
+            continue
         try:
             mapping[name] = zope.i18n.translate(
                 bound.vocabulary.getTerm(value).title,
