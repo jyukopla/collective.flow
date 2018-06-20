@@ -106,6 +106,10 @@ def addMissingAttributes(context):
             assert aq_base(ob).submission_path_template is not None
         except (AttributeError, AssertionError):
             ob.submission_path_template = ''
+        try:
+            assert aq_base(ob).submission_behaviors is not None
+        except (AttributeError, AssertionError):
+            ob.submission_behaviors = []
 
 
 configure.gs.upgradeDepends(
