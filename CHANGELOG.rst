@@ -1,7 +1,7 @@
 Changelog
 =========
 
-0.4.3 (unreleased)
+0.5.0 (2018-06-20)
 ------------------
 
 - Add re-usable supermodel compatible default value factories
