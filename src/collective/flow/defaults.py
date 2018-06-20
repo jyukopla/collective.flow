@@ -7,6 +7,11 @@ import datetime
 
 
 @provider(IDefaultFactory)
+def username():
+    return api.user.get_current().getId()
+
+
+@provider(IDefaultFactory)
 def email():
     return api.user.get_current().getProperty('email', None) or None
 
