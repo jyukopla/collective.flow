@@ -1,0 +1,5 @@
+<div style="display:none;">
+  <div id="commenting">
+    <div tal:replace="structure view/form/render"></div>
+  </div>
+</div>

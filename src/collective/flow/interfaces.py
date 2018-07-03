@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from plone.app.discussion.interfaces import IDiscussionLayer
 from plone.app.z3cform.interfaces import IPloneFormLayer
 from plone.app.z3cform.widget import SelectFieldWidget
 from plone.autoform.directives import widget
@@ -25,7 +26,11 @@ DEFAULT_SCHEMA = u"""
 """
 
 
-class ICollectiveFlowLayer(IDefaultBrowserLayer, IPloneFormLayer):
+class ICollectiveFlowLayer(
+        IDefaultBrowserLayer,
+        IPloneFormLayer,
+        IDiscussionLayer,
+):
     """Marker interface that defines a browser layer."""
 
 

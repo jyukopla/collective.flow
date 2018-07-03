@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from collective.flow.browser import comments
 from collective.flow.browser import folder
 from collective.flow.browser import history
 from collective.flow.browser import schema
@@ -18,6 +19,7 @@ try:
 except ImportError:
     pass
 
+scan(comments)
 scan(folder)
 scan(subfolder)
 scan(schema)

@@ -1,0 +1,59 @@
+<tal:block tal:define="has_replies python:view.has_replies();
+                       replies python:view.get_replies();
+                       auth_token context/@@authenticator/token|nothing">
+
+  <div class="discussion" tal:condition="has_replies">
+    <tal:getreplies repeat="reply_dict replies">
+      <div class="comment"
+           tal:define="reply reply_dict/comment;
+                       depth reply_dict/depth|python:0;
+                       depth python: depth > 10 and '10' or depth;"
+           tal:attributes="class python:'comment replyTreeLevel'+str(depth);
+                           id string:${reply/getId}">
+
+        <div class="documentByLine">
+          <span tal:replace="reply/author_name"></span>
+          <div class="commentDate"
+               tal:content="python:reply.modification_date.strftime('%-d.%-m.%Y %H.%M')">
+            8/23/2001 12:40:44 PM
+          </div>
+        </div>
+
+        <div class="commentBody">
+          <span tal:replace="structure reply/getText"></span>
+          <div class="commentActions">
+            <form name="delete"
+                  action=""
+                  method="post"
+                  class="commentactionsform"
+                  tal:attributes="action string:${reply/absolute_url}/@@moderate-delete-comment">
+              <input name="form.button.DeleteComment"
+                     class="destructive"
+                     type="submit"
+                     value="Delete"
+                     i18n:attributes="value label_delete;"/>
+            </form>
+          </div>
+        </div>
+        <button class="context reply-to-comment-button hide allowMultiSubmit"
+           i18n:translate="label_reply">
+          Reply
+        </button>
+      </div>
+    </tal:getreplies>
+  </div>
+
+  <div class="reply">
+    <a href="#" i18n:translate=""
+       style="display: block; text-align: right;"
+       class="pat-aria-expand"
+       aria-controls="${view/widget/id}-commenting"
+       aria-expanded="false"
+       i18n:translate="">Add comment</a>
+    <div id="${view/widget/id}-commenting"
+         aria-hidden="true" hidden="hidden">
+      <div tal:replace="structure view/form_instance/render"></div>
+    </div>
+  </div>
+
+</tal:block>

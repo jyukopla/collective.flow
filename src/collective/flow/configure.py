@@ -3,6 +3,7 @@ from Acquisition import aq_base
 from collective.flow import _
 from collective.flow import behaviors
 from collective.flow import browser
+from collective.flow import comments
 from collective.flow import content
 from collective.flow import fields
 from collective.flow import history
@@ -28,6 +29,7 @@ configure.i18n.registerTranslations(directory='locales')
 
 scan(behaviors)
 scan(content)
+scan(comments)
 scan(fields)
 scan(history)
 scan(schema)
@@ -122,6 +124,16 @@ configure.gs.upgradeDepends(
     description=u'Update resource bundles and content types',
     profile='collective.flow:default',
     import_steps='typeinfo plone.app.registry',
+)
+
+configure.gs.upgradeDepends(
+    source='1005',
+    destination='1006',
+    sortkey='1005',
+    title=u'Upgrade collective.flow from 1005 to 1006',
+    description=u'Update workflow',
+    profile='collective.flow:default',
+    import_steps='repositorytool workflow',
 )
 
 configure.gs.registerProfile(
