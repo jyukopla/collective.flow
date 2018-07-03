@@ -10,9 +10,9 @@ define([
 
     init: function($el) {
       $el.find('fieldset > legend').each(function() {
-        var $legend = $(this).contents().wrap('<a href="#"></a>').parent();
+        var $legend = $(this).contents().wrapAll('<a href="#"></a>').parent();
         var $fields = $(this).siblings()
-          .wrap('<div id="' + $legend.attr('id') + '-fields"></div>').parent();
+          .wrapAll('<div id="' + $(this).attr('id') + '-fields"></div>').parent();
 
         $legend.attr('aria-controls', $fields.attr('id'));
         $legend.attr('aria-expanded', 'true');
