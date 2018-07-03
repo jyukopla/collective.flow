@@ -27,7 +27,6 @@
   <property name="klass">collective.flow.content.FlowSubmission</property>
   <property name="behaviors">
     <element value="plone.app.dexterity.behaviors.metadata.IDublinCore"/>
-    <element value="plone.app.versioningbehavior.behaviors.IVersionable"/>
     <element value="plone.app.lockingbehavior.behaviors.ILocking"/>
   </property>
   <property name="schema">collective.flow.interfaces.IFlowSubmission</property>

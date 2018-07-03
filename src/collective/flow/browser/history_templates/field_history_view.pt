@@ -1,0 +1,19 @@
+<tal:block define="history view/history|nothing"
+           condition="nocall:history"
+           i18n:domain="collective.flow">
+  <a href="#" i18n:translate=""
+     style="float: right"
+     class="pat-aria-expand"
+     aria-controls="${view/widget/id}-history"
+     aria-expanded="false">Changelog</a>
+  <div id="${view/widget/id}-history" aria-hidden="true" hidden="hidden"
+       style="clear: both;">
+    <table>
+      <tr tal:repeat="version history">
+        <td tal:content="python:version['modified'].strftime('%-d.%-m.%Y')">1.1.2010</td>
+        <td tal:content="structure version/widget/render">value</td>
+      </tr>
+    </table>
+  </div>
+</tal:block>
+

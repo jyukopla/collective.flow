@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from collective.flow.browser import folder
+from collective.flow.browser import history
 from collective.flow.browser import schema
 from collective.flow.browser import subfolder
 from collective.flow.browser import submission
@@ -23,6 +24,7 @@ scan(schema)
 scan(submission)
 scan(widgets)
 scan(viewlets)
+scan(history)
 
 configure.plone.static(
     directory='static',

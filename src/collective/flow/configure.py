@@ -5,6 +5,7 @@ from collective.flow import behaviors
 from collective.flow import browser
 from collective.flow import content
 from collective.flow import fields
+from collective.flow import history
 from collective.flow import schema
 from collective.flow import transforms
 from Products.CMFPlone.interfaces import INonInstallable
@@ -28,6 +29,7 @@ configure.i18n.registerTranslations(directory='locales')
 scan(behaviors)
 scan(content)
 scan(fields)
+scan(history)
 scan(schema)
 scan(transforms)
 
