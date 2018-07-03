@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 from plone.memoize import request
 from plone.uuid.interfaces import IUUID
-from Products.CMFEditions.interfaces.IArchivist import ArchivistError
 from Products.Five import BrowserView
 from venusianconfiguration import configure
 from z3c.form.interfaces import IWidget
@@ -26,24 +25,12 @@ def get_history(context, portal_repository, request=request):
     """Return renderable widgets for available version history of given
     context
     """
-    metadata = portal_repository.getHistoryMetadata(context)
-
-    if not metadata:
-        return []
-
-    # Iterate available history
     history = []
-    for event in range(metadata.getLength(countPurged=False)):
-        info = metadata.retrieve(event, countPurged=False)['vc_info']
-        try:
-            version = portal_repository.retrieve(
-                context,
-                int(info.version_id),
-                countPurged=False,
-            )
-        except ArchivistError:
-            continue
-        # Lookup view for the version, expect it to be widgets view
+    for version in portal_repository.getHistory(
+            context,
+            oldestFirst=True,
+            countPurged=False,
+    ):
         view = version.object.restrictedTraverse('@@view')
         view.update()
         widgets = dict(view.widgets)
