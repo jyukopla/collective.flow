@@ -7,13 +7,13 @@ from collective.flow import content
 from collective.flow import fields
 from collective.flow import schema
 from collective.flow import transforms
-from plone import api
 from Products.CMFPlone.interfaces import INonInstallable
 from venusianconfiguration import configure
 from venusianconfiguration import i18n_domain
 from venusianconfiguration import scan
 from zope.interface import implementer
 
+import plone.api as api
 import plone.supermodel.exportimport
 
 
