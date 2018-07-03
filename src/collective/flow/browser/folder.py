@@ -35,12 +35,14 @@ from plone.z3cform.fieldsets.group import Group
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from uuid import uuid4
 from venusianconfiguration import configure
+from z3c.form.interfaces import IDataManager
 from z3c.form.interfaces import IErrorViewSnippet
 from z3c.form.interfaces import IMultiWidget
 from z3c.form.interfaces import IObjectWidget
 from z3c.form.interfaces import IValue
 from z3c.form.interfaces import IWidget
 from z3c.form.interfaces import NOT_CHANGED
+from z3c.form.util import changedField
 from zope.component import createObject
 from zope.component import getMultiAdapter
 from zope.component import getUtility
@@ -61,7 +63,14 @@ import os
 _ = MessageFactory('collective.flow')
 
 
-def save_form(form, data, submission, default_values=False):
+def save_form(  # noqa: C901 (this has gotten quite complex)
+        form,
+        data,
+        submission,
+        default_values=False,
+        force=False,
+):
+    changes = {}
     for name, field in form.fields.items():
         if name == 'schema':
             continue
@@ -99,12 +108,28 @@ def save_form(form, data, submission, default_values=False):
                     item.__name__ = name
                     item.__parent__ = submission
 
-        setattr(submission, name, value)
+        if force:
+            setattr(submission, name, value)
+        elif changedField(field.field, value, context=submission):
+            # Only update the data, if it is different
+            dm = getMultiAdapter((submission, field.field), IDataManager)
+            dm.set(value)
+            # Record the change using information required later
+            changes.setdefault(dm.field.interface, []).append(name)
     try:
         for group in form.groups:
-            save_form(group, data, submission, default_values)
+            changes.update(
+                save_form(
+                    group,
+                    data,
+                    submission,
+                    default_values,
+                ),
+            )
     except AttributeError:
         pass
+
+    return changes
 
 
 def validate(form, code, data):
@@ -402,7 +427,7 @@ class FlowSubmitForm(DefaultAddForm):
 
         # save form data (bypass data manager for speed
         # and to avoid needing to reload the form schema)
-        save_form(self, data, submission, default_values=True)
+        save_form(self, data, submission, default_values=True, force=True)
 
         # save required submission fields
         submission.schema = remove_attachments(self.context.schema)

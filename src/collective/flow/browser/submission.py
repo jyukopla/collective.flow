@@ -12,8 +12,11 @@ from plone.dexterity.browser.edit import DefaultEditForm
 from plone.z3cform.fieldsets.extensible import ExtensibleForm
 from venusianconfiguration import configure
 from zope.cachedescriptors.property import Lazy
+from zope.event import notify
 from zope.i18nmessageid import MessageFactory
 from zope.interface import implementer
+from zope.lifecycleevent import Attributes
+from zope.lifecycleevent import ObjectModifiedEvent
 
 
 _ = MessageFactory('collective.flow')
@@ -113,4 +116,10 @@ class SubmissionEditForm(DefaultEditForm):
         return data, errors
 
     def applyChanges(self, data):
-        save_form(self, data, self.context)
+        changes = save_form(self, data, self.context)
+        descriptions = []
+        if changes:
+            for interface, names in changes.items():
+                descriptions.append(Attributes(interface, *names))
+            notify(ObjectModifiedEvent(self.context, *descriptions))
+        return changes
