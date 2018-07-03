@@ -17,7 +17,7 @@
         <tal:label condition="widget/label|nothing">
           <label tal:content="widget/label"></label><br/>
         </tal:label>
-        <div tal:content="structure widget/render"></div>
+        <div tal:content="structure widget"></div>
       </div>
     </tal:block>
 
@@ -27,7 +27,7 @@
           <tal:label condition="widget/label|nothing">
             <label tal:content="widget/label"></label><br/>
           </tal:label>
-          <div tal:content="structure widget/render"></div>
+          <div tal:content="structure widget"></div>
         </div>
       </tal:block>
     </tal:block>

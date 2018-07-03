@@ -1,5 +1,8 @@
 # -*- coding: utf-8 -*-
+from collective.flow.interfaces import ICollectiveFlowLayer
+from collective.flow.interfaces import IFlowSchemaForm
 from plone.app.textfield import RichText
+from plone.memoize import view
 from Products.Five.browser.metaconfigure import ViewMixinForTemplates
 from venusianconfiguration import configure
 from z3c.form.browser.widget import addFieldClass
@@ -55,6 +58,47 @@ class RichTextLabelWidget(HTMLFormElement, Widget):
 @implementer(IFieldWidget)
 def RichTextLabelFieldWidget(field, request):
     return FieldWidget(field, RichTextLabelWidget(request))
+
+
+@configure.browser.page.class_(
+    name=u'ploneform-render-widget',
+    for_=IWidget,
+    layer=ICollectiveFlowLayer,
+    permission='zope.Public',
+    template=os.path.join('widgets_templates', 'widget.pt'),
+)
+class RenderWidget(ViewMixinForTemplates):
+    """Patch plone.app.z3cform.widget.RenderWidget to support widget layouts"""
+
+    @view.memoize
+    def layout_enabled(self):
+        try:
+            return all([
+                self.context.context.portal_type == 'FlowSubmission',
+                IFlowSchemaForm.providedBy(
+                    getattr(
+                        self.context.form,
+                        'parentForm',
+                        self.context.form,
+                    ),
+                ),
+            ])
+        except AttributeError:
+            pass
+        return False
+
+
+configure.z3c.widgetLayout(
+    mode=u'display',
+    layer=ICollectiveFlowLayer,
+    template=os.path.join('widgets_templates', 'widget_layout.pt'),
+)
+
+configure.z3c.widgetLayout(
+    mode=u'input',
+    layer=ICollectiveFlowLayer,
+    template=os.path.join('widgets_templates', 'widget_layout.pt'),
+)
 
 
 @configure.browser.page.class_(

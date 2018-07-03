@@ -14,7 +14,7 @@
   <tal:block repeat="widget view/widgets/values">
     <div class="field">
       <label tal:content="widget/label"></label><br/>
-      <div tal:content="structure widget/render"></div>
+      <div tal:content="structure widget"></div>
     </div>
   </tal:block>
 

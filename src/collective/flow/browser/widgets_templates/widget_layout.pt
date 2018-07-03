@@ -1,0 +1,12 @@
+<tal:block define="mode view/form/parentForm/mode|view/form/mode|string:input">
+  <tal:input condition="python:mode=='input'">
+    <tal:widget replace="structure view/@@field-history|nothing" />
+    <tal:widget replace="structure view/render" />
+    <tal:widget replace="structure view/@@field-comments-readonly|nothing" />
+  </tal:input>
+  <tal:input condition="python:mode=='display'">
+    <tal:widget replace="structure view/@@field-history|nothing" />
+    <tal:widget replace="structure view/render" />
+    <tal:widget replace="structure view/@@field-comments|nothing" />
+  </tal:input>
+</tal:block>
