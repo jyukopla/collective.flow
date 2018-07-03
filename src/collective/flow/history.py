@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from Acquisition import aq_base
-from jyu.flowextensions import _
+from collective.flow import _
 from plone.app.versioningbehavior.behaviors import IVersionable
 from plone.app.versioningbehavior.behaviors import IVersioningSupport
 from plone.app.versioningbehavior.behaviors import Versionable
