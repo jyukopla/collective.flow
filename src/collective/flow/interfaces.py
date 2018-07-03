@@ -13,6 +13,7 @@ from z3c.form.browser.textarea import TextAreaWidget
 from zope import schema
 from zope.i18nmessageid import MessageFactory
 from zope.interface import Attribute
+from zope.interface import Interface
 from zope.publisher.interfaces.browser import IDefaultBrowserLayer
 
 
@@ -224,6 +225,10 @@ class IFlowSubmission(IFlowSchema):
         readonly=True,
         required=False,
     )
+
+
+class IFlowSubmissionComment(Interface):
+    """Flow submission comment marker interface"""
 
 
 class IFlowAttachment(model.Schema):

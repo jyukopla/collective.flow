@@ -3,6 +3,7 @@ from Acquisition import aq_inner
 from collective.flow.comments import IComments
 from collective.flow.interfaces import ICollectiveFlowLayer
 from collective.flow.interfaces import IFlowSubmission
+from collective.flow.interfaces import IFlowSubmissionComment
 from plone.app.discussion.browser.comments import CommentForm
 from plone.app.discussion.browser.conversation import ConversationView
 from plone.app.discussion.interfaces import IConversation
@@ -40,6 +41,7 @@ class FieldCommentForm(CommentForm):
     def create_comment(self, data):
         comment = super(FieldCommentForm, self).create_comment(data)
         comment.title = self.comment_title
+        alsoProvides(comment, IFlowSubmissionComment)
         return comment
 
 
@@ -203,13 +205,28 @@ class FieldCommentsView(BrowserView):
         """
         context = aq_inner(self.context)
         conversation = IConversation(context, None)
+        wf = api.portal.get_tool('portal_workflow')
         if len(conversation.objectIds()):
             replies = False
             for r in conversation.getThreads():
-                if r['comment'].title == self.name:
+                r = r.copy()
+                # Yield comments for the field
+                if any([
+                        r['comment'].title == self.name,
+                        replies and r['comment'].in_reply_to,
+                ]):
+                    # List all possible workflow actions
+                    r['actions'] = [
+                        a for a in wf.listActionInfos(object=r['comment'])
+                        if a['category'] == 'workflow' and a['allowed']
+                    ]
+                    r['review_state'] = wf.getInfoFor(  # noqa: P001
+                        r['comment'],
+                        'review_state',
+                        'acknowledged',
+                    )
+                    # Yield
+                    yield r
                     replies = True
-                    yield r
-                elif replies and r['comment'].in_reply_to:
-                    yield r
                 else:
                     replies = False

@@ -1,46 +1,80 @@
 <tal:block tal:define="has_replies python:view.has_replies();
-                       replies python:view.get_replies();
-                       auth_token context/@@authenticator/token|nothing">
+                       replies python:tuple(view.get_replies());
+                       new_replies python:[r for r in replies if r['review_state'] == 'new'];
+                       auth_token context/@@authenticator/token|nothing"
+           i18n:domain="collective.flow">
 
+  <a href="#"
+     style="display: block; text-align: right;"
+     class="toggle-discussion-link pat-aria-expand"
+     aria-controls="${view/widget/id}-discussion"
+     aria-expanded="false"
+     i18n:translate="" tal:condition="has_replies"
+     tal:attributes="aria-expanded python:new_replies and 'true' or 'false'">Comments</a>
+  <div id="${view/widget/id}-discussion"
+       aria-hidden="true" hidden="hidden"
+       tal:attributes="aria-hidden python:new_replies and 'false' or 'true';
+                       hidden python:not new_replies and 'hidden' or None"
+       tal:omit-tag="not:has_replies">
   <div class="discussion" tal:condition="has_replies">
-    <tal:getreplies repeat="reply_dict replies">
-      <div class="comment"
+  <table>
+    <tal:replies repeat="reply_dict replies">
+    <tbody class="comment"
            tal:define="reply reply_dict/comment;
                        depth reply_dict/depth|python:0;
                        depth python: depth > 10 and '10' or depth;"
-           tal:attributes="class python:'comment replyTreeLevel'+str(depth);
+           tal:attributes="class python:'comment replyTreeLevel'+str(depth)+' state-'+reply_dict['review_state'];
                            id string:${reply/getId}">
-
-        <div class="documentByLine">
-          <span tal:replace="reply/author_name"></span>
-          <div class="commentDate"
-               tal:content="python:reply.modification_date.strftime('%-d.%-m.%Y %H.%M')">
+      <tr>
+        <td class="commentByLine">
+          <span class="commentAuthor" tal:content="reply/author_name">
+            User
+          </span><br/>
+          <span class="commentDate"
+             tal:content="python:reply.modification_date.strftime('%-d.%-m.%Y %H.%M')">
             8/23/2001 12:40:44 PM
-          </div>
-        </div>
-
-        <div class="commentBody">
-          <span tal:replace="structure reply/getText"></span>
+          </span>
+        </td>
+        <td class="commentBody">
+          <div tal:replace="structure reply/getText">Comment</div>
           <div class="commentActions">
-            <form name="delete"
+            <form name="delete" style="display: none;"
                   action=""
                   method="post"
                   class="commentactionsform"
-                  tal:attributes="action string:${reply/absolute_url}/@@moderate-delete-comment">
+               tal:attributes="action string:${reply/absolute_url}/@@moderate-delete-comment">
               <input name="form.button.DeleteComment"
                      class="destructive"
                      type="submit"
                      value="Delete"
-                     i18n:attributes="value label_delete;"/>
+                 i18n:attributes="value label_delete;"/>
             </form>
+            <form name=""
+                  action=""
+                  method="get"
+                  class="commentactionsform"
+                  i18n:domain="plone"
+                  tal:repeat="action reply_dict/actions|nothing"
+                  tal:attributes="action string:${reply/absolute_url}/@@moderate-publish-comment;
+                                  name action/id">
+              <input type="hidden" name="workflow_action"
+                     tal:attributes="value action/id" />
+              <input name="form.button.PublishComment"
+                     class="context"
+                     type="submit"
+                 tal:attributes="value action/title"
+                 i18n:attributes="value"/>
+            </form>
+            <button class="context reply-to-comment-button hide allowMultiSubmit"
+               i18n:translate="label_reply">
+              Reply
+            </button>
           </div>
-        </div>
-        <button class="context reply-to-comment-button hide allowMultiSubmit"
-           i18n:translate="label_reply">
-          Reply
-        </button>
-      </div>
-    </tal:getreplies>
+        </td>
+      </tr>
+    </tbody>
+    </tal:replies>
+  </table>
   </div>
 
   <div class="reply">
@@ -48,12 +82,12 @@
        style="display: block; text-align: right;"
        class="pat-aria-expand"
        aria-controls="${view/widget/id}-commenting"
-       aria-expanded="false"
-       i18n:translate="">Add comment</a>
+       aria-expanded="false">Add new comment</a>
     <div id="${view/widget/id}-commenting"
          aria-hidden="true" hidden="hidden">
       <div tal:replace="structure view/form_instance/render"></div>
     </div>
+  </div>
   </div>
 
 </tal:block>

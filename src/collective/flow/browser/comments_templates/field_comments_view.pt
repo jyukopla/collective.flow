@@ -1,28 +1,37 @@
 <tal:block tal:define="has_replies python:view.has_replies();
                        replies python:view.get_replies();">
-
-  <div class="discussion" tal:condition="has_replies">
-    <tal:getreplies repeat="reply_dict replies">
-      <div class="comment"
-           tal:define="reply reply_dict/comment;
-                       depth reply_dict/depth|python:0;
-                       depth python: depth > 10 and '10' or depth;"
-           tal:attributes="class python:'comment replyTreeLevel'+str(depth);
-                           id string:${reply/getId}">
-
-        <div class="documentByLine">
-          <span tal:replace="reply/author_name"></span>
-          <div class="commentDate"
-               tal:content="python:reply.modification_date.strftime('%-d.%-m.%Y %H.%M')">
+  <a href="#"
+     style="display: block; text-align: right;"
+     class="toggle-discussion-link pat-aria-expand"
+     aria-controls="${view/widget/id}-discussion"
+     aria-expanded="false"
+     i18n:translate="" tal:condition="has_replies">Comments</a>
+  <div id="${view/widget/id}-discussion" class="discussion"
+       aria-hidden="true" hidden="hidden" tal:condition="has_replies">
+    <table>
+      <tal:replies repeat="reply_dict replies">
+        <tbody class="comment"
+               tal:define="reply reply_dict/comment;
+                           depth reply_dict/depth|python:0;
+                           depth python: depth > 10 and '10' or depth;"
+               tal:attributes="class python:'comment replyTreeLevel'+str(depth)+' state-'+reply_dict['review_state'];
+                               id string:${reply/getId}">
+        <tr>
+          <td class="commentByLine">
+          <span class="commentAuthor" tal:content="reply/author_name">
+            User
+          </span><br/>
+            <span class="commentDate"
+                  tal:content="python:reply.modification_date.strftime('%-d.%-m.%Y %H.%M')">
             8/23/2001 12:40:44 PM
-          </div>
-        </div>
-
-        <div class="commentBody">
-          <span tal:replace="structure reply/getText"></span>
-        </div>
-      </div>
-
-    </tal:getreplies>
+          </span>
+          </td>
+          <td class="commentBody">
+            <div tal:replace="structure reply/getText">Comment</div>
+          </td>
+        </tr>
+        </tbody>
+      </tal:replies>
+    </table>
   </div>
 </tal:block>

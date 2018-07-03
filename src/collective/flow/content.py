@@ -6,6 +6,7 @@ from collective.flow.interfaces import ICollectiveFlowLayer
 from collective.flow.interfaces import IFlowAttachment
 from collective.flow.interfaces import IFlowSchema
 from collective.flow.interfaces import IFlowSubmission
+from collective.flow.interfaces import IFlowSubmissionComment
 from collective.flow.schema import FlowSchemaSpecificationDescriptor
 from collective.flow.schema import load_schema
 from collective.flow.schema import SCHEMA_MODULE
@@ -222,6 +223,13 @@ def getFlowAttachmentWorkflowChain(ob, tool):
         return ()
 
 
+# noinspection PyPep8Naming
+@configure.adapter.factory(for_=(IFlowSubmissionComment, IPloneBaseTool))
+@implementer(IWorkflowChain)
+def getFlowSubmissionCommentWorkflowChain(ob, tool):
+    return tuple(('acknowledgement_workflow', ))
+
+
 if HAS_PLACEFUL_WORKFLOW:
     configure.adapter(
         for_=(IFlowSubmission, IPlacefulMarker),
@@ -230,4 +238,8 @@ if HAS_PLACEFUL_WORKFLOW:
     configure.adapter(
         for_=(IFlowAttachment, IPlacefulMarker),
         factory=getFlowAttachmentWorkflowChain,
+    )
+    configure.adapter(
+        for_=(IFlowSubmissionComment, IPlacefulMarker),
+        factory=getFlowSubmissionCommentWorkflowChain,
     )
