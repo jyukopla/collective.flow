@@ -11,12 +11,19 @@ from plone.autoform.view import WidgetsView
 from plone.dexterity.browser.edit import DefaultEditForm
 from plone.z3cform.fieldsets.extensible import ExtensibleForm
 from venusianconfiguration import configure
+from z3c.form import button
+from zope.browsermenu.interfaces import IBrowserMenu
 from zope.cachedescriptors.property import Lazy
+from zope.component import getUtility
 from zope.event import notify
+from zope.i18n import translate
 from zope.i18nmessageid import MessageFactory
 from zope.interface import implementer
 from zope.lifecycleevent import Attributes
 from zope.lifecycleevent import ObjectModifiedEvent
+
+import functools
+import re
 
 
 _ = MessageFactory('collective.flow')
@@ -104,6 +111,49 @@ class SubmissionEditForm(DefaultEditForm):
         )
 
     additionalSchemata = ()
+
+    def updateActions(self):
+        # Get currently available workflow actions (re-use from menu)
+        actions = {}
+        menu = getUtility(IBrowserMenu, name='plone_contentmenu_workflow')
+        for action in menu.getMenuItems(self.context, self.request):
+            item_id = action.get('extra', {}).get('id', u'') or u''
+            action_id = re.sub('^workflow-transition-(.*)', '\\1', item_id)
+            actions[action_id] = action
+
+        for action in ['advanced', 'policy']:  # blacklisted menuitems
+            if action in actions:
+                del actions[action]
+
+        for action_id, action in actions.iteritems():
+            new_button = button.Button(
+                name=re.sub('^workflow-transition-(.*)', '\\1', action_id),
+                title=u' '.join([
+                    translate(
+                        _(u'Save and'),
+                        context=self.request,
+                    ),
+                    translate(
+                        action['title'],
+                        domain='plone',
+                        context=self.request,
+                    ).lower(),
+                ]),
+            )
+            self.buttons += button.Buttons(new_button)
+            self.handlers.addHandler(
+                new_button,
+                button.Handler(
+                    new_button,
+                    functools.partial(self.redirect, action['action']),
+                ),
+            )
+        super(SubmissionEditForm, self).updateActions()
+
+    def redirect(self, url, form, button_action):
+        save = self.handlers.getHandler(self.buttons['save'])
+        save(form, button_action)
+        self.request.response.redirect(url)
 
     # noinspection PyPep8Naming
     def extractData(self, setErrors=True):
