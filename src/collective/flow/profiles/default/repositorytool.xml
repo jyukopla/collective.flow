@@ -2,7 +2,7 @@
 <repositorytool>
   <policymap>
     <type name="FlowSubmission">
-      <!-- custom versioning policy -->
+      <policy name="version_on_revert" />
     </type>
   </policymap>
 </repositorytool>
