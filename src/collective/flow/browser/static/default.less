@@ -134,3 +134,16 @@ ul.workflow-metromap {
     min-width: 100%;
   }
 }
+
+a.toggle-discussion-link, a.toggle-field-history-link {
+  &[aria-controls]:before{
+    display: inline-block;
+    content: ">";
+    margin-right: 1ex;
+    font-weight: bold;
+    transition: transform 0.1s linear;
+  }
+  &[aria-expanded="true"]:before{
+    transform: rotate(90deg);
+  }
+}

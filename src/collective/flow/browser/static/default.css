@@ -151,3 +151,15 @@ ul.workflow-metromap li form input {
   display: block;
   min-width: 100%;
 }
+a.toggle-discussion-link[aria-controls]:before,
+a.toggle-field-history-link[aria-controls]:before {
+  display: inline-block;
+  content: ">";
+  margin-right: 1ex;
+  font-weight: bold;
+  transition: transform 0.1s linear;
+}
+a.toggle-discussion-link[aria-expanded="true"]:before,
+a.toggle-field-history-link[aria-expanded="true"]:before {
+  transform: rotate(90deg);
+}
