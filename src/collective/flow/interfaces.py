@@ -222,6 +222,7 @@ class IFlowSubmission(IFlowSchema):
             vocabulary='collective.flow.submission.behaviors',
         ),
         readonly=True,
+        required=False,
     )
 
 
