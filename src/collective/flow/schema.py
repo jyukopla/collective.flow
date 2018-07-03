@@ -21,9 +21,12 @@ from plone.supermodel.interfaces import ISchemaPolicy
 from plone.supermodel.interfaces import XML_NAMESPACE
 from plone.supermodel.utils import ns
 from venusianconfiguration import configure
+from zope.annotation import IAnnotations
 from zope.component import adapter
 from zope.event import notify
 from zope.globalrequest import getRequest
+from zope.i18n import interpolate as i18n_interpolate
+from zope.i18n import translate
 from zope.interface import implementedBy
 from zope.interface import implementer
 from zope.interface.declarations import getObjectSpecification
@@ -36,7 +39,6 @@ from zope.schema import Object
 import hashlib
 import logging
 import threading
-import zope.i18n
 
 
 logger = logging.getLogger('collective.flow')
@@ -217,9 +219,18 @@ class FlowSchemaSpecificationDescriptor(ObjectSpecificationDescriptor):
 
     # noinspection PyProtectedMember
     def __get__(self, inst, cls=None):
-
         if inst is None:
             return getObjectSpecification(cls)
+
+        request = getRequest()
+        annotations = IAnnotations(request)
+        digest = inst.schema_digest
+
+        # Return cached spec from request
+        if not getattr(self, '__recursion__', False):
+            spec = annotations.get(self.__class__.__name__ + '.' + digest)
+            if spec is not None:
+                return spec
 
         spec = getattr(inst, '__provides__', None)
         if spec is None:
@@ -244,6 +255,9 @@ class FlowSchemaSpecificationDescriptor(ObjectSpecificationDescriptor):
             del self.__recursion__
 
         spec = Implements(schema, spec, *dynamically_provided)
+
+        # Cache spec into request
+        annotations[self.__class__.__name__ + '.' + digest] = spec
         return spec
 
 
@@ -339,12 +353,12 @@ def interpolate(template, ob, request=None):
             mapping[name] = ''
             continue
         try:
-            mapping[name] = zope.i18n.translate(
+            mapping[name] = translate(
                 bound.vocabulary.getTerm(value).title,
                 context=request,
             )
         except (AttributeError, LookupError):
             mapping[name] = value
     interpolator = IStringInterpolator(ob)
-    value = interpolator(zope.i18n.interpolate(template, mapping))
+    value = interpolator(i18n_interpolate(template, mapping))
     return value
