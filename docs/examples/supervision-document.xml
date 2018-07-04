@@ -47,39 +47,17 @@
       <description/>
       <required>False</required>
       <text>&lt;h2&gt;Tohtoriopiskelijan ohjausasiakirja&lt;/h2&gt;&#13;
-        &lt;p&gt;Ohjausasiakirjaan kirjataan tohtoriopiskelijan ja hänen
-        ohjaajiensa yhteisesti muodostama suunnitelma väitöskirjan (tai
-        lisensiaatintutkimuksen) ohjauksesta ja valmistumisen aikataulusta.
-        Ohjausasiakirja ja sen liitteet muodostavat yhdessä
-        tutkimussuunnitelman, jatko-opintosuunnitelman ja rahoitussuunnitelman
-        kanssa väitöskirjan (tai lisensiaatintutkimuksen) ohjauksen
-        dokumentaation. Ohjausasiakirja päivitetään vuosittain
-        lukuvuosi-ilmoittautumisen jälkeen sekä tarpeen mukaan.&lt;/p&gt;&#13;
-        &lt;p&gt;Ohjausasiakirjan tarkoitus on selkeyttää tohtoriopiskelijan ja
-        ohjaajan vastuita sekä edistää tohtoriopintojen suorittamista. Osa
-        tiedoista siirretään Jyväskylän yliopiston tietovarastoon yliopiston
-        sisäisiin tilastointi-, raportointi- ja kehittämistarkoituksiin.&lt;/p&gt;&#13;
-        &lt;p&gt;&lt;a title="Ohjeet"
-        href="https://uno.jyu.fi/fi/ohjekeskus/opintoasiat/jatko-opinnot/ohjausasiakirja"
-        data-linktype="external"
-        data-val="https://uno.jyu.fi/fi/ohjekeskus/opintoasiat/jatko-opinnot/ohjausasiakirja"&gt;Ohjausasiakirjaprosessin
-        ohjeet&lt;/a&gt;.&lt;/p&gt;&#13;
-        &lt;p&gt;&lt;a
-        href="https://www.jyu.fi/fi/tutkimus/tohtorikoulutus/opas/tehtavat"
-        data-linktype="external"
-        data-val="https://www.jyu.fi/fi/tutkimus/tohtorikoulutus/opas/tehtavat"&gt;Tohto­rio­pis­ke­li­jan,
-        oh­jaajan ja seu­ran­ta­ryh­män teh­tä­vät&lt;/a&gt;.&lt;/p&gt;&#13;
-        &lt;p&gt;&lt;a
-        href="https://www.jyu.fi/fi/tutkimus/tohtorikoulutus/opas/vaitoskirjavaatimukset"
-        data-linktype="external"
-        data-val="https://www.jyu.fi/fi/tutkimus/tohtorikoulutus/opas/vaitoskirjavaatimukset"&gt;Väitöskirjavaatimukset
-        Jyväskylän yliopistossa&lt;/a&gt;.&lt;br /&gt;       &lt;/p&gt;
-      </text>
+&lt;p&gt;Ohjausasiakirjaan kirjataan tohtoriopiskelijan ja hänen ohjaajiensa yhteisesti muodostama suunnitelma väitöskirjan (tai lisensiaatintutkimuksen) ohjauksesta ja valmistumisen aikataulusta. Ohjausasiakirja ja sen liitteet muodostavat yhdessä tutkimussuunnitelman, jatko-opintosuunnitelman ja rahoitussuunnitelman kanssa väitöskirjan (tai lisensiaatintutkimuksen) ohjauksen dokumentaation. Ohjausasiakirja päivitetään vuosittain lukuvuosi-ilmoittautumisen jälkeen sekä tarpeen mukaan.&lt;/p&gt;&#13;
+&lt;p&gt;Ohjausasiakirjan tarkoitus on selkeyttää tohtoriopiskelijan ja ohjaajan vastuita sekä edistää tohtoriopintojen suorittamista. Osa tiedoista siirretään Jyväskylän yliopiston tietovarastoon yliopiston sisäisiin tilastointi-, raportointi- ja kehittämistarkoituksiin.&lt;/p&gt;&#13;
+&lt;p&gt;&lt;a title="Ohjeet" href="https://uno.jyu.fi/fi/ohjekeskus/opintoasiat/jatko-opinnot/ohjausasiakirja" data-linktype="external" data-val="https://uno.jyu.fi/fi/ohjekeskus/opintoasiat/jatko-opinnot/ohjausasiakirja"&gt;Ohjausasiakirjaprosessin ohjeet&lt;/a&gt;.&lt;/p&gt;&#13;
+&lt;p&gt;&lt;a href="https://www.jyu.fi/fi/tutkimus/tohtorikoulutus/opas/tehtavat" data-linktype="external" data-val="https://www.jyu.fi/fi/tutkimus/tohtorikoulutus/opas/tehtavat"&gt;Liite 1. Tohto­rio­pis­ke­li­jan, oh­jaajan ja seu­ran­ta­ryh­män teh­tä­vät&lt;/a&gt;.&lt;/p&gt;&#13;
+&lt;p&gt;&lt;a href="https://www.jyu.fi/fi/tutkimus/tohtorikoulutus/opas/vaitoskirjavaatimukset" data-linktype="external" data-val="https://www.jyu.fi/fi/tutkimus/tohtorikoulutus/opas/vaitoskirjavaatimukset"&gt;Liite 2. Väitöskirjavaatimukset Jyväskylän yliopistossa&lt;/a&gt;.&lt;br /&gt;       &lt;/p&gt;</text>
       <title>Ohje</title>
     </field>
     <fieldset name="opiskelija" label="Tohtoriopiskelija">
       <field name="name" type="zope.schema.TextLine" form:mode="display">
-        <title>Nimi</title>
+        <description/>
+        <title>Opiskelija</title>
       </field>
       <field name="username" type="zope.schema.TextLine" form:mode="display">
         <title>Käyttäjätunnus</title>
@@ -100,24 +78,14 @@
         <values/>
       </field>
     </fieldset>
-    <fieldset name="tohtoriopinnot" label="Tohtoriopinnot">
-      <field name="student_help" type="collective.flow.fields.RichTextLabel">
+    <fieldset name="studies" label="Tohtoriopinnot">
+      <field name="studies_periods_help" type="collective.flow.fields.RichTextLabel">
         <description/>
         <required>False</required>
-        <text>&lt;p class="western" style="margin-bottom: 0cm; line-height:
-          100%;"&gt;Jos opiskelusi on
-          osa-aikaista, valitse omaa tilannettasi parhaiten kuvaava vaihtoehto
-          (kokopäiväinen opiskelu tarkoittaa n. 1600 h/vuosi tai n. 36
-          h/viikko).&lt;/p&gt;&#13;
-          &lt;p&gt;Huomaa, että tämä ei ole lukuvuosi-ilmoittautuminen läsnä-
-          tai poissaolevaksi! Lukuvuosi-ilmoittautuminen tehdään &lt;a
-          title="Oili-ilmoittautumispalvelu" href="https://oili.csc.fi/"
-          data-linktype="external" data-val="https://oili.csc.fi/"&gt;OILI-ilmoittautumispalvelussa&lt;/a&gt;.&lt;/p&gt;
-        </text>
+        <text>&lt;p&gt;Valitse vaihtoehto ”opiskelen kokopäiväisesti”, jos olet kokoaikaisessa työsuhteessa yliopistoon tohtorikoulutettava -nimikkeellä tai sinulla on muu kokopäiväisiin tohtoriopintoihin tarkoitettu rahoitus (esim. tutkimusapuraha). Jos opiskelusi on osa-aikaista, valitse omaa tilannettasi parhaiten kuvaava vaihtoehto (kokopäiväinen opiskelu tarkoittaa n. 1600 h/vuosi tai n. 36 h/viikko).&lt;/p&gt;</text>
         <title>Ohje</title>
       </field>
       <field name="autumn" type="zope.schema.Choice">
-        <form:widget type="z3c.form.browser.radio.RadioFieldWidget" />
         <description/>
         <title>Syyslukukausi</title>
         <values>
@@ -125,11 +93,11 @@
           <element>osa-aikaisesti (50-75 %)</element>
           <element>osa-aikaisesti (25-50 %)</element>
           <element>osa-aikaisesti (0-25 %)</element>
-          <element>En opiskele</element>
+          <element>en opiskele</element>
         </values>
+        <form:widget type="z3c.form.browser.radio.RadioFieldWidget"/>
       </field>
       <field name="spring" type="zope.schema.Choice">
-        <form:widget type="z3c.form.browser.radio.RadioFieldWidget" />
         <description/>
         <title>Kevätlukukausi</title>
         <values>
@@ -137,47 +105,61 @@
           <element>osa-aikaisesti (50-75 %)</element>
           <element>osa-aikaisesti (25-50 %)</element>
           <element>osa-aikaisesti (0-25 %)</element>
-          <element>En opiskele</element>
+          <element>en opiskele</element>
         </values>
+        <form:widget type="z3c.form.browser.radio.RadioFieldWidget"/>
+      </field>
+      <field name="studies_periods_footnote" type="collective.flow.fields.RichTextLabel">
+        <description/>
+        <required>False</required>
+        <text>&lt;p&gt;Huomaa, että tämä ei ole lukuvuosi-ilmoittautuminen läsnä- tai poissaolevaksi! Lukuvuosi-ilmoittautuminen tehdään &lt;a href="https://opiskelu.jyu.fi/fi/koulutuspalvelut/jatko-opiskelijoiden-ilmoittautuminen" data-linktype="external" data-val="https://opiskelu.jyu.fi/fi/koulutuspalvelut/jatko-opiskelijoiden-ilmoittautuminen"&gt;OILI-ilmoittautumispalvelussa&lt;/a&gt;.&lt;/p&gt;</text>
+        <title>student_help2</title>
       </field>
     </fieldset>
     <fieldset name="supervision" label="Ohjaussuhde">
       <field name="reviewers" type="zope.schema.Choice">
-        <form:widget type="plone.app.z3cform.widget.AjaxSelectFieldWidget" />
-        <title>Vastuulliset ohjaajat</title>
+        <description/>
+        <title>Vastuullinen ohjaaja</title>
         <vocabulary>plone.app.vocabularies.Users</vocabulary>
-        <required>True</required>
+        <form:widget type="plone.app.z3cform.widget.AjaxSelectFieldWidget"/>
       </field>
       <field name="supervision_start" type="zope.schema.Date">
-        <description>Ajankohta, jolloin tiedekunta on vahvistanut
-          vastuullisen ohjaajan. Jos tarkka päivä ei ole tiedossa, valitse
-          kuukauden ensimmäinen päivä.
-        </description>
-        <required>True</required>
+        <description>Ajankohta, jolloin tiedekunta on vahvistanut vastuullisen ohjaajan. Jos et tiedä tarkkaa päivämäärää, valitse kuukauden ensimmäinen päivä.</description>
         <title>Ohjaussuhteen alkamisajankohta</title>
       </field>
-      <field name="supervisors_secondary" type="zope.schema.List">
+      <field name="readers" type="zope.schema.Set">
+        <description/>
+        <required>False</required>
+        <title>Muut ohjaajat Jyväskylän yliopistossa</title>
+        <form:widget type="plone.app.z3cform.widget.AjaxSelectFieldWidget"/>
+        <value_type type="zope.schema.Choice">
+          <vocabulary>plone.app.vocabularies.Users</vocabulary>
+        </value_type>
+      </field>
+      <field name="supervision_others" type="zope.schema.List">
+        <min_length>3</min_length>
         <required>False</required>
         <title>Muut ohjaajat</title>
-        <min_length>3</min_length>
         <value_type type="zope.schema.Object">
           <schema>collective.flow.schema.dynamic.supervisors_secondary</schema>
         </value_type>
       </field>
       <field name="supervision_division" type="zope.schema.Text">
         <description/>
-        <required>False</required>
-        <title>Ohjaajien välinen työnjako</title>
+        <title>Ohjaajien välisestä työnjaosta sovittua</title>
       </field>
       <field name="supervision_meetings" type="zope.schema.Text">
-        <description>tapaamistiheys, kuka tekee aloitteen tapaamisen
-          järjestämiseksi yms.
-        </description>
-        <required>False</required>
+        <description>Tapaamistiheys, kuka tekee aloitteen tapaamisen järjestämiseksi yms.</description>
         <title>Ohjaustapaamisista sovittua</title>
       </field>
     </fieldset>
     <fieldset name="follow_up_group" label="Seurantaryhmä">
+      <field name="follow_up_group_help" type="collective.flow.fields.RichTextLabel">
+        <description/>
+        <required>False</required>
+        <text>&lt;p&gt;Anna tutkimusryhmän ulkopuolisten jäsenten nimet TAI kuvaa mikä taho toimii &lt;a href="https://uno.jyu.fi/fi/ohjeet/opintoasiat/jatko-opinnot/seurantaryhmat" data-linktype="external" data-val="https://uno.jyu.fi/fi/ohjeet/opintoasiat/jatko-opinnot/seurantaryhmat"&gt;seurantaryhmänä&lt;/a&gt;.&lt;/p&gt;</text>
+        <title>follow_up_group_help</title>
+      </field>
       <field name="follow_up_group_description" type="zope.schema.Text">
         <description>Anna tutkimusryhmän ulkopuolisten jäsenten nimet TAI kuvaa
           mikä taho toimii seurantaryhmänä.
@@ -188,164 +170,117 @@
     <fieldset name="dissertation" label="Väitöskirja">
       <field name="title" type="zope.schema.TextLine">
         <description/>
-        <required>False</required>
-        <title>Väitöskirjan otsikko</title>
+        <title>Otsikko</title>
       </field>
       <field name="estimated_completion_date" type="zope.schema.TextLine">
-        <description>Esim. 12/2025</description>
-        <required>False</required>
+        <description/>
         <title>Arvioitu valmistumisaika</title>
       </field>
       <field name="etchical_review" type="zope.schema.Choice">
-        <form:widget type="z3c.form.browser.radio.RadioFieldWidget" />
-        <description>Väitöskirjojen ohjaajat vastaavat siitä, että
-          väitöskirjoissa noudatetaan eettisiä periaatteita. Mikäli
-          väitöskirjatutkimus suunnitellaan toteutettavaksi tavalla, joka
-          kuuluu ennakkoarviointia edellyttävien tutkimusasetelmien ryhmään,
-          ohjaajan tulee hakea ennakkoarviointia eettiseltä toimikunnalta.
-        </description>
-        <required>False</required>
+        <description>Väitöskirjojen ohjaajat vastaavat siitä, että väitöskirjoissa noudatetaan eettisiä periaatteita.</description>
         <title>Eettinen ennakkoarviointi</title>
         <values>
           <element>Eettistä ennakkoarviointia haetaan</element>
           <element>Eettinen ennakkoarviointi on tehty</element>
           <element>Eettinen ennakkoarviointi ei ole tarpeen</element>
         </values>
+        <form:widget type="z3c.form.browser.radio.RadioFieldWidget"/>
       </field>
       <field name="ethical_review_help" type="collective.flow.fields.RichTextLabel">
         <description/>
         <required>False</required>
-        <text>&lt;p&gt;Lisätietoja &lt;a title="Eettinen toimikunta"
-          href="https://www.jyu.fi/hallinto/toimikunnat/eettinentoimikunta"
-          data-linktype="external"
-          data-val="https://www.jyu.fi/hallinto/toimikunnat/eettinentoimikunta"&gt;eettisestä
-          ennakkoarvioinnista&lt;/a&gt;.&lt;/p&gt;&#13;
-          &lt;p&gt;Lisätietoja tutkimusaineistojen hallinnasta LINKKI&lt;/p&gt;
-        </text>
+        <text>&lt;p&gt;Mikäli väitöskirjatutkimus suunnitellaan toteutettavaksi tavalla, joka kuuluu ennakkoarviointia edellyttävien tutkimusasetelmien ryhmään, ohjaajan tulee hakea ennakkoarviointia &lt;a href="https://www.jyu.fi/hallinto/toimikunnat/eettinentoimikunta" data-linktype="external" data-val="https://www.jyu.fi/hallinto/toimikunnat/eettinentoimikunta"&gt;eettiseltä toimikunnalta&lt;/a&gt;.&lt;/p&gt;</text>
         <title>Ohje</title>
       </field>
       <field name="research_data_management" type="zope.schema.Choice">
-        <form:widget type="z3c.form.browser.radio.RadioFieldWidget" />
         <description/>
-        <required>False</required>
         <title>Tutkimusaineiston hallinta</title>
         <values>
           <element>Aineiston hallintasuunnitelma laaditaan</element>
           <element>Aineiston hallintasuunnitelma on tehty</element>
-          <element>Väitöskirjatutkimuksessa noudatetaan laajemman
-            tutkimushankkeen aineiston hallintasuunnitelmaa
-          </element>
+          <element>Väitöskirjatutkimuksessa noudatetaan laajemman tutkimushankkeen aineiston hallintasuunnitelmaa</element>
           <element>Aineiston hallintasuunnitelma ei ole tarpeen</element>
         </values>
+        <form:widget type="z3c.form.browser.radio.RadioFieldWidget"/>
       </field>
       <field name="research_data_management_help" type="collective.flow.fields.RichTextLabel">
         <description/>
         <required>False</required>
-        <text>&lt;p&gt;Tekijyyden periaatteista sovittua (artikkeliväitöskirjat
-          ja yhteisartikkelit)&lt;/p&gt;&#13;
-          &lt;p&gt;Väitöstutkimukselle relevantit kysymykset esim. millä
-          periaatteella yhteisartikkeleiden tekijät ja kirjoittajaluetteloon
-          merkittyjen tekijöiden järjestys määräytyvät? Miten väittelijän
-          itsenäisen työn osuus kuvataan väitöskirjassa jne. &lt;/p&gt;&#13;
-          &lt;p&gt;Tutkimuseettisen neuvottelukunnan &lt;a title="Suositus"
-          href="http://www.tenk.fi/fi/tenkin-suositus-tekijyydest%C3%A4-sopimiseksi"
-          data-linktype="external"
-          data-val="http://www.tenk.fi/fi/tenkin-suositus-tekijyydest%C3%A4-sopimiseksi"&gt;suositus
-          tieteellisten julkaisujen tekijyydestä sopimiseksi&lt;/a&gt;.&lt;/p&gt;
-        </text>
+        <text>&lt;p&gt;Yhteiskuntatieteellisen tietoarkiston &lt;a href="http://www.fsd.uta.fi/aineistonhallinta/fi/" data-linktype="external" data-val="http://www.fsd.uta.fi/aineistonhallinta/fi/"&gt;Aineistonhallinnan käsikirja&lt;/a&gt;&lt;/p&gt;</text>
         <title>Ohje</title>
+      </field>
+      <field name="periaattteista_sovittua" type="zope.schema.Text">
+        <description>Väitöstutkimukselle relevantit kysymykset esim. millä periaatteella yhteisartikkeleiden tekijät ja kirjoittajaluetteloon merkittyjen tekijöiden järjestys määräytyvät? Miten väittelijän itsenäisen työn osuus kuvataan väitöskirjassa jne.</description>
+        <required>False</required>
+        <title>Tekijyyden periaatteista sovittua (artikkeliväitöskirjat ja yhteisartikkelit)</title>
+      </field>
+      <field name="periaatteista_sovittua_ohje" type="collective.flow.fields.RichTextLabel">
+        <description/>
+        <required>False</required>
+        <text>&lt;p&gt;Tutkimuseettisen neuvottelukunnan &lt;a href="http://www.tenk.fi/fi/tenkin-ohjeistot" data-linktype="external" data-val="http://www.tenk.fi/fi/tenkin-ohjeistot"&gt;Suositus tieteellisten julkaisujen tekijyydestä sopimiseksi&lt;/a&gt;&lt;/p&gt;</text>
+        <title>periaatteista sovittua ohje</title>
+      </field>
+      <field name="muuta" type="zope.schema.Text">
+        <description>Tähän kenttään voitte kirjoittaa muistiin muita ohjauksesta sovittuja asioita, jotka haluatte tallentaa ohjausasiakirjaa.</description>
+        <required>False</required>
+        <title>Muuta väitöskirjan tai tohtoriopintojen ohjauksesta sovittua</title>
       </field>
     </fieldset>
-    <fieldset name="degree" label="Tohtorintutkinto">
-      <field name="degree_aim" type="zope.schema.Choice">
-        <form:widget type="z3c.form.browser.radio.RadioFieldWidget" />
-        <description>Väitöskirja (tai lisensiaatintutkimus) sisältyy
-          tohtorintutkintoon (tai lisensiaatintutkintoon).
-        </description>
-        <required>False</required>
+    <fieldset name="degree" label="Tohtorintutkinto" description="Väitöskirja (tai lisensiaatintutkimus) sisältyy tohtorintutkintoon (tai lisensiaatintutkintoon).">
+      <field name="degree_compensation" type="zope.schema.Choice">
+        <description/>
         <title>Tavoitteena on suorittaa tutkinto</title>
         <values>
-          <element>joka on yhden tiedekunnan sisäinen. Opinnäytetyön ohjaajat
-            edustavat yhtä Jyväskylän yliopiston tiedekuntaa. Ohjaajia voi olla
-            myös muista yliopistoista tai tutkimuslaitoksista.
-          </element>
-          <element>joka on kahden tai useamman tiedekunnan välinen.
-            Opinnäytetyön ohjaajat edustavat kahta tai useampaa Jyväskylän
-            yliopiston tiedekuntaa tai erillislaitosta. Ohjaajia voi olla myös
-            muista yliopistoista tai tutkimuslaitoksista.
-          </element>
-          <element>joka suoritetaan kansainvälisessä yhteistutkinto-ohjelmassa.
-            Tutkintoon johtava koulutusohjelma, jonka yksi tai useampi
-            Jyväskylän yliopiston tiedekunnista suunnittelee ja toteuttaa
-            yhdessä yhden tai useamman ulkomaisen yliopiston yksikön kanssa.
-            Yhteistutkinto-ohjelman (joint degree programme) suorittaneelle
-            tohtoriopiskelijalle myönnetään joko yhden tai useamman yliopiston
-            tutkinto sekä annetaan vastaavasti yksi tai useampi
-            tutkintotodistus. Yhteistutkinto-ohjelmasta, joka johtaa kahden
-            tutkinnon ja kahden virallisen tutkintotodistuksen myöntämiseen
-            samojen opintojen pohjalta, voidaan käyttää myös nimitystä
-            kaksoistutkinto-ohjelma (double degree programme).
-          </element>
-          <element>jonka kansainvälisestä yhteisohjausjärjestelystä on sovittu
-            cotutelle -sopimuksella. Opiskelijakohtainen sopimus, yksittäisen
-            tohtoriopiskelijan yhteisohjauksesta ja tohtoriopintojen
-            järjestämisestä, joka pääsääntöisesti solmitaan silloin kun
-            yhteisohjaus ja tohtoriopinnot johtavat kaksoistutkinnon (double
-            degree) myöntämiseen.
-          </element>
+          <element>joka on yhden tiedekunnan sisäinen. Opinnäytetyön ohjaajat edustavat yhtä Jyväskylän yliopiston tiedekuntaa. Ohjaajia voi olla myös muista yliopistoista tai tutkimuslaitoksista.</element>
+          <element>joka on kahden tai useamman tiedekunnan välinen. Opinnäytetyön ohjaajat edustavat kahta tai useampaa Jyväskylän yliopiston tiedekuntaa tai erillislaitosta. Ohjaajia voi olla myös muista yliopistoista tai tutkimuslaitoksista.</element>
         </values>
+        <form:widget type="z3c.form.browser.radio.RadioFieldWidget"/>
       </field>
-      <field name="degree_aim_help" type="collective.flow.fields.RichTextLabel">
+      <field name="degree_compensation_help" type="collective.flow.fields.RichTextLabel">
+        <description/>
         <required>False</required>
-        <text>&lt;p&gt;Mikäli suoritettava tutkinto on kahden tai useamman
-          Jyväskylän yliopiston tiedekunnan välinen: Tiedekunnat tai
-          erillislaitokset, joiden edustajat osallistuvat
-          jatko-opiskeluoikeuden myöntäneen tiedekunnan ohella opinnäytetyön
-          ohjaukseen.&lt;br /&gt;&lt;br /&gt;&lt;a
-          title="Kompensaatiomenettely"
-          href="https://uno.jyu.fi/fi/ohjeet-ja-palvelut/ohjekeskus/opintoasiat/jatko-opinnot/kompesaatiomenettely"
-          data-linktype="external"
-          data-val="https://uno.jyu.fi/fi/ohjeet-ja-palvelut/ohjekeskus/opintoasiat/jatko-opinnot/kompesaatiomenettely"&gt;Kompensaatiomenettelyohje&lt;/a&gt;&lt;/p&gt;
-        </text>
+        <text>
+&lt;p&gt;&lt;a href="https://uno.jyu.fi/fi/ohjeet/opintoasiat/jatko-opinnot/kompesaatiomenettely" data-linktype="external" data-val="https://uno.jyu.fi/fi/ohjeet/opintoasiat/jatko-opinnot/kompesaatiomenettely"&gt;Lisätietoja&lt;/a&gt;&lt;/p&gt;</text>
         <title>Ohje</title>
       </field>
-      <field name="supervisors_departments" type="zope.schema.List">
+      <field name="degree_compensation_division" type="zope.schema.List">
+        <min_length>3</min_length>
         <required>False</required>
         <title>Tiedekunta tai erillislaitos</title>
-        <min_length>3</min_length>
         <value_type type="zope.schema.Object">
-          <schema>collective.flow.schema.dynamic.supervisors_departments</schema>
+          <schema>collective.flow.schema.dynamic.degree_compensation_organisations</schema>
         </value_type>
+      </field>
+      <field name="international_degree_programme" type="zope.schema.Bool">
+        <description>Tutkintoon johtava koulutusohjelma, jonka yksi tai useampi Jyväskylän yliopiston tiedekunnista suunnittelee ja toteuttaa yhdessä yhden tai useamman ulkomaisen yliopiston yksikön kanssa. Yhteistutkinto-ohjelman (joint degree programme) suorittaneelle tohtoriopiskelijalle myönnetään joko yhden tai useamman yliopiston tutkinto sekä annetaan vastaavasti yksi tai useampi tutkintotodistus. Yhteistutkinto-ohjelmasta, joka johtaa kahden tutkinnon ja kahden virallisen tutkintotodistuksen myöntämiseen samojen opintojen pohjalta, voidaan käyttää myös nimitystä kaksoistutkinto-ohjelma (double degree programme).</description>
+        <title>Tutkinto suoritetaan kansainvälisessä yhteistutkinto-ohjelmassa</title>
+        <form:widget type="z3c.form.browser.radio.RadioFieldWidget"/>
+      </field>
+      <field name="cotutelle" type="zope.schema.Bool">
+        <description>Opiskelijakohtainen sopimus, yksittäisen tohtoriopiskelijan yhteisohjauksesta ja tohtoriopintojen järjestämisestä, joka pääsääntöisesti solmitaan silloin kun yhteisohjaus ja tohtoriopinnot johtavat kaksoistutkinnon (double degree) myöntämiseen.</description>
+        <title>Tutkinnon kansainvälisestä yhteisohjausjärjestelystä on sovittu cotutelle sopimuksella</title>
+        <form:widget type="z3c.form.browser.radio.RadioFieldWidget"/>
       </field>
     </fieldset>
     <fieldset name="signatures" label="Allekirjoitukset">
-      <field name="signatures_introduction" type="collective.flow.fields.RichTextLabel">
+      <field name="vahvistaminen_ohje" type="collective.flow.fields.RichTextLabel">
         <description/>
         <required>False</required>
-        <text>&lt;p&gt;Allekirjoitukset – Signatures&lt;/p&gt;&#13;
-          &lt;p&gt;Tohtoriopiskelija ja ohjaajat vahvistavat ohjaussuhteen
-          jatkumisen allekirjoittamalla ohjausasiakirjan.&lt;/p&gt;&#13;
-          &lt;p&gt;Ohjaaja voi harkintansa mukaan kieltäytyä allekirjoittamasta
-          ohjausasiakirjan sillä perusteella, että tohtoriopiskelijan
-          tohtoriopinnot ja tutkimustyö eivät ole riittävästi edenneet
-          edellisen lukuvuoden aikana. Ohjaajan, joka kieltäytyy vahvistamasta
-          ohjausasiakirjaa allekirjoituksellaan, tulee käynnistää
-          jatko-opiskeluoikeuden passivointiprosessi tai ottaa yhteyttä
-          opiskelijan vastuulliseen ohjaajaan prosessin käynnistämiseksi. &lt;a
-          title="Menettelyohje passivointiin"
-          href="https://uno.jyu.fi/fi/ohjeet-ja-palvelut/ohjekeskus/opintoasiat/jatko-opinnot/passivointi"
-          data-linktype="external"
-          data-val="https://uno.jyu.fi/fi/ohjeet-ja-palvelut/ohjekeskus/opintoasiat/jatko-opinnot/passivointi"&gt;Menettelyohje&lt;/a&gt;.&lt;/p&gt;&#13;
-          &lt;p&gt;&lt;strong&gt;Olemme yhdessä keskustelleet tähän
-          ohjausasiakirjaan kirjatuista asioista ja perehtyneet sen liitteessä
-          1 mainittuihin tohtoriopiskelijan, ohjaajan ja seurantaryhmän
-          tehtäviin sekä liitteessä 2 esitettyihin väitöskirjavaatimuksiin.&lt;/strong&gt;&lt;/p&gt;
-        </text>
-        <title>Ohje</title>
+        <text>&lt;p&gt;Valitse &lt;strong&gt;Tallenna&lt;/strong&gt;, jos haluat lisätä ohjausasiakirjaan kommentteja ennen sen vahvistamista.&lt;/p&gt;&#13;
+&lt;p&gt;Ohjausasiakirjapalvelussa kommenteista muodostuu keskustelu, joka näkyy kaikille ohjausasiakirjaan liitetyille henkilöille (opiskelija, ohjaajat ja tiedekunnan nimeämä tarkastaja).&lt;/p&gt;&#13;
+&lt;p&gt;Valitse &lt;strong&gt;Vahvista&lt;/strong&gt;, kun ohjausasiakirja on valmis vahvistettavaksi. Voit lisätä asiakirjaan kommentin myös tässä vaiheessa.&lt;/p&gt;&#13;
+&lt;p&gt;Valitsemalla &lt;strong&gt;Vahvista&lt;/strong&gt; vahvistat, että &lt;strong&gt;Olemme yhdessä keskustelleet tähän ohjausasiakirjaan kirjatuista asioista ja perehtyneet sen &lt;a href="https://www.jyu.fi/fi/tutkimus/tohtorikoulutus/opas/tehtavat" data-linktype="external" data-val="https://www.jyu.fi/fi/tutkimus/tohtorikoulutus/opas/tehtavat"&gt;liitteessä 1&lt;/a&gt; mainittuihin tohtoriopiskelijan, ohjaajan ja seurantaryhmän tehtäviin sekä &lt;a href="https://www.jyu.fi/fi/tutkimus/tohtorikoulutus/opas/vaitoskirjavaatimukset" data-linktype="external" data-val="https://www.jyu.fi/fi/tutkimus/tohtorikoulutus/opas/vaitoskirjavaatimukset"&gt;liitteessä 2&lt;/a&gt; esitettyihin väitöskirjavaatimuksiin&lt;/strong&gt;.&lt;/p&gt;</text>
+        <title>Kommentointi ja vahvistaminen</title>
+      </field>
+      <field name="ohasdfadfso_ohje_reviewer" type="collective.flow.fields.RichTextLabel">
+        <description/>
+        <required>False</required>
+        <text>&lt;p&gt;Vastuullinen ohjaaja voi harkintansa mukaan kieltäytyä vahvistamasta ohjausasiakirjaa sillä perusteella, että tohtoriopiskelijan tohtoriopinnot ja tutkimustyö eivät ole riittävästi edenneet edellisen lukuvuoden aikana. Vastuullisen ohjaajan, joka ei vahvista ohjausasiakirjaa, tulee käynnistää &lt;a href="https://uno.jyu.fi/fi/ohjeet/opintoasiat/jatko-opinnot/passivointi" data-linktype="external" data-val="https://uno.jyu.fi/fi/ohjeet/opintoasiat/jatko-opinnot/passivointi"&gt;jatko-opiskeluoikeuden passivointiprosessi&lt;/a&gt;.&lt;/p&gt;</text>
+        <title>ohasdfadfso_ohje_reviewer</title>
       </field>
     </fieldset>
   </schema>
-  <schema name="supervisors_secondary" based-on="collective.flow.interfaces.IFlowSchemaDynamic">
+<schema name="supervisors_secondary" based-on="collective.flow.interfaces.IFlowSchemaDynamic">
     <field name="name" type="zope.schema.TextLine">
       <description>Sukunimi, Etunimi</description>
       <required>False</required>
@@ -357,25 +292,25 @@
       <title>Sähköpostiosoite</title>
     </field>
     <field name="affiliation" type="zope.schema.TextLine">
+      <description>Jos muu kuin Jyväskylän yliopisto</description>
       <required>False</required>
       <title>Affiliaatio</title>
-      <description>Jos muu kuin Jyväskylän yliopisto</description>
     </field>
   </schema>
-  <schema name="supervisors_departments" based-on="collective.flow.interfaces.IFlowSchemaDynamic">
+<schema name="degree_compensation_organisations" based-on="collective.flow.interfaces.IFlowSchemaDynamic">
     <field name="name" type="zope.schema.Choice">
-      <title>Tiedekunta tai erillislaitos joka osallistuu ohjaukseen</title>
-      <vocabulary>jyu.vocabularies.faculties.available</vocabulary>
       <required>False</required>
+      <title>Tiedekunta tai erillislaitos joka osallistuu ohjaukseen</title>
+      <vocabulary>jyu.vocabularies.organisations.available</vocabulary>
     </field>
     <field name="share" type="zope.schema.Choice">
       <required>False</required>
       <title>Arvioitu suhteellinen osuus ohjauksesta</title>
       <values>
-        <element value="25">n. 25 %</element>
-        <element value="50">n. 50 %</element>
-        <element value="75">n. 75 %</element>
-        <element value="100">n. 100 %</element>
+        <element>n. 25 %</element>
+        <element>n. 50 %</element>
+        <element>n. 75 %</element>
+        <element>n. 100 %</element>
       </values>
     </field>
   </schema>
