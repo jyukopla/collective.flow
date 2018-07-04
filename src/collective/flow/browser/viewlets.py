@@ -97,7 +97,8 @@ configure.browser.viewlet(
     manager=IBelowContentBody,
     permission='zope2.View',
     template=os.path.join(
-        'viewlets_templates', 'submission_actions_viewlet.pt'
+        'viewlets_templates',
+        'submission_actions_viewlet.pt',
     ),
 )
 @implementer(IViewlet)

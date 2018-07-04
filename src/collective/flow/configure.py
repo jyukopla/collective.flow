@@ -131,9 +131,9 @@ configure.gs.upgradeDepends(
     destination='1006',
     sortkey='1005',
     title=u'Upgrade collective.flow from 1005 to 1006',
-    description=u'Update workflow',
+    description=u'Update workflow and viewlet order',
     profile='collective.flow:default',
-    import_steps='repositorytool workflow',
+    import_steps='repositorytool workflow viewlets',
 )
 
 configure.gs.registerProfile(
