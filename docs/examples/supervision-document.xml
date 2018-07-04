@@ -42,7 +42,41 @@
       </values>
     </field>
   </schema>
-  <schema based-on="collective.flow.interfaces.IFlowSchemaDynamic">
+  <schema name="supervisors_secondary" based-on="collective.flow.interfaces.IFlowSchemaDynamic">
+    <field name="name" type="zope.schema.TextLine">
+      <description>Sukunimi, Etunimi</description>
+      <required>False</required>
+      <title>Nimi</title>
+    </field>
+    <field name="email" type="plone.schema.email.Email">
+      <description>Työsähköposti</description>
+      <required>False</required>
+      <title>Sähköpostiosoite</title>
+    </field>
+    <field name="affiliation" type="zope.schema.TextLine">
+      <description>Jos muu kuin Jyväskylän yliopisto</description>
+      <required>False</required>
+      <title>Affiliaatio</title>
+    </field>
+  </schema>
+<schema name="degree_compensation_organisations" based-on="collective.flow.interfaces.IFlowSchemaDynamic">
+    <field name="name" type="zope.schema.Choice">
+      <required>False</required>
+      <title>Tiedekunta tai erillislaitos joka osallistuu ohjaukseen</title>
+      <vocabulary>jyu.vocabularies.organisations.available</vocabulary>
+    </field>
+    <field name="share" type="zope.schema.Choice">
+      <required>False</required>
+      <title>Arvioitu suhteellinen osuus ohjauksesta</title>
+      <values>
+        <element>n. 25 %</element>
+        <element>n. 50 %</element>
+        <element>n. 75 %</element>
+        <element>n. 100 %</element>
+      </values>
+    </field>
+  </schema>
+<schema based-on="collective.flow.interfaces.IFlowSchemaDynamic">
     <field name="introduction" type="collective.flow.fields.RichTextLabel">
       <description/>
       <required>False</required>
@@ -131,17 +165,17 @@
         <description/>
         <required>False</required>
         <title>Muut ohjaajat Jyväskylän yliopistossa</title>
-        <form:widget type="plone.app.z3cform.widget.AjaxSelectFieldWidget"/>
         <value_type type="zope.schema.Choice">
           <vocabulary>plone.app.vocabularies.Users</vocabulary>
         </value_type>
+        <form:widget type="plone.app.z3cform.widget.AjaxSelectFieldWidget"/>
       </field>
       <field name="supervision_others" type="zope.schema.List">
         <min_length>3</min_length>
         <required>False</required>
         <title>Muut ohjaajat</title>
         <value_type type="zope.schema.Object">
-          <schema>collective.flow.schema.dynamic.supervisors_secondary</schema>
+          <schema>collective.flow.schema.dynamic.supervision_others</schema>
         </value_type>
       </field>
       <field name="supervision_division" type="zope.schema.Text">
@@ -161,9 +195,7 @@
         <title>follow_up_group_help</title>
       </field>
       <field name="follow_up_group_description" type="zope.schema.Text">
-        <description>Anna tutkimusryhmän ulkopuolisten jäsenten nimet TAI kuvaa
-          mikä taho toimii seurantaryhmänä.
-        </description>
+        <description/>
         <title>Seurantaryhmän kuvaus</title>
       </field>
     </fieldset>
@@ -248,7 +280,7 @@
         <required>False</required>
         <title>Tiedekunta tai erillislaitos</title>
         <value_type type="zope.schema.Object">
-          <schema>collective.flow.schema.dynamic.degree_compensation_organisations</schema>
+          <schema>collective.flow.schema.dynamic.degree_compensation_division</schema>
         </value_type>
       </field>
       <field name="international_degree_programme" type="zope.schema.Bool">
@@ -262,15 +294,14 @@
         <form:widget type="z3c.form.browser.radio.RadioFieldWidget"/>
       </field>
     </fieldset>
-    <fieldset name="signatures" label="Allekirjoitukset">
+    <fieldset name="confirmaton" label="Vahvistamisprosessi">
       <field name="vahvistaminen_ohje" type="collective.flow.fields.RichTextLabel">
         <description/>
         <required>False</required>
-        <text>&lt;p&gt;Valitse &lt;strong&gt;Tallenna&lt;/strong&gt;, jos haluat lisätä ohjausasiakirjaan kommentteja ennen sen vahvistamista.&lt;/p&gt;&#13;
-&lt;p&gt;Ohjausasiakirjapalvelussa kommenteista muodostuu keskustelu, joka näkyy kaikille ohjausasiakirjaan liitetyille henkilöille (opiskelija, ohjaajat ja tiedekunnan nimeämä tarkastaja).&lt;/p&gt;&#13;
-&lt;p&gt;Valitse &lt;strong&gt;Vahvista&lt;/strong&gt;, kun ohjausasiakirja on valmis vahvistettavaksi. Voit lisätä asiakirjaan kommentin myös tässä vaiheessa.&lt;/p&gt;&#13;
-&lt;p&gt;Valitsemalla &lt;strong&gt;Vahvista&lt;/strong&gt; vahvistat, että &lt;strong&gt;Olemme yhdessä keskustelleet tähän ohjausasiakirjaan kirjatuista asioista ja perehtyneet sen &lt;a href="https://www.jyu.fi/fi/tutkimus/tohtorikoulutus/opas/tehtavat" data-linktype="external" data-val="https://www.jyu.fi/fi/tutkimus/tohtorikoulutus/opas/tehtavat"&gt;liitteessä 1&lt;/a&gt; mainittuihin tohtoriopiskelijan, ohjaajan ja seurantaryhmän tehtäviin sekä &lt;a href="https://www.jyu.fi/fi/tutkimus/tohtorikoulutus/opas/vaitoskirjavaatimukset" data-linktype="external" data-val="https://www.jyu.fi/fi/tutkimus/tohtorikoulutus/opas/vaitoskirjavaatimukset"&gt;liitteessä 2&lt;/a&gt; esitettyihin väitöskirjavaatimuksiin&lt;/strong&gt;.&lt;/p&gt;</text>
-        <title>Kommentointi ja vahvistaminen</title>
+        <text>&lt;p&gt;Valitse &lt;strong&gt;Tallenna ja vahvista&lt;/strong&gt;, kun ohjausasiakirja on valmis vahvistettavaksi. Voit valita &lt;strong&gt;Vahvista&lt;/strong&gt; myös tallentamisen jälkeen.&lt;/p&gt;&#13;
+&lt;p&gt;Valitsemalla &lt;strong&gt;Vahvista&lt;/strong&gt; vahvistat, että &lt;strong&gt;Olemme yhdessä keskustelleet tähän ohjausasiakirjaan kirjatuista asioista ja perehtyneet sen &lt;a href="https://www.jyu.fi/fi/tutkimus/tohtorikoulutus/opas/tehtavat" data-linktype="external" data-val="https://www.jyu.fi/fi/tutkimus/tohtorikoulutus/opas/tehtavat"&gt;liitteessä 1&lt;/a&gt; mainittuihin tohtoriopiskelijan, ohjaajan ja seurantaryhmän tehtäviin sekä &lt;a href="https://www.jyu.fi/fi/tutkimus/tohtorikoulutus/opas/vaitoskirjavaatimukset" data-linktype="external" data-val="https://www.jyu.fi/fi/tutkimus/tohtorikoulutus/opas/vaitoskirjavaatimukset"&gt;liitteessä 2&lt;/a&gt; esitettyihin väitöskirjavaatimuksiin&lt;/strong&gt;.&lt;/p&gt;&#13;
+&lt;p&gt;Vahvistamisen jälkeen ohjaajasi voivat kommentoida ohjausasiakirjaasi ja voit vastata heiädn kommentteihin. Kommenteista muodostuu keskustelu, joka näkyy kaikille ohjausasiakirjaan liitetyille henkilöille (opiskelija, ohjaajat ja tiedekunnan nimeämä tarkastaja).&lt;/p&gt;</text>
+        <title>Ohje</title>
       </field>
       <field name="ohasdfadfso_ohje_reviewer" type="collective.flow.fields.RichTextLabel">
         <description/>
@@ -280,24 +311,7 @@
       </field>
     </fieldset>
   </schema>
-<schema name="supervisors_secondary" based-on="collective.flow.interfaces.IFlowSchemaDynamic">
-    <field name="name" type="zope.schema.TextLine">
-      <description>Sukunimi, Etunimi</description>
-      <required>False</required>
-      <title>Nimi</title>
-    </field>
-    <field name="email" type="plone.schema.email.Email">
-      <description>Työsähköposti</description>
-      <required>False</required>
-      <title>Sähköpostiosoite</title>
-    </field>
-    <field name="affiliation" type="zope.schema.TextLine">
-      <description>Jos muu kuin Jyväskylän yliopisto</description>
-      <required>False</required>
-      <title>Affiliaatio</title>
-    </field>
-  </schema>
-<schema name="degree_compensation_organisations" based-on="collective.flow.interfaces.IFlowSchemaDynamic">
+<schema name="degree_compensation_division" based-on="collective.flow.interfaces.IFlowSchemaDynamic">
     <field name="name" type="zope.schema.Choice">
       <required>False</required>
       <title>Tiedekunta tai erillislaitos joka osallistuu ohjaukseen</title>
@@ -312,6 +326,23 @@
         <element>n. 75 %</element>
         <element>n. 100 %</element>
       </values>
+    </field>
+  </schema>
+<schema name="supervision_others" based-on="collective.flow.interfaces.IFlowSchemaDynamic">
+    <field name="name" type="zope.schema.TextLine">
+      <description>Sukunimi, Etunimi</description>
+      <required>False</required>
+      <title>Nimi</title>
+    </field>
+    <field name="email" type="plone.schema.email.Email">
+      <description>Työsähköposti</description>
+      <required>False</required>
+      <title>Sähköpostiosoite</title>
+    </field>
+    <field name="affiliation" type="zope.schema.TextLine">
+      <description>Jos muu kuin Jyväskylän yliopisto</description>
+      <required>False</required>
+      <title>Affiliaatio</title>
     </field>
   </schema>
 </model>
