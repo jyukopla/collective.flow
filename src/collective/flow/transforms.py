@@ -52,10 +52,15 @@ class InjectInlineStylesAndScripts(object):
         root = result.tree.getroot()
         if css:
             head = root.find('head')
-            head.append(builder.STYLE(
-                css,
-                type='text/css',
-            ))
+            # trick LXML to render styles with //<!CDATA[[
+            style = builder.STYLE(u'\n/*', type='text/css')
+            style.append(builder.S(CDATA(u'*/\n' + css + u'\n/*')))
+            style.getchildren()[0].tail = u'*/\n'
+            head.append(style)
+            # head.append(builder.STYLE(
+            #     css,
+            #     type='text/css',
+            # ))
 
         if javascript:
             body = root.find('body')

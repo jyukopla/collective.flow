@@ -1,5 +1,12 @@
 <form action="#" method="GET" class="flow-shortcut-button"
-      i18n:domain="plone"
+      i18n:domain="plone" style="display: inline"
       tal:attributes="action string:${context/absolute_url}/@@edit">
   <input type="submit" value="Edit" i18n:attributes="value"/>
+</form>
+<form action="#" method="GET" class="flow-shortcut-button"
+   i18n:domain="plone" style="display: inline"
+   tal:repeat="action python:view.actions().values()"
+   tal:attributes="action action/action">
+  <input type="submit" value="Edit" i18n:attributes="value"
+         tal:attributes="value action/title"/>
 </form>
