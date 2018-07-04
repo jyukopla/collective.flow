@@ -99,14 +99,14 @@ def save_form(  # noqa: C901 (this has gotten quite complex)
         # Set contained information of schema.Object
         if IContained.providedBy(value):
             value.__name__ = name
-            value.__parent__ = submission
+            value.__parent__ = aq_base(submission)
 
         # Set contained information of schema.List|Tuple(value_type=Object)
         if isinstance(value, list) or isinstance(value, tuple):
             for item in value:
                 if IContained.providedBy(item):
                     item.__name__ = name
-                    item.__parent__ = submission
+                    item.__parent__ = aq_base(submission)
 
         if force:
             setattr(submission, name, value)
