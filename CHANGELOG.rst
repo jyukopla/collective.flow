@@ -4,8 +4,28 @@ Changelog
 0.5.1 (unreleased)
 ------------------
 
-- Nothing changed yet.
-
+- Fix CSS injection to allow CDATA
+  [Asko Soukka]
+- Add workflow buttons to display form
+  [Asko Soukka]
+- Add workflow buttons to edit form
+  [Asko Soukka]
+- Fix issue where folding fieldsets pattern did not properly wrap fields
+  [Asko Soukka]
+- Implement acknowledgement workflow for field comments
+  [Asko Soukka]
+- Add to cache submission dynamic interfaces by request
+  [Asko Soukka]
+- Fix submission behaviors not required
+  [Asko Soukka]
+- Add support (and patch Plone to support) for z3c form widget layouts
+  [Asko Soukka]
+- Add field level commenting behavior
+  [Asko Soukka]
+- Add field history behavior
+  [Asko Soukka]
+- Fix issue where editing submissions did not fire object events properly; Fix submissin update to use data managers
+  [Asko Soukka]
 
 0.5.0 (2018-06-20)
 ------------------
