@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from jyu.flowextensions import _
+from collective.flow import _
 from venusianconfiguration import configure
 from zope.interface import Interface
 
