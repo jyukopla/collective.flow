@@ -1,7 +1,7 @@
 Changelog
 =========
 
-0.5.1 (unreleased)
+0.6.0 (2018-07-04)
 ------------------
 
 - Fix CSS injection to allow CDATA
