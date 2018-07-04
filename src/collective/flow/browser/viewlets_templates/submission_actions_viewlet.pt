@@ -1,5 +1,6 @@
-<form action="#" method="GET" class="flow-shortcut-button"
-      i18n:domain="plone"
-      tal:attributes="action string:${context/absolute_url}/@@edit">
-  <input type="submit" value="Edit" i18n:attributes="value"/>
-</form>
+<a href="#" class="btn flow-submission-action-link"
+   i18n:domain="plone" i18n:attributes="title" i18n:translate=""
+   tal:repeat="action python:view.actions().values()"
+   tal:attributes="href action/action;
+                   title action/title;"
+   tal:content="action/title">Action</a>

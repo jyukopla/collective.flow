@@ -90,6 +90,16 @@ configure.browser.viewlet(
     permission='cmf.ReviewPortalContent',
     template=os.path.join('viewlets_templates', 'metromap_viewlet.pt'),
 )
+@configure.browser.viewlet.class_(
+    name='collective.flow.submission.actions',
+    for_=IFlowSubmission,
+    view=IViewView,
+    manager=IBelowContentBody,
+    permission='zope2.View',
+    template=os.path.join(
+        'viewlets_templates', 'submission_actions_viewlet.pt'
+    ),
+)
 @implementer(IViewlet)
 class MetroMapViewlet(BrowserView):
     def __init__(self, context, request, view, manager=None):
@@ -100,6 +110,29 @@ class MetroMapViewlet(BrowserView):
         self.view = view
         self.manager = manager
         self.steps = []
+
+    @view.memoize
+    def actions(self):
+        tool = api.portal.get_tool('portal_workflow')
+
+        # Get the default workflow id
+        chain = tool.getChainFor(self.context)
+        if not chain:
+            return
+
+        # Get currently available workflow actions (re-use from menu)
+        actions = {}
+        menu = getUtility(IBrowserMenu, name='plone_contentmenu_workflow')
+        for action in menu.getMenuItems(self.context, self.request):
+            item_id = action.get('extra', {}).get('id', u'') or u''
+            action_id = re.sub('^workflow-transition-(.*)', '\\1', item_id)
+            actions[action_id] = action
+
+        for action in ['advanced', 'policy']:  # blacklisted menuitems
+            if action in actions:
+                del actions[action]
+
+        return actions
 
     @view.memoize
     def update(self):
@@ -115,12 +148,7 @@ class MetroMapViewlet(BrowserView):
         wf = tool.getWorkflowById(chain[0])
 
         # Get currently available workflow actions (re-use from menu)
-        actions = {}
-        menu = getUtility(IBrowserMenu, name='plone_contentmenu_workflow')
-        for action in menu.getMenuItems(self.context, self.request):
-            item_id = action.get('extra', {}).get('id', u'') or u''
-            action_id = re.sub('^workflow-transition-(.*)', '\\1', item_id)
-            actions[action_id] = action
+        actions = self.actions()
 
         # Evaluate "ploneintranet"-style "happy path metro map" from wf
         metro_expression = wf.variables.get('metromap_transitions')
