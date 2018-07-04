@@ -153,7 +153,8 @@ class SubmissionEditForm(DefaultEditForm):
     def redirect(self, url, form, button_action):
         save = self.handlers.getHandler(self.buttons['save'])
         save(form, button_action)
-        self.request.response.redirect(url)
+        if not self.status:
+            self.request.response.redirect(url)
 
     # noinspection PyPep8Naming
     def extractData(self, setErrors=True):
