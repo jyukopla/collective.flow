@@ -9,6 +9,7 @@ from collective.flow.interfaces import IAddFlowSchemaDynamic
 from collective.flow.interfaces import ICollectiveFlowLayer
 from collective.flow.interfaces import IFlowFolder
 from collective.flow.interfaces import IFlowSchemaForm
+from collective.flow.schema import FlowSchemaFieldPermissionChecker
 from collective.flow.schema import interpolate
 from collective.flow.schema import load_schema
 from collective.flow.schema import remove_attachments
@@ -18,6 +19,7 @@ from collective.flow.utils import unrestricted
 from datetime import datetime
 from persistent.mapping import PersistentMapping
 from plone import api
+from plone.app.widgets.interfaces import IFieldPermissionChecker
 from plone.autoform.view import WidgetsView
 from plone.dexterity.browser.add import DefaultAddForm
 from plone.dexterity.events import AddBegunEvent
@@ -43,6 +45,7 @@ from z3c.form.interfaces import IValue
 from z3c.form.interfaces import IWidget
 from z3c.form.interfaces import NOT_CHANGED
 from z3c.form.util import changedField
+from zope.component import adapter
 from zope.component import createObject
 from zope.component import getMultiAdapter
 from zope.component import getUtility
@@ -423,7 +426,7 @@ class FlowSubmitForm(DefaultAddForm):
         submission.title = IUUID(submission)  # noqa: P001
 
         # extract attachments to be saved into separate objects
-        attachments = tuple(extract_attachments(data, context))
+        submission._v_attachments = tuple(extract_attachments(data, context))
 
         # save form data (bypass data manager for speed
         # and to avoid needing to reload the form schema)
@@ -434,10 +437,16 @@ class FlowSubmitForm(DefaultAddForm):
         submission.schema_digest = hashlib.md5(submission.schema).hexdigest()
         submission.submission_behaviors = self.submission_behaviors
 
-        return aq_base(submission), attachments
+        return aq_base(submission)
 
-    def add(self, submission_with_attachments):
-        submission, attachments = submission_with_attachments
+    def add(self, submission):
+        try:
+            # noinspection PyProtectedMember
+            attachments = submission._v_attachments
+            delattr(submission, '_v_attachments')
+        except AttributeError:
+            attachments = []
+
         folder = self.context
         for folder in parents(folder, IFlowFolder):
             # Traverse from IFlowSubFolders to IFlowFolder
@@ -494,6 +503,17 @@ class FlowSubmitForm(DefaultAddForm):
         self.buttons['save'].title = self.submit_label
         if 'cancel' in self.buttons:
             del self.buttons['cancel']
+
+
+@configure.adapter.factory()
+@adapter(IFlowSchemaForm)
+@implementer(IFieldPermissionChecker)
+class FlowSubmitFormPermissionChecker(FlowSchemaFieldPermissionChecker):
+    DEFAULT_PERMISSION = 'Add portal content'
+
+    def __init__(self, view):
+        context = view.context
+        super(FlowSubmitFormPermissionChecker, self).__init__(context)
 
 
 class SubmissionView(WidgetsView):
