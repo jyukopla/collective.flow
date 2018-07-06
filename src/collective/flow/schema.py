@@ -360,5 +360,5 @@ def interpolate(template, ob, request=None):
         except (AttributeError, LookupError):
             mapping[name] = value
     interpolator = IStringInterpolator(ob)
-    value = interpolator(i18n_interpolate(template, mapping))
+    value = interpolator(i18n_interpolate(template or u'', mapping))
     return value

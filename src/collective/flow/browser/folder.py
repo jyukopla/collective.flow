@@ -266,6 +266,8 @@ def get_submission_container(container, submission):
             'submission_path_template',
         )
     except AttributeError:
+        template = None
+    if not template:
         return container
     path = datetime.utcnow().strftime(interpolate(template, submission))
     normalizer = getUtility(IIDNormalizer)
