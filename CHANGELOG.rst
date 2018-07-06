@@ -4,8 +4,12 @@ Changelog
 0.6.1 (unreleased)
 ------------------
 
-- Nothing changed yet.
-
+- Fix issue where flow filing template could not be empty
+  [Asko Soukka]
+- Fix issue where field permission checking was broken on add/submit form
+  [Asko Soukka]
+- Fix issue where flow folder still required at least one behavior to be added
+  [Asko Soukka]
 
 0.6.0 (2018-07-04)
 ------------------
