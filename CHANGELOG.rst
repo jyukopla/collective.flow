@@ -1,7 +1,7 @@
 Changelog
 =========
 
-0.6.1 (unreleased)
+0.6.1 (2018-07-06)
 ------------------
 
 - Fix issue where flow filing template could not be empty
