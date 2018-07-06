@@ -24,7 +24,7 @@ class FlowSubmissionBehaviorAssignable(DexterityBehaviorAssignable):
                               self).enumerateBehaviors():
             yield behavior
         try:
-            behaviors = aq_base(self.context.submission_behaviors)
+            behaviors = aq_base(self.context.submission_behaviors) or []
         except AttributeError:
             behaviors = []
         for behavior in behaviors:

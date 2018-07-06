@@ -144,6 +144,7 @@ class IFlowFolder(IFlowSchema):
         value_type=schema.Choice(
             vocabulary='collective.flow.submission.behaviors',
         ),
+        required=False,
     )
 
     submission_workflow = schema.Choice(
