@@ -39,6 +39,7 @@ from zope.schema import Object
 
 import hashlib
 import logging
+import plone.api as api
 import threading
 
 
@@ -125,12 +126,24 @@ def update_schema(xml, schema, name=u'', language=u''):
         schema_root = etree.fromstring(serializeSchema(schema, name))
 
     for el in root.findall(ns('schema')):
-        if el.attrib.get('name', u'') == language + name:
+        name_ = el.attrib.get('name', u'')
+        if name_ == name + language:
+            root.remove(el)
+            break
+        elif name_ == name and not language:
             root.remove(el)
             break
 
     for el in schema_root.findall(ns('schema')):
-        if el.attrib.get('name', u'') == language + name:
+        name_ = el.attrib.get('name', u'')
+        if name_ == name + language:
+            root.append(el)
+            break
+        elif name_ == name and language:
+            el.attrib['name'] = language
+            root.append(el)
+            break
+        elif name_ == name and not language:
             root.append(el)
             break
 
@@ -334,10 +347,11 @@ def save_schema(context, schema=None, xml=None, language=u''):
 def save_schema_from_schema_context(schema_context, event=None):
     assert event
     language = negotiate(context=getRequest())
+    default_language = api.portal.get_default_language()
     save_schema(
         schema_context.content,
         schema=schema_context.schema,
-        language=language,
+        language=language != default_language and language or u'',
     )
 
 
