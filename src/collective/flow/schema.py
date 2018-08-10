@@ -26,6 +26,7 @@ from zope.component import adapter
 from zope.event import notify
 from zope.globalrequest import getRequest
 from zope.i18n import interpolate as i18n_interpolate
+from zope.i18n import negotiate
 from zope.i18n import translate
 from zope.interface import implementedBy
 from zope.interface import implementer
@@ -58,14 +59,19 @@ CUSTOMIZABLE_TAGS = [
 
 
 # noinspection PyProtectedMember
-def load_schema(xml, name=u'', cache_key=None):
+def load_schema(xml, name=u'', language=u'', cache_key=None):
     """Load named (or default) supermodel schema from XML source with optional
     cache key (ZCA lookups require exact schema instance to match lookups)
     """
     if name:
         name = name.strip()
+    if language:
+        language = u'/' + language.strip() + u'/'
     try:
-        return SCHEMA_CACHE[cache_key].schemata[name]
+        try:
+            return SCHEMA_CACHE[cache_key].schemata[language + name]
+        except KeyError:
+            return SCHEMA_CACHE[cache_key].schemata[name]
     except KeyError:
         schema, additional_schemata = split_schema(xml)
         additional = loadString(additional_schemata, policy='collective.flow')
@@ -78,7 +84,10 @@ def load_schema(xml, name=u'', cache_key=None):
         if cache_key is not None:
             SCHEMA_CACHE[cache_key] = model
             logger.info('Cache MISS. Size {0:d}'.format(len(SCHEMA_CACHE)))
-        return model.schemata[name]
+        try:
+            return model.schemata[language + name]
+        except KeyError:
+            return model.schemata[name]
 
 
 def split_schema(xml):
@@ -103,23 +112,27 @@ def split_schema(xml):
     return schema, additional_schemata
 
 
-def update_schema(xml, schema, name=u''):
+def update_schema(xml, schema, name=u'', language=u''):
     root = etree.fromstring(xml)
 
     if name:
         name = name.strip()
+    if language:
+        language = u'/' + language.strip() + u'/'
     if isinstance(schema, str):
         schema_root = etree.fromstring(schema)
     else:
         schema_root = etree.fromstring(serializeSchema(schema, name))
 
     for el in root.findall(ns('schema')):
-        if el.attrib.get('name', u'') == name:
+        if el.attrib.get('name', u'') == language + name:
             root.remove(el)
+            break
 
     for el in schema_root.findall(ns('schema')):
-        if el.attrib.get('name', u'') == name:
+        if el.attrib.get('name', u'') == language + name:
             root.append(el)
+            break
 
     return etree.tostring(
         root,
@@ -280,11 +293,16 @@ class FlowSchemaFieldPermissionChecker(DXFieldPermissionChecker):
         return schemata
 
 
-def save_schema(context, schema=None, xml=None):
+def save_schema(context, schema=None, xml=None, language=u''):
     if schema:
         # Update XML schema (got update from model designer)
         try:
-            context.schema = update_schema(aq_base(context).schema, schema)
+            context.schema = update_schema(
+                aq_base(context).schema,
+                schema,
+                language=language,
+            )
+            # TODO: synchronize languages
         except AttributeError:
             context.schema = serializeSchema(schema)
         for name in schema:
@@ -315,7 +333,12 @@ def save_schema(context, schema=None, xml=None):
 @adapter(IFlowSchemaContext, ISchemaModifiedEvent)
 def save_schema_from_schema_context(schema_context, event=None):
     assert event
-    save_schema(schema_context.content, schema=schema_context.schema)
+    language = negotiate(context=getRequest())
+    save_schema(
+        schema_context.content,
+        schema=schema_context.schema,
+        language=language,
+    )
 
 
 @configure.utility.factory(name=u'collective.flow')

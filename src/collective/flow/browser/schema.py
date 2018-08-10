@@ -16,6 +16,7 @@ from Products.Five import BrowserView
 from venusianconfiguration import configure
 from z3c.form import button
 from zope.component import queryMultiAdapter
+from zope.i18n import negotiate
 from zope.i18nmessageid import MessageFactory
 from zope.interface import implementer
 
@@ -69,8 +70,13 @@ class SchemaView(DefaultEditForm):
 @implementer(IFlowSchemaContext)
 class FlowSchemaContext(SchemaContext):
     def __init__(self, context, request):
+        language = negotiate(context=request)
         try:
-            schema = load_schema(aq_base(context).schema, cache_key=None)
+            schema = load_schema(
+                aq_base(context).schema,
+                language=language,
+                cache_key=None,
+            )
         except AttributeError:
             schema = load_schema(DEFAULT_SCHEMA, cache_key=None)
         super(FlowSchemaContext, self).__init__(
