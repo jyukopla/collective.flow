@@ -50,12 +50,14 @@
   </action>
   <action title="Fields" action_id="design" category="object" condition_expr=""
           description="" icon_expr="" link_target=""
-          url_expr="string:${object_url}/@@design" visible="True">
+          url_expr="string:${object_url}/@@design" visible="True"
+          remove="True">
     <permission value="Modify portal content"/>
   </action>
   <action title="XML" action_id="modeleditor" category="object" condition_expr=""
           description="" icon_expr="" link_target=""
-          url_expr="string:${object_url}/@@design/@@modeleditor" visible="True">
+          url_expr="string:${object_url}/@@design/@@modeleditor" visible="True"
+          remove="True">
     <permission value="Modify portal content"/>
   </action>
 </object>

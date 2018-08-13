@@ -90,6 +90,19 @@ class FlowSchemaContext(SchemaContext):
         self.content = context
 
 
+@configure.browser.page.class_(
+    name='fields',
+    for_=IFlowSchemaContext,
+    layer=ICollectiveFlowLayer,
+    permission='cmf.ModifyPortalContent'
+)
+class RedirectSchemaEditor(BrowserView):
+    def __call__(self):
+        self.request.response.redirect(
+            self.context.content.absolute_url() + u'/@@design'
+        )
+
+
 class ModelEditorView(BrowserView):
     def modelSource(self):
         try:
