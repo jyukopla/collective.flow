@@ -40,6 +40,7 @@ from zope.schema import Object
 import hashlib
 import logging
 import plone.api as api
+import re
 import threading
 
 
@@ -51,6 +52,8 @@ SCHEMA_CACHE = CleanupDict()
 SCHEMA_CACHE.cleanup_period = 60 * 60 * 12  # 12 hours
 dynamic = dynamic.create(SCHEMA_MODULE)
 current = threading.local()
+
+IS_TRANSLATION = re.compile(r'/[a-z\-]+/')
 
 CUSTOMIZABLE_TAGS = [
     ns('default'),
@@ -67,11 +70,11 @@ def load_model(xml, cache_key=None):
     try:
         return SCHEMA_CACHE[cache_key]
     except KeyError:
-        schema, additional_schemata = split_schema(xml)
+        schemata, additional_schemata = split_schema(xml)
         additional = loadString(additional_schemata, policy='collective.flow')
         try:
             current.model = additional
-            model = loadString(schema, policy='collective.flow')
+            model = loadString(schemata, policy='collective.flow')
             model.schemata.update(additional.schemata)
         finally:
             current.model = None
@@ -97,16 +100,18 @@ def load_schema(xml, name=u'', language=u'', cache_key=None):
 
 
 def split_schema(xml):
-    """Split XML supermodel schema into main schema and additional schemata"""
+    """Split XML supermodel schema into main schemata and additional
+    schemata """
     root = etree.fromstring(xml)
 
     stack = []
     for el in root.findall(ns('schema')):
-        if el.attrib.get('name'):
+        if el.attrib.get('name') and not IS_TRANSLATION.match(
+                el.attrib.get('name')):
             stack.append(el)
             root.remove(el)
 
-    schema = etree.tostring(root)
+    schemata = etree.tostring(root)
 
     for el in root.findall(ns('schema')):
         root.remove(el)
@@ -115,7 +120,7 @@ def split_schema(xml):
 
     additional_schemata = etree.tostring(root)
 
-    return schema, additional_schemata
+    return schemata, additional_schemata
 
 
 def update_schema(xml, schema, name=u'', language=u''):
@@ -271,7 +276,7 @@ class FlowSchemaSpecificationDescriptor(ObjectSpecificationDescriptor):
         schemata = [
             model.schemata[name]
             for name in model.schemata
-            if name == u'' or (name.startswith(u'/') and name.endswith(u'/'))
+            if name == u'' or IS_TRANSLATION.match(name)
         ]
         schemata.append(spec)
 

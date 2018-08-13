@@ -94,12 +94,12 @@ class FlowSchemaContext(SchemaContext):
     name='fields',
     for_=IFlowSchemaContext,
     layer=ICollectiveFlowLayer,
-    permission='cmf.ModifyPortalContent'
+    permission='cmf.ModifyPortalContent',
 )
 class RedirectSchemaEditor(BrowserView):
     def __call__(self):
         self.request.response.redirect(
-            self.context.content.absolute_url() + u'/@@design'
+            self.context.content.absolute_url() + u'/@@design',
         )
 
 
