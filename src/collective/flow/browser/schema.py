@@ -46,9 +46,11 @@ class SchemaView(DefaultEditForm):
     @property
     @view.memoize
     def schema(self):
+        language = negotiate(context=self.request)
         try:
             return load_schema(
                 aq_base(self.context).schema,
+                language=language,
                 cache_key=aq_base(self.context).schema_digest,
             )
         except AttributeError:

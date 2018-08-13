@@ -51,6 +51,7 @@ from zope.component import getMultiAdapter
 from zope.component import getUtility
 from zope.component import queryMultiAdapter
 from zope.event import notify
+from zope.i18n import negotiate
 from zope.i18nmessageid import MessageFactory
 from zope.interface import alsoProvides
 from zope.interface import implementer
@@ -378,11 +379,13 @@ class FlowSubmitForm(DefaultAddForm):
     @property
     @view.memoize
     def schema(self):
+        language = negotiate(context=self.request)
         try:
             try:
                 schema = load_schema(
                     aq_base(self.context).schema,
                     name='++add++',
+                    language=language,
                     cache_key=aq_base(self.context).schema_digest,
                 )
                 alsoProvides(schema, IAddFlowSchemaDynamic)
@@ -390,6 +393,7 @@ class FlowSubmitForm(DefaultAddForm):
             except KeyError:
                 return load_schema(
                     aq_base(self.context).schema,
+                    language=language,
                     cache_key=aq_base(self.context).schema_digest,
                 )
         except AttributeError:
@@ -526,9 +530,11 @@ class SubmissionView(WidgetsView):
     )
 
     def __init__(self, context, request, content):
+        language = negotiate(context=request)
         self.content = content
         self.schema = load_schema(
             aq_base(content).schema,
+            language=language,
             cache_key=aq_base(content).schema_digest,
         )
         super(SubmissionView, self).__init__(context, request)

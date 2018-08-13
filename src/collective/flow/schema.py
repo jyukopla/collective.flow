@@ -376,6 +376,9 @@ class FlowSchemaPolicy(object):
 def interpolate(template, ob, request=None):
     if request is None:
         request = getRequest()
+    # Currently interpolation uses always the default language by purpose,
+    # because multilingual support would result e.g. in language specific
+    # folder structure (because of the current use cases of interpolation).
     schema = load_schema(
         aq_base(ob).schema,
         cache_key=aq_base(ob).schema_digest,
