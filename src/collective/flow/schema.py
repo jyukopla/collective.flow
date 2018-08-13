@@ -60,19 +60,12 @@ CUSTOMIZABLE_TAGS = [
 
 
 # noinspection PyProtectedMember
-def load_schema(xml, name=u'', language=u'', cache_key=None):
-    """Load named (or default) supermodel schema from XML source with optional
+def load_model(xml, cache_key=None):
+    """Load supermodel instance from XML source with optional
     cache key (ZCA lookups require exact schema instance to match lookups)
     """
-    if name:
-        name = name.strip()
-    if language:
-        language = u'/' + language.strip() + u'/'
     try:
-        try:
-            return SCHEMA_CACHE[cache_key].schemata[language + name]
-        except KeyError:
-            return SCHEMA_CACHE[cache_key].schemata[name]
+        return SCHEMA_CACHE[cache_key]
     except KeyError:
         schema, additional_schemata = split_schema(xml)
         additional = loadString(additional_schemata, policy='collective.flow')
@@ -84,11 +77,23 @@ def load_schema(xml, name=u'', language=u'', cache_key=None):
             current.model = None
         if cache_key is not None:
             SCHEMA_CACHE[cache_key] = model
-            logger.info('Cache MISS. Size {0:d}'.format(len(SCHEMA_CACHE)))
-        try:
-            return model.schemata[language + name]
-        except KeyError:
-            return model.schemata[name]
+        return model
+
+
+# noinspection PyProtectedMember
+def load_schema(xml, name=u'', language=u'', cache_key=None):
+    """Load named (or default) supermodel schema from XML source with optional
+    cache key (ZCA lookups require exact schema instance to match lookups)
+    """
+    if name:
+        name = name.strip()
+    if language:
+        language = u'/' + language.strip() + u'/'
+    model = load_model(xml, cache_key=cache_key)
+    try:
+        return model.schemata[language + name]
+    except KeyError:
+        return model.schemata[name]
 
 
 def split_schema(xml):
@@ -262,10 +267,16 @@ class FlowSchemaSpecificationDescriptor(ObjectSpecificationDescriptor):
         if spec is None:
             spec = implementedBy(cls)
 
-        schema = load_schema(inst.schema, cache_key=inst.schema_digest)
+        model = load_model(inst.schema, cache_key=inst.schema_digest)
+        schemata = [
+            model.schemata[name]
+            for name in model.schemata
+            if name == u'' or (name.startswith(u'/') and name.endswith(u'/'))
+        ]
+        schemata.append(spec)
 
         if getattr(self, '__recursion__', False):
-            return Implements(schema, spec)
+            return Implements(*schemata)
 
         self.__recursion__ = True
         dynamically_provided = []
@@ -280,7 +291,8 @@ class FlowSchemaSpecificationDescriptor(ObjectSpecificationDescriptor):
         finally:
             del self.__recursion__
 
-        spec = Implements(schema, spec, *dynamically_provided)
+        schemata.extend(dynamically_provided)
+        spec = Implements(*schemata)
 
         # Cache spec into request
         annotations[self.__class__.__name__ + '.' + digest] = spec
