@@ -21,8 +21,10 @@ from venusianconfiguration import configure
 from z3c.form.interfaces import IMultiWidget
 from z3c.form.interfaces import IObjectFactory
 from z3c.form.interfaces import IValue
+from zope.annotation import IAnnotations
 from zope.component import adapter
 from zope.dottedname.resolve import resolve
+from zope.globalrequest import getRequest
 from zope.interface import Interface
 from zope.interface.declarations import getObjectSpecification
 from zope.interface.declarations import implementedBy
@@ -60,20 +62,29 @@ class FlowDataSpecificationDescriptor(ObjectSpecificationDescriptor):
 
     # noinspection PyProtectedMember
     def __get__(self, inst, cls=None):
-
         if inst is None:
             return getObjectSpecification(cls)
 
-        spec = getattr(inst, '__provides__', None)
-        if spec is None:
-            spec = implementedBy(cls)
+        request = getRequest()
+        annotations = IAnnotations(request)
 
+        # Return cached spec from request
         if inst.__parent__ is not None and inst.__name__ is not None:
+            digest = inst.__parent__.schema_digest
+            key = '.'.join([self.__class__.__name__, digest, inst.__name__])
+            spec = annotations.get(key)
+            if spec is not None:
+                return spec
+
+            spec = getattr(inst, '__provides__', None)
+            if spec is None:
+                spec = implementedBy(cls)
+
             model = load_model(
                 aq_base(inst.__parent__).schema,
                 cache_key=inst.__parent__.schema_digest,
             )
-            schemata = [spec]
+            schemata = []
             for schema in [model.schemata[name]
                            for name in model.schemata
                            if name == u'' or IS_TRANSLATION.match(name)]:
@@ -85,11 +96,24 @@ class FlowDataSpecificationDescriptor(ObjectSpecificationDescriptor):
                     schemata.append(field.schema)
                 except AttributeError:
                     schemata.append(field.value_type.schema)
+            schemata.append(spec)
+
+            spec = Implements(*schemata)
+
+            # Cache spec into request
+            annotations[key] = spec
+
         else:
+
+            spec = getattr(inst, '__provides__', None)
+            if spec is None:
+                spec = implementedBy(cls)
+
             # Set by FlowSubmissionDataFactory
             schemata = [inst._v_initial_schema, spec]
 
-        spec = Implements(*schemata)
+            spec = Implements(*schemata)
+
         return spec
 
 
