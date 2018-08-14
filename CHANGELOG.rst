@@ -1,7 +1,7 @@
 Changelog
 =========
 
-0.7.0 (unreleased)
+0.7.0 (2018-08-14)
 ------------------
 
 - Add support for multilingual forms
