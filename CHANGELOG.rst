@@ -4,8 +4,12 @@ Changelog
 0.7.1 (unreleased)
 ------------------
 
-- Nothing changed yet.
-
+- Fix flow data descriptor schema order and cache descriptor in request
+  [Asko Soukka]
+- Fix regexp for matching translations
+  [Asko Soukka]
+- Fix state missing exit-transition in Flow Folder Workflow
+  [Asko Soukka]
 
 0.7.0 (2018-08-14)
 ------------------
