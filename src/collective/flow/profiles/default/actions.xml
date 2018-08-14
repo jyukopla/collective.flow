@@ -1,0 +1,39 @@
+<?xml version="1.0"?>
+<object name="portal_actions" meta_type="Plone Actions Tool"
+        xmlns:i18n="http://xml.zope.org/namespaces/i18n">
+  <object name="object_flow" title="Flow Actions" meta_type="CMF Action Category">
+    <object name="Flow Settings" meta_type="CMF Action" i18n:domain="collective.flow">
+      <property name="title" i18n:translate="">Settings</property>
+      <property name="description" i18n:translate="">Edit flow settings</property>
+      <property name="url_expr">string:$object_url/@@edit</property>
+      <property name="icon_expr"/>
+      <property name="available_expr">python:path('object/portal_type') in ['FlowFolder']</property>
+      <property name="permissions">
+        <element value="Modify portal content"/>
+      </property>
+      <property name="visible">True</property>
+    </object>
+    <object name="Flow Designer" meta_type="CMF Action" i18n:domain="collective.flow">
+      <property name="title" i18n:translate="">Designer</property>
+      <property name="description" i18n:translate="">Edit flow form fields</property>
+      <property name="url_expr">string:$object_url/@@design</property>
+      <property name="icon_expr"/>
+      <property name="available_expr">python:path('object/portal_type') in ['FlowFolder']</property>
+      <property name="permissions">
+        <element value="Modify portal content"/>
+      </property>
+      <property name="visible">True</property>
+    </object>
+    <object name="Flow XML" meta_type="CMF Action" i18n:domain="collective.flow">
+      <property name="title" i18n:translate="">XML</property>
+      <property name="description" i18n:translate="">Edit raw XML</property>
+      <property name="url_expr">string:$object_url/@@design/@@modeleditor</property>
+      <property name="icon_expr"/>
+      <property name="available_expr">python:path('object/portal_type') in ['FlowFolder']</property>
+      <property name="permissions">
+        <element value="Modify portal content"/>
+      </property>
+      <property name="visible">True</property>
+    </object>
+  </object>
+</object>

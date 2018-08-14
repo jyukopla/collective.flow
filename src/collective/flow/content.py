@@ -8,7 +8,8 @@ from collective.flow.interfaces import IFlowSchema
 from collective.flow.interfaces import IFlowSubmission
 from collective.flow.interfaces import IFlowSubmissionComment
 from collective.flow.schema import FlowSchemaSpecificationDescriptor
-from collective.flow.schema import load_schema
+from collective.flow.schema import IS_TRANSLATION
+from collective.flow.schema import load_model
 from collective.flow.schema import SCHEMA_MODULE
 from persistent.mapping import PersistentMapping
 from plone.app.content.interfaces import INameFromTitle
@@ -68,19 +69,27 @@ class FlowDataSpecificationDescriptor(ObjectSpecificationDescriptor):
             spec = implementedBy(cls)
 
         if inst.__parent__ is not None and inst.__name__ is not None:
-            field = load_schema(
+            model = load_model(
                 aq_base(inst.__parent__).schema,
                 cache_key=inst.__parent__.schema_digest,
-            )[inst.__name__]
-            try:
-                schema = field.schema
-            except AttributeError:
-                schema = field.value_type.schema
+            )
+            schemata = [spec]
+            for schema in [model.schemata[name]
+                           for name in model.schemata
+                           if name == u'' or IS_TRANSLATION.match(name)]:
+                try:
+                    field = schema[inst.__name__]
+                except AttributeError:
+                    continue
+                try:
+                    schemata.append(field.schema)
+                except AttributeError:
+                    schemata.append(field.value_type.schema)
         else:
             # Set by FlowSubmissionDataFactory
-            schema = inst._v_initial_schema
+            schemata = [inst._v_initial_schema, spec]
 
-        spec = Implements(schema, spec)
+        spec = Implements(*schemata)
         return spec
 
 

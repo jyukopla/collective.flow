@@ -16,6 +16,7 @@ from Products.Five import BrowserView
 from venusianconfiguration import configure
 from z3c.form import button
 from zope.component import queryMultiAdapter
+from zope.i18n import negotiate
 from zope.i18nmessageid import MessageFactory
 from zope.interface import implementer
 
@@ -45,9 +46,11 @@ class SchemaView(DefaultEditForm):
     @property
     @view.memoize
     def schema(self):
+        language = negotiate(context=self.request)
         try:
             return load_schema(
                 aq_base(self.context).schema,
+                language=language,
                 cache_key=aq_base(self.context).schema_digest,
             )
         except AttributeError:
@@ -69,8 +72,13 @@ class SchemaView(DefaultEditForm):
 @implementer(IFlowSchemaContext)
 class FlowSchemaContext(SchemaContext):
     def __init__(self, context, request):
+        language = negotiate(context=request)
         try:
-            schema = load_schema(aq_base(context).schema, cache_key=None)
+            schema = load_schema(
+                aq_base(context).schema,
+                language=language,
+                cache_key=None,
+            )
         except AttributeError:
             schema = load_schema(DEFAULT_SCHEMA, cache_key=None)
         super(FlowSchemaContext, self).__init__(
@@ -80,6 +88,19 @@ class FlowSchemaContext(SchemaContext):
             title=_(u'design'),
         )
         self.content = context
+
+
+@configure.browser.page.class_(
+    name='fields',
+    for_=IFlowSchemaContext,
+    layer=ICollectiveFlowLayer,
+    permission='cmf.ModifyPortalContent',
+)
+class RedirectSchemaEditor(BrowserView):
+    def __call__(self):
+        self.request.response.redirect(
+            self.context.content.absolute_url() + u'/@@design',
+        )
 
 
 class ModelEditorView(BrowserView):

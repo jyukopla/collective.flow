@@ -16,6 +16,7 @@ from zope.browsermenu.interfaces import IBrowserMenu
 from zope.cachedescriptors.property import Lazy
 from zope.component import getUtility
 from zope.event import notify
+from zope.i18n import negotiate
 from zope.i18n import translate
 from zope.i18nmessageid import MessageFactory
 from zope.interface import implementer
@@ -40,8 +41,10 @@ _ = MessageFactory('collective.flow')
 class SubmissionView(WidgetsView, ExtensibleForm):
     @Lazy
     def schema(self):
+        language = negotiate(context=self.request)
         return load_schema(
             aq_base(self.context).schema,
+            language=language,
             cache_key=aq_base(self.context).schema_digest,
         )
 
@@ -105,8 +108,10 @@ class SubmissionEditForm(DefaultEditForm):
 
     @Lazy
     def schema(self):
+        language = negotiate(context=self.request)
         return load_schema(
             aq_base(self.context).schema,
+            language=language,
             cache_key=aq_base(self.context).schema_digest,
         )
 

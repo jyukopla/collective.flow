@@ -136,6 +136,16 @@ configure.gs.upgradeDepends(
     import_steps='repositorytool workflow viewlets',
 )
 
+configure.gs.upgradeDepends(
+    source='1006',
+    destination='1007',
+    sortkey='1006',
+    title=u'Upgrade collective.flow from 1006 to 1007',
+    description=u'Update workflow and viewlet order',
+    profile='collective.flow:default',
+    import_steps='typeinfo actions',
+)
+
 configure.gs.registerProfile(
     name=u'uninstall',
     title=_(u'Forms, workflows and everything'),

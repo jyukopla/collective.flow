@@ -26,6 +26,7 @@ from zope.component import adapter
 from zope.event import notify
 from zope.globalrequest import getRequest
 from zope.i18n import interpolate as i18n_interpolate
+from zope.i18n import negotiate
 from zope.i18n import translate
 from zope.interface import implementedBy
 from zope.interface import implementer
@@ -38,6 +39,8 @@ from zope.schema import Object
 
 import hashlib
 import logging
+import plone.api as api
+import re
 import threading
 
 
@@ -50,6 +53,8 @@ SCHEMA_CACHE.cleanup_period = 60 * 60 * 12  # 12 hours
 dynamic = dynamic.create(SCHEMA_MODULE)
 current = threading.local()
 
+IS_TRANSLATION = re.compile(r'/[a-z\-]+/')
+
 CUSTOMIZABLE_TAGS = [
     ns('default'),
     ns('defaultFactory'),
@@ -58,40 +63,55 @@ CUSTOMIZABLE_TAGS = [
 
 
 # noinspection PyProtectedMember
-def load_schema(xml, name=u'', cache_key=None):
-    """Load named (or default) supermodel schema from XML source with optional
+def load_model(xml, cache_key=None):
+    """Load supermodel instance from XML source with optional
     cache key (ZCA lookups require exact schema instance to match lookups)
     """
-    if name:
-        name = name.strip()
     try:
-        return SCHEMA_CACHE[cache_key].schemata[name]
+        return SCHEMA_CACHE[cache_key]
     except KeyError:
-        schema, additional_schemata = split_schema(xml)
+        schemata, additional_schemata = split_schema(xml)
         additional = loadString(additional_schemata, policy='collective.flow')
         try:
             current.model = additional
-            model = loadString(schema, policy='collective.flow')
+            model = loadString(schemata, policy='collective.flow')
             model.schemata.update(additional.schemata)
         finally:
             current.model = None
         if cache_key is not None:
             SCHEMA_CACHE[cache_key] = model
-            logger.info('Cache MISS. Size {0:d}'.format(len(SCHEMA_CACHE)))
+        return model
+
+
+# noinspection PyProtectedMember
+def load_schema(xml, name=u'', language=u'', cache_key=None):
+    """Load named (or default) supermodel schema from XML source with optional
+    cache key (ZCA lookups require exact schema instance to match lookups)
+    """
+    if name:
+        name = name.strip()
+    if language:
+        language = u'/' + language.strip() + u'/'
+    model = load_model(xml, cache_key=cache_key)
+    try:
+        return model.schemata[language + name]
+    except KeyError:
         return model.schemata[name]
 
 
 def split_schema(xml):
-    """Split XML supermodel schema into main schema and additional schemata"""
+    """Split XML supermodel schema into main schemata and additional
+    schemata """
     root = etree.fromstring(xml)
 
     stack = []
     for el in root.findall(ns('schema')):
-        if el.attrib.get('name'):
+        if el.attrib.get('name') and not IS_TRANSLATION.match(
+                el.attrib.get('name')):
             stack.append(el)
             root.remove(el)
 
-    schema = etree.tostring(root)
+    schemata = etree.tostring(root)
 
     for el in root.findall(ns('schema')):
         root.remove(el)
@@ -100,26 +120,42 @@ def split_schema(xml):
 
     additional_schemata = etree.tostring(root)
 
-    return schema, additional_schemata
+    return schemata, additional_schemata
 
 
-def update_schema(xml, schema, name=u''):
+def update_schema(xml, schema, name=u'', language=u''):
     root = etree.fromstring(xml)
 
     if name:
         name = name.strip()
+    if language:
+        language = u'/' + language.strip() + u'/'
     if isinstance(schema, str):
         schema_root = etree.fromstring(schema)
     else:
         schema_root = etree.fromstring(serializeSchema(schema, name))
 
     for el in root.findall(ns('schema')):
-        if el.attrib.get('name', u'') == name:
+        name_ = el.attrib.get('name', u'')
+        if name_ == name + language:
             root.remove(el)
+            break
+        elif name_ == name and not language:
+            root.remove(el)
+            break
 
     for el in schema_root.findall(ns('schema')):
-        if el.attrib.get('name', u'') == name:
+        name_ = el.attrib.get('name', u'')
+        if name_ == name + language:
             root.append(el)
+            break
+        elif name_ == name and language:
+            el.attrib['name'] = language
+            root.append(el)
+            break
+        elif name_ == name and not language:
+            root.append(el)
+            break
 
     return etree.tostring(
         root,
@@ -236,10 +272,16 @@ class FlowSchemaSpecificationDescriptor(ObjectSpecificationDescriptor):
         if spec is None:
             spec = implementedBy(cls)
 
-        schema = load_schema(inst.schema, cache_key=inst.schema_digest)
+        model = load_model(inst.schema, cache_key=inst.schema_digest)
+        schemata = [
+            model.schemata[name]
+            for name in model.schemata
+            if name == u'' or IS_TRANSLATION.match(name)
+        ]
+        schemata.append(spec)
 
         if getattr(self, '__recursion__', False):
-            return Implements(schema, spec)
+            return Implements(*schemata)
 
         self.__recursion__ = True
         dynamically_provided = []
@@ -254,7 +296,8 @@ class FlowSchemaSpecificationDescriptor(ObjectSpecificationDescriptor):
         finally:
             del self.__recursion__
 
-        spec = Implements(schema, spec, *dynamically_provided)
+        schemata.extend(dynamically_provided)
+        spec = Implements(*schemata)
 
         # Cache spec into request
         annotations[self.__class__.__name__ + '.' + digest] = spec
@@ -280,11 +323,16 @@ class FlowSchemaFieldPermissionChecker(DXFieldPermissionChecker):
         return schemata
 
 
-def save_schema(context, schema=None, xml=None):
+def save_schema(context, schema=None, xml=None, language=u''):
     if schema:
         # Update XML schema (got update from model designer)
         try:
-            context.schema = update_schema(aq_base(context).schema, schema)
+            context.schema = update_schema(
+                aq_base(context).schema,
+                schema,
+                language=language,
+            )
+            # TODO: synchronize languages
         except AttributeError:
             context.schema = serializeSchema(schema)
         for name in schema:
@@ -315,7 +363,13 @@ def save_schema(context, schema=None, xml=None):
 @adapter(IFlowSchemaContext, ISchemaModifiedEvent)
 def save_schema_from_schema_context(schema_context, event=None):
     assert event
-    save_schema(schema_context.content, schema=schema_context.schema)
+    language = negotiate(context=getRequest())
+    default_language = api.portal.get_default_language()
+    save_schema(
+        schema_context.content,
+        schema=schema_context.schema,
+        language=language != default_language and language or u'',
+    )
 
 
 @configure.utility.factory(name=u'collective.flow')
@@ -339,6 +393,9 @@ class FlowSchemaPolicy(object):
 def interpolate(template, ob, request=None):
     if request is None:
         request = getRequest()
+    # Currently interpolation uses always the default language by purpose,
+    # because multilingual support would result e.g. in language specific
+    # folder structure (because of the current use cases of interpolation).
     schema = load_schema(
         aq_base(ob).schema,
         cache_key=aq_base(ob).schema_digest,

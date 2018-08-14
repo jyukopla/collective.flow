@@ -15,6 +15,7 @@ from plone import api
 from plone.memoize import view
 from plone.schemaeditor.browser.schema.traversal import SchemaContext
 from venusianconfiguration import configure
+from zope.i18n import negotiate
 from zope.i18nmessageid import MessageFactory
 from zope.interface import implementer
 from zope.lifecycleevent import IObjectModifiedEvent
@@ -55,9 +56,11 @@ def on_flow_change_customize_schemata(context, event):
 @implementer(IFlowSchemaContext)
 class SubFlowSchemaContext(SchemaContext):
     def __init__(self, context, request):
+        language = negotiate(context=request)
         try:
             schema = load_schema(
                 aq_base(context).schema,
+                language=language,
                 cache_key=None,
             )
         except AttributeError:
@@ -112,9 +115,11 @@ class SubFlowSubmitForm(FlowSubmitForm):
     @property
     @view.memoize
     def schema(self):
+        language = negotiate(context=self.request)
         try:
             return load_schema(
                 aq_base(self.context).schema,
+                language=language,
                 cache_key=aq_base(self.context).schema_digest,
             )
         except AttributeError:

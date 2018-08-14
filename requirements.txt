@@ -143,7 +143,7 @@ plone.app.querystring==1.4.8
 plone.app.redirector==1.3.6
 plone.app.registry==1.7.1
 plone.app.relationfield==1.4.0
-plone.app.robotframework==1.1
+plone.app.robotframework==1.2.0
 plone.app.testing==5.0.8
 plone.app.textfield==1.2.11
 plone.app.theming==2.0.3
@@ -210,8 +210,8 @@ pytz==2017.3
 repoze.xmliter==0.6
 requests-toolbelt==0.8.0
 robotframework-debuglibrary==0.8.2
-robotframework-selenium2screenshots==0.7.0
-robotsuite==1.7.0
+robotframework-selenium2screenshots==0.7.2
+robotsuite==2.0.0
 roman==1.4.0
 sauna.reload==0.5.5
 setuptools==38.4.0
@@ -220,7 +220,7 @@ slimit==0.8.1
 snowballstemmer==1.2.1
 sourcecodegen==0.6.14
 sphinx-rtd-theme==0.2.4
-sphinxcontrib-robotframework==0.7.0
+sphinxcontrib-robotframework==0.6.1
 sphinxcontrib-websupport==1.0.1
 tempstorage==4.0.1
 testfixtures==6.2.0
@@ -229,7 +229,6 @@ transaction==2.1.2
 trollius==2.1
 twine==1.10.0
 typing==3.6.2
-unittest2==0.5.1
 venusian==1.1.0
 venusianconfiguration==1.1.0
 yapf==0.22.0
