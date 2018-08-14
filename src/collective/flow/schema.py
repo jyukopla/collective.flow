@@ -53,7 +53,7 @@ SCHEMA_CACHE.cleanup_period = 60 * 60 * 12  # 12 hours
 dynamic = dynamic.create(SCHEMA_MODULE)
 current = threading.local()
 
-IS_TRANSLATION = re.compile(r'/[a-z\-]+/')
+IS_TRANSLATION = re.compile(r'^/[a-z\-]+/$')
 
 CUSTOMIZABLE_TAGS = [
     ns('default'),
