@@ -1,7 +1,7 @@
 Changelog
 =========
 
-0.7.1 (unreleased)
+0.7.1 (2018-08-14)
 ------------------
 
 - Fix flow data descriptor schema order and cache descriptor in request
