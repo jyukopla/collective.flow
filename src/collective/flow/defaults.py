@@ -32,7 +32,7 @@ def firstname():
 
 @provider(IDefaultFactory)
 def lastname():
-    return fullname().split(u' ', 1)[-0]
+    return fullname().split(u' ', 1)[-1]
 
 
 @provider(IDefaultFactory)
