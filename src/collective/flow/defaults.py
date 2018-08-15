@@ -26,6 +26,16 @@ def fullname():
 
 
 @provider(IDefaultFactory)
+def firstname():
+    return fullname().split(u' ', 1)[0]
+
+
+@provider(IDefaultFactory)
+def lastname():
+    return fullname().split(u' ', 1)[-0]
+
+
+@provider(IDefaultFactory)
 def today():
     return datetime.datetime.now().date()
 
