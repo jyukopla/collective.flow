@@ -1,7 +1,7 @@
 Changelog
 =========
 
-0.7.2 (unreleased)
+0.7.2 (2018-08-15)
 ------------------
 
 - Add naive firstname and lastname default factories
