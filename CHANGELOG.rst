@@ -1,7 +1,7 @@
 Changelog
 =========
 
-0.7.4 (unreleased)
+0.7.4 (2018-08-15)
 ------------------
 
 - Add support for serializing default factories
