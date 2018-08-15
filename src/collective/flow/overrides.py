@@ -62,10 +62,14 @@ class ObjectFromUnicode(object):
 
     def fromUnicode(self, value):
         try:
-            obj = resolve(value)
-        except ImportError:
+            data = json.loads(value)
             obj = FlowSubmissionData()
             obj._v_initial_schema = self.context.schema
-            obj.update(json.loads(value))
+            obj.update(data)
+        except ValueError:
+            try:
+                obj = resolve(value)
+            except ImportError:
+                obj = value
         self.context.validate(obj)
         return obj
