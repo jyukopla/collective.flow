@@ -4,12 +4,6 @@ Changelog
 0.7.3 (unreleased)
 ------------------
 
-- Nothing changed yet.
-
-
-0.7.2 (2018-08-15)
-------------------
-
 - Add naive firstname and lastname default factories
   [Asko Soukka]
 - Fix issue where failed to parse schema with broken default factory path
