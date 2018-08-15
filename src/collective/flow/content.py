@@ -14,6 +14,7 @@ from collective.flow.schema import SCHEMA_MODULE
 from persistent.mapping import PersistentMapping
 from plone.app.content.interfaces import INameFromTitle
 from plone.dexterity.content import Container
+from plone.supermodel.interfaces import IDefaultFactory
 from plone.supermodel.interfaces import IToUnicode
 from Products.CMFPlone.interfaces import IPloneBaseTool
 from Products.CMFPlone.interfaces import IWorkflowChain
@@ -164,7 +165,9 @@ class ObjectToUnicode(object):
     def toUnicode(self, value):
         if isinstance(value, FlowSubmissionData):
             return json.dumps(dict(value))
-        if IContextAwareDefaultFactory.providedBy(value):
+        elif IContextAwareDefaultFactory.providedBy(value):
+            return dottedname(value)
+        elif IDefaultFactory.providedBy(value):
             return dottedname(value)
         raise NotImplementedError()
 
