@@ -1,11 +1,29 @@
 Changelog
 =========
 
-0.6.2 (unreleased)
+0.7.2 (unreleased)
 ------------------
 
 - Nothing changed yet.
 
+
+0.7.1 (2018-08-14)
+------------------
+
+- Fix flow data descriptor schema order and cache descriptor in request
+  [Asko Soukka]
+- Fix regexp for matching translations
+  [Asko Soukka]
+- Fix state missing exit-transition in Flow Folder Workflow
+  [Asko Soukka]
+
+0.7.0 (2018-08-14)
+------------------
+
+- Add support for multilingual forms
+  [Asko Soukka]
+- Add custom "Flow" content menu
+  [Asko Soukka]
 
 0.6.1 (2018-07-06)
 ------------------
