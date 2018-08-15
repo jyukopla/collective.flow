@@ -4,8 +4,8 @@ Changelog
 0.7.4 (unreleased)
 ------------------
 
-- Nothing changed yet.
-
+- Add support for serializing default factories
+  [Asko Soukka]
 
 0.7.3 (2018-08-15)
 ------------------
