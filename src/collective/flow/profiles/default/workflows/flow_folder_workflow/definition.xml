@@ -102,7 +102,7 @@
               after_script="">
     <description>
     </description>
-    <action url="%(content_url)s/content_status_modify?workflow_action=reject"
+    <action url="%(content_url)s/content_status_modify?workflow_action=hide"
             category="workflow" icon="">Send back
     </action>
     <guard>
