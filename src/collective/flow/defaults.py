@@ -1,9 +1,32 @@
 # -*- coding: utf-8 -*-
-from plone import api
+from collective.flow import _
+from collective.flow.schema import load_schema
 from plone.supermodel.interfaces import IDefaultFactory
+from venusianconfiguration import configure
+from zope.interface import Interface
 from zope.interface import provider
+from zope.lifecycleevent import IObjectAddedEvent
 
 import datetime
+import plone.api as api
+
+
+@configure.plone.behavior.provides(
+    name=u'submission_default_values',
+    title=_(u'Submission (calculated) default values'),
+    description=_(
+        u'Provides support evaluating default values on creation',
+    ),
+)
+class IDefaultValues(Interface):
+    """Marker interface for submission comments behavior"""
+
+
+@configure.subscriber.handler(
+    for_=(IDefaultValues, IObjectAddedEvent),
+)
+def burnDefaultValues(submission, event):
+    print submission
 
 
 @provider(IDefaultFactory)
