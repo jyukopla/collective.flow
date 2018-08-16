@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 from collective.flow import _
-from collective.flow.schema import load_schema
 from plone.supermodel.interfaces import IDefaultFactory
 from venusianconfiguration import configure
 from zope.interface import Interface
@@ -26,7 +25,7 @@ class IDefaultValues(Interface):
     for_=(IDefaultValues, IObjectAddedEvent),
 )
 def burnDefaultValues(submission, event):
-    print submission
+    pass
 
 
 @provider(IDefaultFactory)
