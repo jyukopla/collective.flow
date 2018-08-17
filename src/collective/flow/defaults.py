@@ -1,10 +1,13 @@
 # -*- coding: utf-8 -*-
+from Acquisition import aq_base
 from collective.flow import _
+from collective.flow.schema import load_schema
 from plone.supermodel.interfaces import IDefaultFactory
 from venusianconfiguration import configure
 from zope.interface import Interface
 from zope.interface import provider
 from zope.lifecycleevent import IObjectAddedEvent
+from zope.schema._bootstrapinterfaces import IContextAwareDefaultFactory
 
 import datetime
 import plone.api as api
@@ -24,8 +27,32 @@ class IDefaultValues(Interface):
 @configure.subscriber.handler(
     for_=(IDefaultValues, IObjectAddedEvent),
 )
-def burnDefaultValues(submission, event):
-    pass
+def burnDefaultValues(ob, event):
+    schema = load_schema(
+        aq_base(ob).schema,
+        cache_key=aq_base(ob).schema_digest,
+    )
+    for name in schema.names():
+        field = schema[name]
+        try:
+            factory = field.defaultFactory
+        except AttributeError:
+            factory = None
+        if not factory:
+            continue
+        bound = field.bind(ob)
+        try:
+            value = bound.get(ob)
+        except AttributeError:
+            value = None
+        if value:
+            continue
+        if IContextAwareDefaultFactory.providedBy(factory):
+            value = factory(ob)
+        else:
+            value = factory()
+        if value:
+            bound.set(ob, value)
 
 
 @provider(IDefaultFactory)
