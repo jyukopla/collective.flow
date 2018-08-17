@@ -22,6 +22,12 @@
     </tal:block>
 
     <tal:block repeat="group view/groups">
+      <h2 class="submissionHeading"
+         tal:content="group/label"
+         tal:condition="group/label|nothing">Fieldset heading</h2>
+      <p class="submissionDescription"
+         tal:content="group/description"
+         tal:condition="group/description|nothing">Fieldset description</p>
       <tal:block repeat="widget group/widgets/values">
         <div class="field">
           <tal:label condition="widget/label|nothing">
