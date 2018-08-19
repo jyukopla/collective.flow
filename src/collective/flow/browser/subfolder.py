@@ -1,12 +1,20 @@
 # -*- coding: utf-8 -*-
 from Acquisition import aq_base
 from collective.flow.browser.folder import FlowSubmitForm
+from collective.flow.interfaces import ATTACHMENT_WORKFLOW_FIELD
+from collective.flow.interfaces import DEFAULT_ATTACHMENT_WORKFLOW
+from collective.flow.interfaces import DEFAULT_FIELDSET_LABEL_FIELD
 from collective.flow.interfaces import DEFAULT_SCHEMA
+from collective.flow.interfaces import DEFAULT_SUBMISSION_WORKFLOW
 from collective.flow.interfaces import ICollectiveFlowLayer
 from collective.flow.interfaces import IFlowFolder
 from collective.flow.interfaces import IFlowSchemaContext
 from collective.flow.interfaces import IFlowSchemaForm
 from collective.flow.interfaces import IFlowSubFolder
+from collective.flow.interfaces import SUBMISSION_BEHAVIORS_FIELD
+from collective.flow.interfaces import SUBMISSION_PATH_TEMPLATE_FIELD
+from collective.flow.interfaces import SUBMISSION_TITLE_TEMPLATE_FIELD
+from collective.flow.interfaces import SUBMISSION_WORKFLOW_FIELD
 from collective.flow.schema import customized_schema
 from collective.flow.schema import load_schema
 from collective.flow.schema import save_schema
@@ -86,31 +94,64 @@ class SubFlowSchemaContext(SchemaContext):
 @implementer(IFlowSchemaForm)
 class SubFlowSubmitForm(FlowSubmitForm):
     def label(self):
-        return self.context.aq_explicit.aq_acquire('title')
+        try:
+            return self.context.aq_explicit.aq_acquire('title')
+        except AttributeError:
+            return self.context.title
 
     @property
     def default_fieldset_label(self):
-        return self.context.aq_explicit.aq_acquire('default_fieldset_label')
+        try:
+            return self.context.aq_explicit.aq_acquire(
+                DEFAULT_FIELDSET_LABEL_FIELD,
+            )
+        except AttributeError:
+            return _(u'Default')
 
     @property
     def submission_title_template(self):
-        return self.context.aq_explicit.aq_acquire('submission_title_template')
+        try:
+            return self.context.aq_explicit.aq_acquire(
+                SUBMISSION_TITLE_TEMPLATE_FIELD,
+            )
+        except AttributeError:
+            return u''
 
     @property
     def submission_path_template(self):
-        return self.context.aq_explicit.aq_acquire('submission_path_template')
+        try:
+            return self.context.aq_explicit.aq_acquire(
+                SUBMISSION_PATH_TEMPLATE_FIELD,
+            )
+        except AttributeError:
+            return u''
 
     @property
     def submission_behaviors(self):
-        return self.context.aq_explicit.aq_acquire('submission_behaviors')
+        try:
+            return self.context.aq_explicit.aq_acquire(
+                SUBMISSION_BEHAVIORS_FIELD,
+            )
+        except AttributeError:
+            return []
 
     @property
     def submission_workflow(self):
-        return self.context.aq_explicit.aq_acquire('submission_workflow')
+        try:
+            return self.context.aq_explicit.aq_acquire(
+                SUBMISSION_WORKFLOW_FIELD,
+            )
+        except AttributeError:
+            return DEFAULT_SUBMISSION_WORKFLOW
 
     @property
     def attachment_workflow(self):
-        return self.context.aq_explicit.aq_acquire('attachment_workflow')
+        try:
+            return self.context.aq_explicit.aq_acquire(
+                ATTACHMENT_WORKFLOW_FIELD,
+            )
+        except AttributeError:
+            return DEFAULT_ATTACHMENT_WORKFLOW
 
     @property
     @view.memoize

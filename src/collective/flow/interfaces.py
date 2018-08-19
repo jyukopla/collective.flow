@@ -19,12 +19,31 @@ from zope.publisher.interfaces.browser import IDefaultBrowserLayer
 
 _ = MessageFactory('collective.flow')
 
+FLOW_NAMESPACE = 'http://namespaces.plone.org/supermodel/flow'
+FLOW_PREFIX = 'flow'
+
+COMMENTS_KEY = u'collective.flow.comments'
+CHANGELOG_KEY = u'collective.flow.changelog'
+
 DEFAULT_SCHEMA = u"""
 <model xmlns="http://namespaces.plone.org/supermodel/schema">
   <schema>
   </schema>
 </model>
 """
+
+DEFAULT_SUBMISSION_WORKFLOW = 'always_private_workflow'
+DEFAULT_ATTACHMENT_WORKFLOW = 'always_private_workflow'
+
+DEFAULT_FIELDSET_LABEL_FIELD = u'default_fieldset_label'
+SUBMISSION_BEHAVIORS_FIELD = u'submission_behaviors'
+SUBMISSION_PATH_TEMPLATE_FIELD = u'submission_path_template'
+SUBMISSION_TITLE_TEMPLATE_FIELD = u'submission_title_template'
+SUBMIT_LABEL_FIELD = u'submit_label'
+SUBMISSION_WORKFLOW_FIELD = u'submission_workflow'
+SUBMISSION_TRANSITION_FIELD = u'submission_transition'
+ATTACHMENT_WORKFLOW_FIELD = u'attachment_workflow'
+ATTACHMENT_TRANSITION_FIELD = u'attachment_transition'
 
 
 class ICollectiveFlowLayer(
@@ -106,13 +125,13 @@ class IFlowFolder(IFlowSchema):
         'advanced',
         label=_(u'Advanced'),
         fields=[
-            u'submission_title_template',
-            u'submission_path_template',
-            u'submission_behaviors',
-            u'submission_workflow',
-            u'submission_transition',
-            u'attachment_workflow',
-            u'attachment_transition',
+            SUBMISSION_TITLE_TEMPLATE_FIELD,
+            SUBMISSION_PATH_TEMPLATE_FIELD,
+            SUBMISSION_BEHAVIORS_FIELD,
+            SUBMISSION_WORKFLOW_FIELD,
+            SUBMISSION_TRANSITION_FIELD,
+            ATTACHMENT_WORKFLOW_FIELD,
+            ATTACHMENT_TRANSITION_FIELD,
         ],
     )
 
@@ -138,7 +157,7 @@ class IFlowFolder(IFlowSchema):
         required=False,
     )
 
-    widget('submission_behaviors', SelectFieldWidget)
+    widget(SUBMISSION_BEHAVIORS_FIELD, SelectFieldWidget)
     submission_behaviors = schema.List(
         title=_(u'Submission behaviors'),
         value_type=schema.Choice(
@@ -150,7 +169,7 @@ class IFlowFolder(IFlowSchema):
     submission_workflow = schema.Choice(
         title=_(u'Submission workflow'),
         vocabulary='plone.app.vocabularies.Workflows',
-        default='always_private_workflow',
+        default=DEFAULT_SUBMISSION_WORKFLOW,
     )
 
     submission_transition = schema.Choice(
@@ -163,7 +182,7 @@ class IFlowFolder(IFlowSchema):
     attachment_workflow = schema.Choice(
         title=_(u'Attachment workflow'),
         vocabulary='plone.app.vocabularies.Workflows',
-        default='always_private_workflow',
+        default=DEFAULT_ATTACHMENT_WORKFLOW,
     )
 
     attachment_transition = schema.Choice(
@@ -217,15 +236,6 @@ class IFlowSubFolder(IFlowSchema):
 
 class IFlowSubmission(IFlowSchema):
     """Flow submission"""
-
-    submission_behaviors = schema.List(
-        title=_(u'Submission behaviors'),
-        value_type=schema.Choice(
-            vocabulary='collective.flow.submission.behaviors',
-        ),
-        readonly=True,
-        required=False,
-    )
 
 
 class IFlowSubmissionComment(Interface):

@@ -1,9 +1,23 @@
 # -*- coding: utf-8 -*-
+from Acquisition import aq_base
+from collective.flow import _
+from collective.flow.history import IVersionableField
+from collective.flow.history import IVersionableSubmission
+from plone.app.versioningbehavior.behaviors import IVersioningSupport
 from plone.memoize import request
+from plone.schemaeditor.interfaces import IFieldEditorExtender
+from plone.schemaeditor.interfaces import ISchemaContext
 from plone.uuid.interfaces import IUUID
 from Products.Five import BrowserView
 from venusianconfiguration import configure
 from z3c.form.interfaces import IWidget
+from zope import schema
+from zope.component import adapter
+from zope.interface import alsoProvides
+from zope.interface import implementer
+from zope.interface import Interface
+from zope.interface import noLongerProvides
+from zope.schema.interfaces import IField
 
 import logging
 import os
@@ -12,6 +26,51 @@ import re
 
 
 logger = logging.getLogger('collective.flow')
+
+
+class IFieldChangelogForm(Interface):
+    changelog = schema.Bool(
+        title=_(u'Enable changelog'),
+        required=False,
+    )
+
+
+@configure.adapter.factory(provides=IFieldChangelogForm)
+@implementer(IFieldChangelogForm)
+@adapter(IField)
+class FieldCommentsAdapter(object):
+    def __init__(self, field):
+        self.field = field
+
+    def _read_changelog(self):
+        return IVersionableField.providedBy(self.field)
+
+    def _write_changelog(self, value):
+        if value:
+            alsoProvides(self.field, IVersionableField)
+        else:
+            noLongerProvides(self.field, IVersionableField)
+
+    changelog = property(_read_changelog, _write_changelog)
+
+
+# The adapter could be registered directly as a named adapter providing
+# IFieldEditorExtender for ISchemaContext and IField. But we can also register
+# a separate callable which returns the schema only if extra conditions pass:
+@configure.adapter.factory(
+    provides=IFieldEditorExtender,
+    name='collective.flow.changelog',
+)
+@adapter(ISchemaContext, IField)
+def get_changelog_schema(schema_context, field):
+    try:
+        if IVersionableSubmission.providedBy(schema_context.content):
+            return IFieldChangelogForm
+        elif (u'submission_versioning' in aq_base(
+                schema_context.content).submission_behaviors):
+            return IFieldChangelogForm
+    except AttributeError:
+        pass
 
 
 # noinspection PyUnusedLocal,PyShadowingNames
@@ -62,7 +121,11 @@ class FieldHistoryView(BrowserView):
         super(FieldHistoryView, self).__init__(widget.context, request)
 
     def enabled(self):
-        return self._pr.isVersionable(self.context)
+        return IVersioningSupport.providedBy(
+            self.context,
+        ) and self._pr.isVersionable(
+            self.context,
+        ) and IVersionableField.providedBy(self.field)
 
     def history(self):
         seen = []

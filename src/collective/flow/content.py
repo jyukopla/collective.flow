@@ -2,11 +2,15 @@
 from Acquisition import aq_base
 from collective.flow.browser.folder import FlowSubmitForm
 from collective.flow.browser.folder import FlowSubmitFormGroup
+from collective.flow.interfaces import ATTACHMENT_WORKFLOW_FIELD
+from collective.flow.interfaces import DEFAULT_ATTACHMENT_WORKFLOW
+from collective.flow.interfaces import DEFAULT_SUBMISSION_WORKFLOW
 from collective.flow.interfaces import ICollectiveFlowLayer
 from collective.flow.interfaces import IFlowAttachment
 from collective.flow.interfaces import IFlowSchema
 from collective.flow.interfaces import IFlowSubmission
 from collective.flow.interfaces import IFlowSubmissionComment
+from collective.flow.interfaces import SUBMISSION_WORKFLOW_FIELD
 from collective.flow.schema import FlowSchemaSpecificationDescriptor
 from collective.flow.schema import IS_TRANSLATION
 from collective.flow.schema import load_model
@@ -236,9 +240,9 @@ class NameFromTitle(object):
 @implementer(IWorkflowChain)
 def getFlowSubmissionWorkflowChain(ob, tool):
     try:
-        wf_id = ob.aq_explicit.aq_acquire('submission_workflow')
+        wf_id = ob.aq_explicit.aq_acquire(SUBMISSION_WORKFLOW_FIELD)
     except AttributeError:
-        wf_id = None
+        wf_id = DEFAULT_SUBMISSION_WORKFLOW
     if wf_id:
         return tuple((wf_id, ))
     else:
@@ -250,9 +254,9 @@ def getFlowSubmissionWorkflowChain(ob, tool):
 @implementer(IWorkflowChain)
 def getFlowAttachmentWorkflowChain(ob, tool):
     try:
-        wf_id = ob.aq_explicit.aq_acquire('attachment_workflow')
+        wf_id = ob.aq_explicit.aq_acquire(ATTACHMENT_WORKFLOW_FIELD)
     except AttributeError:
-        wf_id = None
+        wf_id = DEFAULT_ATTACHMENT_WORKFLOW
     if wf_id:
         return tuple((wf_id, ))
     else:

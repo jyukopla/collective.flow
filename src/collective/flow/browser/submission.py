@@ -4,6 +4,7 @@ from collective.flow.browser.folder import save_form
 from collective.flow.browser.folder import validate
 from collective.flow.browser.widgets import RichTextLabelWidget
 from collective.flow.interfaces import ICollectiveFlowLayer
+from collective.flow.interfaces import IFlowFolder
 from collective.flow.interfaces import IFlowSchemaForm
 from collective.flow.interfaces import IFlowSubmission
 from collective.flow.schema import load_schema
@@ -21,13 +22,36 @@ from zope.i18n import translate
 from zope.i18nmessageid import MessageFactory
 from zope.interface import implementer
 from zope.lifecycleevent import Attributes
+from zope.lifecycleevent import IObjectModifiedEvent
 from zope.lifecycleevent import ObjectModifiedEvent
 
 import functools
+import plone.api as api
 import re
 
 
 _ = MessageFactory('collective.flow')
+
+
+@configure.subscriber.handler(
+    for_=(IFlowFolder, IObjectModifiedEvent),
+)
+def on_flow_change_update_behaviors(context, event):
+    catalog = api.portal.get_tool('portal_catalog')
+    try:
+        submission_behaviors = aq_base(context).submission_behaviors or []
+    except AttributeError:
+        submission_behaviors = []
+    submission_behaviors = sorted(submission_behaviors)
+    for brain in catalog(object_provides=IFlowSubmission.__identifier__,
+                         path='/'.join(context.getPhysicalPath())):
+        ob = aq_base(brain.getObject())
+        try:
+            if (submission_behaviors != sorted(
+                    ob.submission_behaviors or [])):
+                ob.submission_behaviors = submission_behaviors[:]
+        except AttributeError:
+            ob.submission_behaviors = submission_behaviors[:]
 
 
 @configure.browser.page.class_(

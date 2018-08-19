@@ -1,6 +1,9 @@
 # -*- coding: utf-8 -*-
+from Acquisition import aq_base
 from Acquisition import aq_inner
+from collective.flow import _
 from collective.flow.comments import IComments
+from collective.flow.comments import IDiscussableField
 from collective.flow.interfaces import ICollectiveFlowLayer
 from collective.flow.interfaces import IFlowSubmission
 from collective.flow.interfaces import IFlowSubmissionComment
@@ -9,11 +12,19 @@ from plone.app.discussion.browser.conversation import ConversationView
 from plone.app.discussion.interfaces import IConversation
 from plone.app.layout.globals.interfaces import IViewView
 from plone.app.layout.viewlets.interfaces import IBelowContent
+from plone.schemaeditor.interfaces import IFieldEditorExtender
+from plone.schemaeditor.interfaces import ISchemaContext
 from plone.z3cform.interfaces import IWrappedForm
 from Products.Five import BrowserView
 from venusianconfiguration import configure
 from z3c.form.interfaces import IWidget
+from zope import schema
+from zope.component import adapter
 from zope.interface import alsoProvides
+from zope.interface import implementer
+from zope.interface import Interface
+from zope.interface import noLongerProvides
+from zope.schema.interfaces import IField
 
 import logging
 import os
@@ -26,6 +37,51 @@ except ImportError:
     Tile = BrowserView
 
 logger = logging.getLogger('collective.flow')
+
+
+class IFieldCommentsForm(Interface):
+    comments = schema.Bool(
+        title=_(u'Enable comments'),
+        required=False,
+    )
+
+
+@configure.adapter.factory(provides=IFieldCommentsForm)
+@implementer(IFieldCommentsForm)
+@adapter(IField)
+class FieldCommentsAdapter(object):
+    def __init__(self, field):
+        self.field = field
+
+    def _read_comments(self):
+        return IDiscussableField.providedBy(self.field)
+
+    def _write_comments(self, value):
+        if value:
+            alsoProvides(self.field, IDiscussableField)
+        else:
+            noLongerProvides(self.field, IDiscussableField)
+
+    comments = property(_read_comments, _write_comments)
+
+
+# The adapter could be registered directly as a named adapter providing
+# IFieldEditorExtender for ISchemaContext and IField. But we can also register
+# a separate callable which returns the schema only if extra conditions pass:
+@configure.adapter.factory(
+    provides=IFieldEditorExtender,
+    name='collective.flow.comments',
+)
+@adapter(ISchemaContext, IField)
+def get_comments_schema(schema_context, field):
+    try:
+        if IComments.providedBy(schema_context.content):
+            return IFieldCommentsForm
+        elif (u'submission_comments' in aq_base(
+                schema_context.content).submission_behaviors):
+            return IFieldCommentsForm
+    except AttributeError:
+        pass
 
 
 class FieldCommentForm(CommentForm):
@@ -45,6 +101,19 @@ class FieldCommentForm(CommentForm):
         return comment
 
 
+@configure.browser.viewlet.class_(
+    name=u'plone.comments',
+    for_=IFlowSubmission,
+    layer=ICollectiveFlowLayer,
+    manager=IBelowContent,
+    view=IViewView,
+    permission='zope2.View',
+    template=os.path.join(
+        os.path.dirname(__file__),
+        'comments_templates',
+        'reply_form_viewlet.pt',
+    ),
+)
 @configure.browser.viewlet.class_(
     name=u'plone.comments',
     for_=IComments,
@@ -76,11 +145,24 @@ class EmptyDiscussionViewlet(BrowserView):
         self.form.update()
 
     def __call__(self):
-        if self.form is None:
+        if not IComments.providedBy(self.context):
+            return u''
+        elif self.form is None:
             self.update()
         return self.index()
 
 
+@configure.browser.page.class_(
+    name=u'plone.app.standardtiles.discussion',
+    for_=IFlowSubmission,
+    layer=ICollectiveFlowLayer,
+    permission='zope2.View',
+    template=os.path.join(
+        os.path.dirname(__file__),
+        'comments_templates',
+        'reply_form_viewlet.pt',
+    ),
+)
 @configure.browser.page.class_(
     name=u'plone.app.standardtiles.discussion',
     for_=IComments,
@@ -98,6 +180,8 @@ class ReplyFormTile(Tile):
     form = None
 
     def __call__(self):
+        if not IComments.providedBy(self.context):
+            return u''
         # Call form
         self.form = FieldCommentForm(self.context, self.request)
         alsoProvides(self.form, IWrappedForm)
@@ -162,11 +246,12 @@ class FieldCommentsView(BrowserView):
         self.field = widget.field
         self.form = widget.form
         self.name = self.field.__name__
-        self._pr = api.portal.get_tool('portal_repository')
         super(FieldCommentsView, self).__init__(widget.context, request)
 
     def enabled(self):
-        return IComments.providedBy(self.context)
+        return IComments.providedBy(
+            self.context,
+        ) and IDiscussableField.providedBy(self.field)
 
     def update(self):
         self.form_instance = self.form_klass(

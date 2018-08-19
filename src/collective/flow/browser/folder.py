@@ -441,6 +441,9 @@ class FlowSubmitForm(DefaultAddForm):
         # save required submission fields
         submission.schema = remove_attachments(self.context.schema)
         submission.schema_digest = hashlib.md5(submission.schema).hexdigest()
+
+        # we cannot acquire from parent FlowFolder, because behaviors
+        # are resolved (this method called) without acquisition chain
         submission.submission_behaviors = self.submission_behaviors
 
         return aq_base(submission)
