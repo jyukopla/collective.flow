@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2018-07-03 22:14+0000\n"
+"POT-Creation-Date: 2018-08-20 07:33+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI +ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -14,25 +14,21 @@ msgstr ""
 "Preferred-Encodings: utf-8 latin1\n"
 "Domain: DOMAIN\n"
 
-#: collective/flow/configure.py:44
-msgid "Activates collective.flow"
-msgstr ""
-
 #: collective/flow/browser/comments_templates/field_comments_form.pt:81
-msgid "Add new comment"
-msgstr "Lisää uusi kommentti"
+msgid "Add comment"
+msgstr "Kommentoi"
 
-#: collective/flow/interfaces.py:107
+#: collective/flow/interfaces.py:131
 msgid "Advanced"
 msgstr "Asetukset"
 
-#: collective/flow/interfaces.py:169
+#: collective/flow/interfaces.py:194
 msgid "Attachment transition"
-msgstr ""
+msgstr "Liitteiden aloitussiirtymä"
 
-#: collective/flow/interfaces.py:163
+#: collective/flow/interfaces.py:188
 msgid "Attachment workflow"
-msgstr ""
+msgstr "Liitteiden työnkulku"
 
 #: collective/flow/browser/history_templates/field_history_view.pt:4
 msgid "Changelog"
@@ -44,35 +40,76 @@ msgstr "Kommentit"
 
 #: collective/flow/profiles/default/types/FlowSchemaRepository.xml
 msgid "Container for editable schemas"
-msgstr ""
+msgstr "Skeemavarasto"
 
-#: collective/flow/interfaces.py:177
+#: collective/flow/browser/folder.py:556
+msgid "Continue"
+msgstr "Jatka"
+
+#: collective/flow/interfaces.py:202
 msgid "Custom CSS"
-msgstr ""
+msgstr "CSS"
 
-#: collective/flow/interfaces.py:189
+#: collective/flow/interfaces.py:214
 msgid "Custom JavaScript"
-msgstr ""
+msgstr "JavaScript"
 
-#: collective/flow/interfaces.py:201
+#: collective/flow/interfaces.py:226
 msgid "Custom validator"
-msgstr ""
+msgstr "Validointi"
 
-#: collective/flow/configure.py:142
+#: collective/flow/configure.py:155
 msgid "Deactivates collective.flow"
 msgstr ""
 
-#: collective/flow/interfaces.py:73
+#: collective/flow/browser/subfolder.py:111
+msgid "Default"
+msgstr "Perustiedot"
+
+#: collective/flow/interfaces.py:97
 msgid "Default fieldset label"
-msgstr ""
+msgstr "Perustietokenttien otsake"
+
+#: collective/flow/profiles/default/actions.xml
+msgid "Designer"
+msgstr "Suunnittele"
+
+#: collective/flow/profiles/default/actions.xml
+msgid "Edit flow form fields"
+msgstr "Muokkaa lomakeflown kenttiä"
+
+#: collective/flow/profiles/default/actions.xml
+msgid "Edit flow settings"
+msgstr "Muokkaa lomakeflown asetuksia"
+
+#: collective/flow/profiles/default/actions.xml
+msgid "Edit raw XML"
+msgstr "Muokkaa lomakeflown XML"
 
 #: collective/flow/profiles/default/types/FlowSchema.xml
 msgid "Editable schema"
-msgstr ""
+msgstr "Muokattava malli"
 
-#: collective/flow/interfaces.py:239
+#: collective/flow/browser/history.py:33
+msgid "Enable changelog"
+msgstr "Näytä muutosloki"
+
+#: collective/flow/browser/comments.py:44
+msgid "Enable comments"
+msgstr "Näytä kommentit"
+
+#: collective/flow/interfaces.py:255
 msgid "File"
-msgstr ""
+msgstr "Liite"
+
+#: collective/flow/browser/folder.py:536
+#: collective/flow/profiles/default/actions.xml
+msgid "Fill the form for other person"
+msgstr "Täytä lomake jonkun puolesta"
+
+#: collective/flow/browser/folder_templates/folder_form.pt:17
+msgid "Fill this form for other person…"
+msgstr "Täytä lomake jonkun puolesta…"
 
 #: collective/flow/profiles/default/types/FlowAttachment.xml
 msgid "Flow file"
@@ -85,16 +122,12 @@ msgstr "Lomaketyönkulku"
 
 #: collective/flow/profiles/default/types/FlowSchema.xml
 msgid "Flow schema"
-msgstr "Lomakepohja"
-
-#: collective/flow/configure.py:57
-msgid "Flow schemata"
-msgstr "Lomakepohja"
+msgstr "Lomaketyönkulun malli"
 
 #. Default: "Flow folder"
 #: collective/flow/profiles/default/types/FlowSubFolder.xml
 msgid "Flow sub-folder"
-msgstr "Räätälöinti"
+msgstr "Lomaketyönkulun kansio"
 
 #: collective/flow/profiles/default/types/FlowSubmission.xml
 msgid "Flow submission"
@@ -104,18 +137,22 @@ msgstr "Täytetty lomake"
 msgid "Flow submission attachment"
 msgstr "Täytetyn lomakkeen liite"
 
-#: collective/flow/browser/submission.py:104
-#: collective/flow/interfaces.py:74
+#: collective/flow/browser/submission.py:131
+#: collective/flow/interfaces.py:98
 msgid "Form"
 msgstr "Lomake"
 
-#: collective/flow/configure.py:43
+#: collective/flow/configure.py:154
 msgid "Forms, workflows and everything"
 msgstr "Lomakepohjaiset työnkulut"
 
-#: collective/flow/interfaces.py:245
+#: collective/flow/interfaces.py:261
 msgid "Image"
-msgstr ""
+msgstr "Kuva"
+
+#: collective/flow/profiles/default/actions.xml
+msgid "Impersonate"
+msgstr "Imitoi"
 
 #: collective/flow/fields.py:33
 msgid "Instruction"
@@ -125,19 +162,23 @@ msgstr "Ohje"
 msgid "Order"
 msgstr "Järjestys"
 
-#: collective/flow/history.py:16
+#: collective/flow/history.py:23
 msgid "Provides Form flow submission versioning support with CMFEditions"
 msgstr ""
 
-#: collective/flow/comments.py:10
+#: collective/flow/comments.py:16
 msgid "Provides field level comments for Flow Submissions"
 msgstr ""
 
-#: collective/flow/browser/submission.py:133
+#: collective/flow/defaults.py:19
+msgid "Provides support evaluating default values on creation"
+msgstr ""
+
+#: collective/flow/browser/submission.py:162
 msgid "Save and"
 msgstr "Tallenna ja"
 
-#: collective/flow/browser/schema.py:130
+#: collective/flow/browser/schema.py:151
 msgid "Saved"
 msgstr "Tallennettu"
 
@@ -145,60 +186,76 @@ msgstr "Tallennettu"
 msgid "Schema folder"
 msgstr "Lomakepohjakansio"
 
-#: collective/flow/interfaces.py:195
+#: collective/flow/interfaces.py:220
 msgid "Scripts"
 msgstr "JavaScript"
 
-#: collective/flow/interfaces.py:183
+#: collective/flow/interfaces.py:271
+msgid "Select user to impersonate"
+msgstr "Valitse käyttäjä imitoitavaksi"
+
+#: collective/flow/profiles/default/actions.xml
+msgid "Settings"
+msgstr ""
+
+#: collective/flow/interfaces.py:208
 msgid "Styles"
 msgstr "CSS-tyylit"
 
-#: collective/flow/interfaces.py:143
+#: collective/flow/defaults.py:18
+msgid "Submission (calculated) default values"
+msgstr "Esitäytä lomakkeelle oletusarvot"
+
+#: collective/flow/interfaces.py:167
 msgid "Submission behaviors"
 msgstr "Täytetyn lomakkeen toiminnot"
 
-#: collective/flow/comments.py:9
+#: collective/flow/comments.py:15
 msgid "Submission commenting"
 msgstr "Täytetyn lomakkeen kommentointi"
 
-#: collective/flow/interfaces.py:131
+#: collective/flow/interfaces.py:155
 msgid "Submission filing template"
 msgstr "Täytetyn lomakkeen tallennuspolku"
 
-#: collective/flow/interfaces.py:120
+#: collective/flow/interfaces.py:144
 msgid "Submission title template"
 msgstr "Täytetyn lomakkeen otsikkosääntö"
 
-#: collective/flow/history.py:15
+#: collective/flow/history.py:22
 msgid "Submission versioning"
 msgstr "Täytetyn lomakkeen versiointi"
 
-#: collective/flow/interfaces.py:150
+#: collective/flow/interfaces.py:175
 msgid "Submission workflow"
-msgstr ""
+msgstr "Täytetyn lomakkeen työnkulku"
 
-#: collective/flow/interfaces.py:79
+#: collective/flow/interfaces.py:103
 msgid "Submit"
 msgstr "Lähetä"
 
-#: collective/flow/interfaces.py:78
+#: collective/flow/interfaces.py:102
 msgid "Submit button label"
-msgstr ""
+msgstr "Lähetyspainikkeen nimike"
 
-#: collective/flow/interfaces.py:156
+#: collective/flow/interfaces.py:181
 msgid "Submit transition"
-msgstr ""
+msgstr "Täytetyn lomakkeen aloitussiirtymä"
 
 #: collective/flow/browser/widgets.py:32
 msgid "Text"
 msgstr "Teksti"
 
-#: collective/flow/interfaces.py:208
+#: collective/flow/interfaces.py:233
 msgid "Validation"
 msgstr "Validointi"
 
-#: collective/flow/browser/schema.py:80
-#: collective/flow/browser/subfolder.py:72
+#: collective/flow/profiles/default/actions.xml
+msgid "XML"
+msgstr ""
+
+#: collective/flow/browser/schema.py:88
+#: collective/flow/browser/subfolder.py:85
 msgid "design"
 msgstr ""
 
@@ -207,17 +264,27 @@ msgstr ""
 msgid "label_delete"
 msgstr "Poista kommentti"
 
+#. Default: "Flow"
+#: collective/flow/browser/menu.py:35
+msgid "label_flow_menu"
+msgstr ""
+
 #. Default: "Reply"
 #: collective/flow/browser/comments_templates/field_comments_form.pt:68
 msgid "label_reply"
 msgstr "Vastaa kommenttiin"
 
 #. Default: "Customize submission filing sub-paths to allow delegation submission reviewer roles."
-#: collective/flow/interfaces.py:132
+#: collective/flow/interfaces.py:156
 msgid "submission_path_help"
 msgstr ""
 
 #. Default: "Customize submission titles to enhance their discoverability in listings."
-#: collective/flow/interfaces.py:121
+#: collective/flow/interfaces.py:145
 msgid "submission_title_help"
+msgstr ""
+
+#. Default: "Flow form management actions"
+#: collective/flow/browser/menu.py:39
+msgid "title_flow_menu"
 msgstr ""

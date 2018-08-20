@@ -534,7 +534,7 @@ class FlowSubmitForm(DefaultAddForm):
 
 
 class FlowImpersonationForm(AutoExtensibleForm, Form):
-    label = _(u'Fill the form other person')
+    label = _(u'Fill the form for other person')
 
     ignoreContext = True
 

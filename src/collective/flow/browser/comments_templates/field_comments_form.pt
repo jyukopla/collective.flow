@@ -82,7 +82,7 @@
        style="display: block; text-align: right;"
        class="pat-aria-expand"
        aria-controls="${view/widget/id}-commenting"
-       aria-expanded="false">Add new comment</a>
+       aria-expanded="false">Add comment</a>
     <div id="${view/widget/id}-commenting"
          aria-hidden="true" hidden="hidden">
       <div tal:replace="structure view/form_instance/render"></div>

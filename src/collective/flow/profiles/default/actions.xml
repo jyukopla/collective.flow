@@ -37,7 +37,7 @@
     </object>
     <object name="Flow Impersonate" meta_type="CMF Action" i18n:domain="collective.flow">
       <property name="title" i18n:translate="">Impersonate</property>
-      <property name="description" i18n:translate="">Fill form as someone else</property>
+      <property name="description" i18n:translate="">Fill the form for other person</property>
       <property name="url_expr">string:$object_url/@@impersonate</property>
       <property name="icon_expr"/>
       <property name="available_expr">python:path('object/portal_type') in ['FlowFolder', 'FlowSubFolder']</property>

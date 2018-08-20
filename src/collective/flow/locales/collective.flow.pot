@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2018-07-03 22:14+0000\n"
+"POT-Creation-Date: 2018-08-20 07:33+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI +ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -14,23 +14,19 @@ msgstr ""
 "Preferred-Encodings: utf-8 latin1\n"
 "Domain: DOMAIN\n"
 
-#: collective/flow/configure.py:44
-msgid "Activates collective.flow"
-msgstr ""
-
 #: collective/flow/browser/comments_templates/field_comments_form.pt:81
 msgid "Add new comment"
 msgstr ""
 
-#: collective/flow/interfaces.py:107
+#: collective/flow/interfaces.py:131
 msgid "Advanced"
 msgstr ""
 
-#: collective/flow/interfaces.py:169
+#: collective/flow/interfaces.py:194
 msgid "Attachment transition"
 msgstr ""
 
-#: collective/flow/interfaces.py:163
+#: collective/flow/interfaces.py:188
 msgid "Attachment workflow"
 msgstr ""
 
@@ -46,32 +42,73 @@ msgstr ""
 msgid "Container for editable schemas"
 msgstr ""
 
-#: collective/flow/interfaces.py:177
+#: collective/flow/browser/folder.py:556
+msgid "Continue"
+msgstr ""
+
+#: collective/flow/interfaces.py:202
 msgid "Custom CSS"
 msgstr ""
 
-#: collective/flow/interfaces.py:189
+#: collective/flow/interfaces.py:214
 msgid "Custom JavaScript"
 msgstr ""
 
-#: collective/flow/interfaces.py:201
+#: collective/flow/interfaces.py:226
 msgid "Custom validator"
 msgstr ""
 
-#: collective/flow/configure.py:142
+#: collective/flow/configure.py:155
 msgid "Deactivates collective.flow"
 msgstr ""
 
-#: collective/flow/interfaces.py:73
+#: collective/flow/browser/subfolder.py:111
+msgid "Default"
+msgstr ""
+
+#: collective/flow/interfaces.py:97
 msgid "Default fieldset label"
+msgstr ""
+
+#: collective/flow/profiles/default/actions.xml
+msgid "Designer"
+msgstr ""
+
+#: collective/flow/profiles/default/actions.xml
+msgid "Edit flow form fields"
+msgstr ""
+
+#: collective/flow/profiles/default/actions.xml
+msgid "Edit flow settings"
+msgstr ""
+
+#: collective/flow/profiles/default/actions.xml
+msgid "Edit raw XML"
 msgstr ""
 
 #: collective/flow/profiles/default/types/FlowSchema.xml
 msgid "Editable schema"
 msgstr ""
 
-#: collective/flow/interfaces.py:239
+#: collective/flow/browser/history.py:33
+msgid "Enable changelog"
+msgstr ""
+
+#: collective/flow/browser/comments.py:44
+msgid "Enable comments"
+msgstr ""
+
+#: collective/flow/interfaces.py:255
 msgid "File"
+msgstr ""
+
+#: collective/flow/browser/folder.py:536
+#: collective/flow/profiles/default/actions.xml
+msgid "Fill the form for other person"
+msgstr ""
+
+#: collective/flow/browser/folder_templates/folder_form.pt:17
+msgid "Fill this form for other person…"
 msgstr ""
 
 #: collective/flow/profiles/default/types/FlowAttachment.xml
@@ -87,10 +124,6 @@ msgstr ""
 msgid "Flow schema"
 msgstr ""
 
-#: collective/flow/configure.py:57
-msgid "Flow schemata"
-msgstr ""
-
 #. Default: "Flow folder"
 #: collective/flow/profiles/default/types/FlowSubFolder.xml
 msgid "Flow sub-folder"
@@ -104,17 +137,21 @@ msgstr ""
 msgid "Flow submission attachment"
 msgstr ""
 
-#: collective/flow/browser/submission.py:104
-#: collective/flow/interfaces.py:74
+#: collective/flow/browser/submission.py:131
+#: collective/flow/interfaces.py:98
 msgid "Form"
 msgstr ""
 
-#: collective/flow/configure.py:43
+#: collective/flow/configure.py:154
 msgid "Forms, workflows and everything"
 msgstr ""
 
-#: collective/flow/interfaces.py:245
+#: collective/flow/interfaces.py:261
 msgid "Image"
+msgstr ""
+
+#: collective/flow/profiles/default/actions.xml
+msgid "Impersonate"
 msgstr ""
 
 #: collective/flow/fields.py:33
@@ -125,19 +162,23 @@ msgstr ""
 msgid "Order"
 msgstr ""
 
-#: collective/flow/history.py:16
+#: collective/flow/history.py:23
 msgid "Provides Form flow submission versioning support with CMFEditions"
 msgstr ""
 
-#: collective/flow/comments.py:10
+#: collective/flow/comments.py:16
 msgid "Provides field level comments for Flow Submissions"
 msgstr ""
 
-#: collective/flow/browser/submission.py:133
+#: collective/flow/defaults.py:19
+msgid "Provides support evaluating default values on creation"
+msgstr ""
+
+#: collective/flow/browser/submission.py:162
 msgid "Save and"
 msgstr ""
 
-#: collective/flow/browser/schema.py:130
+#: collective/flow/browser/schema.py:151
 msgid "Saved"
 msgstr ""
 
@@ -145,47 +186,59 @@ msgstr ""
 msgid "Schema folder"
 msgstr ""
 
-#: collective/flow/interfaces.py:195
+#: collective/flow/interfaces.py:220
 msgid "Scripts"
 msgstr ""
 
-#: collective/flow/interfaces.py:183
+#: collective/flow/interfaces.py:271
+msgid "Select user to impersonate"
+msgstr ""
+
+#: collective/flow/profiles/default/actions.xml
+msgid "Settings"
+msgstr ""
+
+#: collective/flow/interfaces.py:208
 msgid "Styles"
 msgstr ""
 
-#: collective/flow/interfaces.py:143
+#: collective/flow/defaults.py:18
+msgid "Submission (calculated) default values"
+msgstr ""
+
+#: collective/flow/interfaces.py:167
 msgid "Submission behaviors"
 msgstr ""
 
-#: collective/flow/comments.py:9
+#: collective/flow/comments.py:15
 msgid "Submission commenting"
 msgstr ""
 
-#: collective/flow/interfaces.py:131
+#: collective/flow/interfaces.py:155
 msgid "Submission filing template"
 msgstr ""
 
-#: collective/flow/interfaces.py:120
+#: collective/flow/interfaces.py:144
 msgid "Submission title template"
 msgstr ""
 
-#: collective/flow/history.py:15
+#: collective/flow/history.py:22
 msgid "Submission versioning"
 msgstr ""
 
-#: collective/flow/interfaces.py:150
+#: collective/flow/interfaces.py:175
 msgid "Submission workflow"
 msgstr ""
 
-#: collective/flow/interfaces.py:79
+#: collective/flow/interfaces.py:103
 msgid "Submit"
 msgstr ""
 
-#: collective/flow/interfaces.py:78
+#: collective/flow/interfaces.py:102
 msgid "Submit button label"
 msgstr ""
 
-#: collective/flow/interfaces.py:156
+#: collective/flow/interfaces.py:181
 msgid "Submit transition"
 msgstr ""
 
@@ -193,12 +246,16 @@ msgstr ""
 msgid "Text"
 msgstr ""
 
-#: collective/flow/interfaces.py:208
+#: collective/flow/interfaces.py:233
 msgid "Validation"
 msgstr ""
 
-#: collective/flow/browser/schema.py:80
-#: collective/flow/browser/subfolder.py:72
+#: collective/flow/profiles/default/actions.xml
+msgid "XML"
+msgstr ""
+
+#: collective/flow/browser/schema.py:88
+#: collective/flow/browser/subfolder.py:85
 msgid "design"
 msgstr ""
 
@@ -207,17 +264,27 @@ msgstr ""
 msgid "label_delete"
 msgstr ""
 
+#. Default: "Flow"
+#: collective/flow/browser/menu.py:35
+msgid "label_flow_menu"
+msgstr ""
+
 #. Default: "Reply"
 #: collective/flow/browser/comments_templates/field_comments_form.pt:68
 msgid "label_reply"
 msgstr ""
 
 #. Default: "Customize submission filing sub-paths to allow delegation submission reviewer roles."
-#: collective/flow/interfaces.py:132
+#: collective/flow/interfaces.py:156
 msgid "submission_path_help"
 msgstr ""
 
 #. Default: "Customize submission titles to enhance their discoverability in listings."
-#: collective/flow/interfaces.py:121
+#: collective/flow/interfaces.py:145
 msgid "submission_title_help"
+msgstr ""
+
+#. Default: "Flow form management actions"
+#: collective/flow/browser/menu.py:39
+msgid "title_flow_menu"
 msgstr ""
