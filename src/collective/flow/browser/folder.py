@@ -4,6 +4,7 @@ from AccessControl.security import checkPermission
 from Acquisition import aq_base
 from Acquisition import aq_inner
 from collective.flow.browser.widgets import RichTextLabelWidget
+from collective.flow.interfaces import DEFAULT_FIELDSET_LABEL_FIELD
 from collective.flow.interfaces import DEFAULT_SCHEMA
 from collective.flow.interfaces import IAddFlowSchemaDynamic
 from collective.flow.interfaces import ICollectiveFlowLayer
@@ -11,6 +12,8 @@ from collective.flow.interfaces import IFlowFolder
 from collective.flow.interfaces import IFlowImpersonation
 from collective.flow.interfaces import IFlowSchemaForm
 from collective.flow.interfaces import IImpersonateFlowSchemaDynamic
+from collective.flow.interfaces import SUBMISSION_TITLE_TEMPLATE_FIELD
+from collective.flow.interfaces import SUBMIT_LABEL_FIELD
 from collective.flow.schema import FlowSchemaFieldPermissionChecker
 from collective.flow.schema import interpolate
 from collective.flow.schema import load_schema
@@ -25,6 +28,7 @@ from plone.app.widgets.interfaces import IFieldPermissionChecker
 from plone.autoform.form import AutoExtensibleForm
 from plone.autoform.view import WidgetsView
 from plone.dexterity.browser.add import DefaultAddForm
+from plone.dexterity.browser.edit import DefaultEditForm
 from plone.dexterity.events import AddBegunEvent
 from plone.dexterity.interfaces import IDexterityFTI
 from plone.dexterity.utils import addContentToContainer
@@ -62,6 +66,7 @@ from zope.interface import alsoProvides
 from zope.interface import implementer
 from zope.interface import Invalid
 from zope.location.interfaces import IContained
+from zope.proxy import ProxyBase
 from zope.publisher.interfaces import IPublishTraverse
 from ZPublisher.HTTPRequest import FileUpload
 
@@ -329,8 +334,18 @@ class FlowSubmitForm(DefaultAddForm):
     enable_form_tabbing = False
     css_class = 'pat-folding-fieldsets'
     impersonate_url = None
-    buttons = None
-    handlers = None
+
+    def __init__(self, context, request):
+        super(FlowSubmitForm, self).__init__(context, request)
+        language = negotiate(context=self.request)
+        if language == api.portal.get_default_language():
+            self.localized_context = context
+        else:
+            proxy = LanguageFieldsProxy(self.context)
+            proxy._language = language
+            self.localized_context = proxy
+        self.buttons = button.Buttons()
+        self.handlers = button.Handlers()
 
     def __call__(self):
         if 'disable_border' in self.request.form:
@@ -348,24 +363,24 @@ class FlowSubmitForm(DefaultAddForm):
             return super(FlowSubmitForm, self).__call__()
 
     def label(self):
-        return self.context.Title()
+        return self.localized_context.title
 
     # noinspection PyRedeclaration
     @property
     def description(self):
-        return self.context.Description()
+        return self.localized_context.description
 
     @property
     def default_fieldset_label(self):
-        return self.context.default_fieldset_label
+        return self.localized_context.default_fieldset_label
 
     @property
     def submit_label(self):
-        return self.context.submit_label
+        return self.localized_context.submit_label
 
     @property
     def submission_title_template(self):
-        return self.context.submission_title_template
+        return self.localized_context.submission_title_template
 
     @property
     def submission_path_template(self):
@@ -525,8 +540,7 @@ class FlowSubmitForm(DefaultAddForm):
     def updateActions(self):
         # override to re-title save button and remove the cancel button
         btn = button.Button(name='submit', title=self.submit_label)
-        self.buttons = button.Buttons(btn)
-        self.handlers = button.Handlers()
+        self.buttons += button.Buttons(btn)
         self.handlers.addHandler(btn, self.handleAdd)
         super(FlowSubmitForm, self).updateActions()
 
@@ -596,9 +610,8 @@ class ImpersonatedFlowSubmitForm(FlowSubmitForm):
 class FlowSubmitFormPermissionChecker(FlowSchemaFieldPermissionChecker):
     DEFAULT_PERMISSION = 'Add portal content'
 
-    def __init__(self, view):
-        context = view.context
-        super(FlowSubmitFormPermissionChecker, self).__init__(context)
+    def __init__(self, form):
+        super(FlowSubmitFormPermissionChecker, self).__init__(form.context)
 
 
 class SubmissionView(WidgetsView):
@@ -636,3 +649,115 @@ class SubmissionView(WidgetsView):
             for widget in group.widgets.values():
                 if isinstance(widget, RichTextLabelWidget):
                     widget.label = u''
+
+
+class LanguageFieldsProxy(ProxyBase):
+    __slots__ = ['_context', '_language']
+
+    def __init__(self, context):
+        super(LanguageFieldsProxy, self).__init__(context)
+        self._context = context
+        self._language = None
+
+    def get_title(self):
+        try:
+            return getattr(self._context, 'title' + '_' + self._language)
+        except AttributeError:
+            return self._context.title
+
+    def set_title(self, value):
+        setattr(self._context, 'title' + '_' + self._language, value)
+
+    title = property(get_title, set_title)
+
+    def get_description(self):
+        try:
+            return getattr(self._context, 'description' + '_' + self._language)
+        except AttributeError:
+            return self._context.description
+
+    def set_description(self, value):
+        setattr(self._context, 'description' + '_' + self._language, value)
+
+    description = property(get_description, set_description)
+
+    def get_default_fieldset_label(self):
+        try:
+            return getattr(
+                self._context,
+                DEFAULT_FIELDSET_LABEL_FIELD + '_' + self._language,
+            )
+        except AttributeError:
+            return self._context.default_fieldset_label
+
+    def set_default_fieldset_label(self, value):
+        setattr(
+            self._context,
+            DEFAULT_FIELDSET_LABEL_FIELD + '_' + self._language,
+            value,
+        )
+
+    default_fieldset_label = property(
+        get_default_fieldset_label,
+        set_default_fieldset_label,
+    )
+
+    def get_submit_label(self):
+        try:
+            return getattr(
+                self._context,
+                SUBMIT_LABEL_FIELD + '_' + self._language,
+            )
+        except AttributeError:
+            return self._context.submit_label
+
+    def set_submit_label(self, value):
+        setattr(
+            self._context,
+            SUBMIT_LABEL_FIELD + '_' + self._language,
+            value,
+        )
+
+    submit_label = property(
+        get_submit_label,
+        set_submit_label,
+    )
+
+    def get_submission_title_template(self):
+        try:
+            return getattr(
+                self._context,
+                SUBMISSION_TITLE_TEMPLATE_FIELD + '_' + self._language,
+            )
+        except AttributeError:
+            return self._context.submission_title_template
+
+    def set_submission_title_template(self, value):
+        setattr(
+            self._context,
+            SUBMISSION_TITLE_TEMPLATE_FIELD + '_' + self._language,
+            value,
+        )
+
+    submission_title_template = property(
+        get_submission_title_template,
+        set_submission_title_template,
+    )
+
+
+@configure.browser.page.class_(
+    name='edit',
+    for_=IFlowFolder,
+    layer=ICollectiveFlowLayer,
+    permission='cmf.ModifyPortalContent',
+)
+@implementer(IFlowSchemaForm)
+class FlowFolderEditForm(DefaultEditForm):
+    def getContent(self):
+        language = negotiate(context=self.request)
+        if language == api.portal.get_default_language():
+            return self.context
+        else:
+            proxy = LanguageFieldsProxy(self.context)
+            proxy._language = language
+            return proxy
