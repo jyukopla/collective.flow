@@ -329,6 +329,8 @@ class FlowSubmitForm(DefaultAddForm):
     enable_form_tabbing = False
     css_class = 'pat-folding-fieldsets'
     impersonate_url = None
+    buttons = None
+    handlers = None
 
     def __call__(self):
         if 'disable_border' in self.request.form:
@@ -443,7 +445,7 @@ class FlowSubmitForm(DefaultAddForm):
         # and to avoid needing to reload the form schema)
         save_form(self, data, submission, default_values=True, force=True)
 
-        # save required submission fields
+        # save schema to allow submission to adapt its schema interface
         submission.schema = remove_attachments(self.context.schema)
         submission.schema_digest = hashlib.md5(submission.schema).hexdigest()
 
@@ -522,10 +524,11 @@ class FlowSubmitForm(DefaultAddForm):
 
     def updateActions(self):
         # override to re-title save button and remove the cancel button
+        btn = button.Button(name='submit', title=self.submit_label)
+        self.buttons = button.Buttons(btn)
+        self.handlers = button.Handlers()
+        self.handlers.addHandler(btn, self.handleAdd)
         super(FlowSubmitForm, self).updateActions()
-        self.buttons['save'].title = self.submit_label
-        if 'cancel' in self.buttons:
-            del self.buttons['cancel']
 
 
 class FlowImpersonationForm(AutoExtensibleForm, Form):
