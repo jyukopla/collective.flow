@@ -47,8 +47,7 @@ def on_flow_change_update_behaviors(context, event):
                          path='/'.join(context.getPhysicalPath())):
         ob = aq_base(brain.getObject())
         try:
-            if (submission_behaviors != sorted(
-                    ob.submission_behaviors or [])):
+            if (submission_behaviors != sorted(ob.submission_behaviors or [])):
                 ob.submission_behaviors = submission_behaviors[:]
         except AttributeError:
             ob.submission_behaviors = submission_behaviors[:]
@@ -154,6 +153,7 @@ class SubmissionEditForm(DefaultEditForm):
             if action in actions:
                 del actions[action]
 
+        self.buttons = self.buttons.copy()
         for action_id, action in actions.iteritems():
             new_button = button.Button(
                 name=re.sub('^workflow-transition-(.*)', '\\1', action_id),
