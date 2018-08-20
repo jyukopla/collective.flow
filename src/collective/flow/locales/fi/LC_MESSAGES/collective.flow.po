@@ -196,7 +196,7 @@ msgstr "Valitse käyttäjä imitoitavaksi"
 
 #: collective/flow/profiles/default/actions.xml
 msgid "Settings"
-msgstr ""
+msgstr "Asetukset"
 
 #: collective/flow/interfaces.py:208
 msgid "Styles"
