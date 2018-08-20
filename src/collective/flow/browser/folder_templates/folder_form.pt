@@ -7,14 +7,17 @@
 
 <metal:block fill-slot="main">
 
-  <h1 class="documentFirstHeading" tal:content="view/label | nothing">Form</h1>
+  <h1 class="documentFirstHeading"
+     tal:content="view/label | nothing"
+     i18n:translate="">Form</h1>
 
   <div id="content-core">
-    <form action="${url}" method="GET" i18n:domain="collective.flow"
-       tal:define="url view/impersonate_url|nothing"
-       tal:condition="url">
+    <form action="${url}" method="GET"
+        i18n:domain="collective.flow"
+        tal:define="url view/impersonate_url|nothing"
+        tal:condition="url">
       <p>
-        <input type="submit" value="Fill this form for other person&hellip;" i18n:attributes="value"/>
+        <input type="submit" value="Fill this form for other person" i18n:attributes="value"/>
       </p>
     </form>
     <metal:block use-macro="context/@@ploneform-macros/titlelessform" />

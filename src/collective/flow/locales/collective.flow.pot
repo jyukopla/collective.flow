@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2018-08-20 07:33+0000\n"
+"POT-Creation-Date: 2018-08-20 10:44+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI +ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -14,8 +14,12 @@ msgstr ""
 "Preferred-Encodings: utf-8 latin1\n"
 "Domain: DOMAIN\n"
 
+#: collective/flow/configure.py:46
+msgid "Activates collective.flow"
+msgstr ""
+
 #: collective/flow/browser/comments_templates/field_comments_form.pt:81
-msgid "Add new comment"
+msgid "Add comment"
 msgstr ""
 
 #: collective/flow/interfaces.py:131
@@ -42,7 +46,7 @@ msgstr ""
 msgid "Container for editable schemas"
 msgstr ""
 
-#: collective/flow/browser/folder.py:556
+#: collective/flow/browser/folder.py:557
 msgid "Continue"
 msgstr ""
 
@@ -58,7 +62,7 @@ msgstr ""
 msgid "Custom validator"
 msgstr ""
 
-#: collective/flow/configure.py:155
+#: collective/flow/configure.py:157
 msgid "Deactivates collective.flow"
 msgstr ""
 
@@ -102,12 +106,12 @@ msgstr ""
 msgid "File"
 msgstr ""
 
-#: collective/flow/browser/folder.py:536
+#: collective/flow/browser/folder.py:537
 #: collective/flow/profiles/default/actions.xml
 msgid "Fill the form for other person"
 msgstr ""
 
-#: collective/flow/browser/folder_templates/folder_form.pt:17
+#: collective/flow/browser/folder_templates/folder_form.pt:20
 msgid "Fill this form for other person…"
 msgstr ""
 
@@ -142,7 +146,7 @@ msgstr ""
 msgid "Form"
 msgstr ""
 
-#: collective/flow/configure.py:154
+#: collective/flow/configure.py:45
 msgid "Forms, workflows and everything"
 msgstr ""
 
