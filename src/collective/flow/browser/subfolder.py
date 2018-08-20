@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from Acquisition import aq_base
+from collective.flow.browser.folder import FlowImpersonationForm
 from collective.flow.browser.folder import FlowSubmitForm
 from collective.flow.interfaces import ATTACHMENT_WORKFLOW_FIELD
 from collective.flow.interfaces import DEFAULT_ATTACHMENT_WORKFLOW
@@ -27,6 +28,7 @@ from zope.i18n import negotiate
 from zope.i18nmessageid import MessageFactory
 from zope.interface import implementer
 from zope.lifecycleevent import IObjectModifiedEvent
+from zope.publisher.interfaces import IPublishTraverse
 
 
 _ = MessageFactory('collective.flow')
@@ -168,3 +170,30 @@ class SubFlowSubmitForm(FlowSubmitForm):
                 u'{0}/@@design'.format(self.context.absolute_url()),
             )
             return load_schema(DEFAULT_SCHEMA, cache_key=None)
+
+
+@configure.browser.page.class_(
+    name='impersonate',
+    for_=IFlowSubFolder,
+    layer=ICollectiveFlowLayer,
+    permission='cmf.ModifyPortalContent',
+)
+@implementer(IPublishTraverse)
+@implementer(IFlowSchemaForm)
+class ImpersonatedSubFlowSubmitForm(SubFlowSubmitForm):
+    username = None
+
+    def publishTraverse(self, request, name):
+        self.username = name
+        return self
+
+    def __call__(self):
+        if self.username is None:
+            if 'disable_border' in self.request.form:
+                del self.request.form['disable_border']
+            form = FlowImpersonationForm(self.context, self.request)
+            form.update()
+            return form()
+        else:
+            with api.env.adopt_user(username=self.username):
+                return super(ImpersonatedSubFlowSubmitForm, self).__call__()

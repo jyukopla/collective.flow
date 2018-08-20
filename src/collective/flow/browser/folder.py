@@ -8,7 +8,9 @@ from collective.flow.interfaces import DEFAULT_SCHEMA
 from collective.flow.interfaces import IAddFlowSchemaDynamic
 from collective.flow.interfaces import ICollectiveFlowLayer
 from collective.flow.interfaces import IFlowFolder
+from collective.flow.interfaces import IFlowImpersonation
 from collective.flow.interfaces import IFlowSchemaForm
+from collective.flow.interfaces import IImpersonateFlowSchemaDynamic
 from collective.flow.schema import FlowSchemaFieldPermissionChecker
 from collective.flow.schema import interpolate
 from collective.flow.schema import load_schema
@@ -20,6 +22,7 @@ from datetime import datetime
 from persistent.mapping import PersistentMapping
 from plone import api
 from plone.app.widgets.interfaces import IFieldPermissionChecker
+from plone.autoform.form import AutoExtensibleForm
 from plone.autoform.view import WidgetsView
 from plone.dexterity.browser.add import DefaultAddForm
 from plone.dexterity.events import AddBegunEvent
@@ -37,6 +40,8 @@ from plone.z3cform.fieldsets.group import Group
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from uuid import uuid4
 from venusianconfiguration import configure
+from z3c.form import button
+from z3c.form.form import Form
 from z3c.form.interfaces import IDataManager
 from z3c.form.interfaces import IErrorViewSnippet
 from z3c.form.interfaces import IMultiWidget
@@ -57,6 +62,7 @@ from zope.interface import alsoProvides
 from zope.interface import implementer
 from zope.interface import Invalid
 from zope.location.interfaces import IContained
+from zope.publisher.interfaces import IPublishTraverse
 from ZPublisher.HTTPRequest import FileUpload
 
 import hashlib
@@ -319,11 +325,15 @@ class FlowSubmitForm(DefaultAddForm):
     description = u''
     content = None
     group_class = FlowSubmitFormGroup
+    template = ViewPageTemplateFile(
+        os.path.join('folder_templates', 'folder_form.pt'),
+    )
     view_template = ViewPageTemplateFile(
         os.path.join('folder_templates', 'folder_listing.pt'),
     )
     enable_form_tabbing = False
     css_class = 'pat-folding-fieldsets'
+    impersonate_url = None
 
     def __call__(self):
         if 'disable_border' in self.request.form:
@@ -504,6 +514,15 @@ class FlowSubmitForm(DefaultAddForm):
                     self.request,
                     self.content,
                 )()
+        else:
+            can_edit = checkPermission(  # noqa: P001
+                'cmf.ModifyPortalContent',
+                self.content,
+            )
+            if can_edit:
+                self.impersonate_url = (
+                    self.context.absolute_url() + u'/@@impersonate'
+                )
         return super(FlowSubmitForm, self).render()
 
     def updateActions(self):
@@ -512,6 +531,65 @@ class FlowSubmitForm(DefaultAddForm):
         self.buttons['save'].title = self.submit_label
         if 'cancel' in self.buttons:
             del self.buttons['cancel']
+
+
+class FlowImpersonationForm(AutoExtensibleForm, Form):
+    label = _(u'Fill the form other person')
+
+    ignoreContext = True
+
+    @property
+    @view.memoize
+    def schema(self):
+        try:
+            language = negotiate(context=self.request)
+            schema = load_schema(
+                aq_base(self.context).schema,
+                name='@@impersonate',
+                language=language,
+                cache_key=aq_base(self.context).schema_digest,
+            )
+            alsoProvides(schema, IImpersonateFlowSchemaDynamic)
+            return schema
+        except (AttributeError, KeyError):
+            return IFlowImpersonation
+
+    @button.buttonAndHandler(_(u'Continue'))
+    def handleApply(self, action):
+        data, errors = self.extractData()
+        if errors:
+            self.status = self.formErrorsMessage
+            return
+        self.request.response.redirect(
+            self.request.getURL() + '/' + data['username'],
+        )
+
+
+@configure.browser.page.class_(
+    name='impersonate',
+    for_=IFlowFolder,
+    layer=ICollectiveFlowLayer,
+    permission='cmf.ModifyPortalContent',
+)
+@implementer(IPublishTraverse)
+@implementer(IFlowSchemaForm)
+class ImpersonatedFlowSubmitForm(FlowSubmitForm):
+    username = None
+
+    def publishTraverse(self, request, name):
+        self.username = name
+        return self
+
+    def __call__(self):
+        if self.username is None:
+            if 'disable_border' in self.request.form:
+                del self.request.form['disable_border']
+            form = FlowImpersonationForm(self.context, self.request)
+            form.update()
+            return form()
+        else:
+            with api.env.adopt_user(username=self.username):
+                return super(ImpersonatedFlowSubmitForm, self).__call__()
 
 
 @configure.adapter.factory()

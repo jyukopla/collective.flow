@@ -2,6 +2,7 @@
 from Acquisition import aq_base
 from collective.flow.interfaces import DEFAULT_SCHEMA
 from collective.flow.interfaces import IFlowFolder
+from collective.flow.interfaces import IFlowImpersonation
 from collective.flow.interfaces import IFlowSchemaContext
 from collective.flow.interfaces import IFlowSchemaDynamic
 from lxml import etree
@@ -320,6 +321,25 @@ class FlowSchemaFieldPermissionChecker(DXFieldPermissionChecker):
             schemata = schemata + tuple((schema, ))
         except AttributeError:
             pass
+        try:
+            schema = load_schema(
+                aq_base(self.context).schema,
+                name='++add++',
+                cache_key=aq_base(self.context).schema_digest,
+            )
+            schemata = schemata + tuple((schema, ))
+        except (AttributeError, KeyError):
+            pass
+        try:
+            schema = load_schema(
+                aq_base(self.context).schema,
+                name='@@impersonate',
+                cache_key=aq_base(self.context).schema_digest,
+            )
+            schemata = schemata + tuple((schema, ))
+        except (AttributeError, KeyError):
+            pass
+        schemata = schemata + tuple((IFlowImpersonation, ))
         return schemata
 
 

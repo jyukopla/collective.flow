@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from plone.app.discussion.interfaces import IDiscussionLayer
 from plone.app.z3cform.interfaces import IPloneFormLayer
+from plone.app.z3cform.widget import AjaxSelectFieldWidget
 from plone.app.z3cform.widget import SelectFieldWidget
 from plone.autoform.directives import widget
 from plone.namedfile.field import NamedBlobFile
@@ -59,6 +60,10 @@ class IFlowSchemaDynamic(model.Schema):
 
 
 class IAddFlowSchemaDynamic(IFlowSchemaDynamic):
+    """Marker interface for dynamic flow schemas."""
+
+
+class IImpersonateFlowSchemaDynamic(IFlowSchemaDynamic):
     """Marker interface for dynamic flow schemas."""
 
 
@@ -255,4 +260,14 @@ class IFlowAttachment(model.Schema):
     image = NamedBlobImage(
         title=_(u'Image'),
         required=False,
+    )
+
+
+class IFlowImpersonation(model.Schema):
+    """Default flow impersonation schema"""
+
+    widget('username', AjaxSelectFieldWidget)
+    username = schema.Choice(
+        title=_(u'Select user to impersonate'),
+        vocabulary='plone.app.vocabularies.Users',
     )

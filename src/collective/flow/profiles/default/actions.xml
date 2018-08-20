@@ -18,7 +18,7 @@
       <property name="description" i18n:translate="">Edit flow form fields</property>
       <property name="url_expr">string:$object_url/@@design</property>
       <property name="icon_expr"/>
-      <property name="available_expr">python:path('object/portal_type') in ['FlowFolder']</property>
+      <property name="available_expr">python:path('object/portal_type') in ['FlowSchema', 'FlowFolder', 'FlowSubFolder']</property>
       <property name="permissions">
         <element value="Modify portal content"/>
       </property>
@@ -29,7 +29,18 @@
       <property name="description" i18n:translate="">Edit raw XML</property>
       <property name="url_expr">string:$object_url/@@design/@@modeleditor</property>
       <property name="icon_expr"/>
-      <property name="available_expr">python:path('object/portal_type') in ['FlowFolder']</property>
+      <property name="available_expr">python:path('object/portal_type') in ['FlowSchema', 'FlowFolder', 'FlowSubFolder']</property>
+      <property name="permissions">
+        <element value="Modify portal content"/>
+      </property>
+      <property name="visible">True</property>
+    </object>
+    <object name="Flow Impersonate" meta_type="CMF Action" i18n:domain="collective.flow">
+      <property name="title" i18n:translate="">Impersonate</property>
+      <property name="description" i18n:translate="">Fill form as someone else</property>
+      <property name="url_expr">string:$object_url/@@impersonate</property>
+      <property name="icon_expr"/>
+      <property name="available_expr">python:path('object/portal_type') in ['FlowFolder', 'FlowSubFolder']</property>
       <property name="permissions">
         <element value="Modify portal content"/>
       </property>
