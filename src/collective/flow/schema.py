@@ -312,13 +312,18 @@ class FlowSchemaFieldPermissionChecker(DXFieldPermissionChecker):
     DEFAULT_PERMISSION = 'Modify portal content'
 
     def _get_schemata(self):
-        schemata = tuple(iterSchemata(self.context))
+        schemata = list(iterSchemata(self.context))
         try:
             schema = load_schema(
                 aq_base(self.context).schema,
                 cache_key=aq_base(self.context).schema_digest,
             )
-            schemata = schemata + tuple((schema, ))
+            schemata.append(schema)
+            for name in schema:
+                value_type = getattr(schema[name], 'value_type', None)
+                schema_ = getattr(value_type, 'schema', None)
+                if schema_:
+                    schemata.append(schema_)
         except AttributeError:
             pass
         try:
@@ -327,7 +332,7 @@ class FlowSchemaFieldPermissionChecker(DXFieldPermissionChecker):
                 name='++add++',
                 cache_key=aq_base(self.context).schema_digest,
             )
-            schemata = schemata + tuple((schema, ))
+            schemata.append(schema)
         except (AttributeError, KeyError):
             pass
         try:
@@ -336,11 +341,11 @@ class FlowSchemaFieldPermissionChecker(DXFieldPermissionChecker):
                 name='@@impersonate',
                 cache_key=aq_base(self.context).schema_digest,
             )
-            schemata = schemata + tuple((schema, ))
+            schemata.append(schema)
         except (AttributeError, KeyError):
             pass
-        schemata = schemata + tuple((IFlowImpersonation, ))
-        return schemata
+        schemata.append(IFlowImpersonation)
+        return tuple(schemata)
 
 
 def save_schema(context, schema=None, xml=None, language=u''):
