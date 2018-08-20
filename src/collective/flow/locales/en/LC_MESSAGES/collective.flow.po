@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2018-08-20 10:44+0000\n"
+"POT-Creation-Date: 2018-08-20 19:50+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI +ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -46,7 +46,7 @@ msgstr ""
 msgid "Container for editable schemas"
 msgstr ""
 
-#: collective/flow/browser/folder.py:557
+#: collective/flow/browser/folder.py:569
 msgid "Continue"
 msgstr ""
 
@@ -64,10 +64,6 @@ msgstr ""
 
 #: collective/flow/configure.py:157
 msgid "Deactivates collective.flow"
-msgstr ""
-
-#: collective/flow/browser/subfolder.py:111
-msgid "Default"
 msgstr ""
 
 #: collective/flow/interfaces.py:97
@@ -106,13 +102,13 @@ msgstr ""
 msgid "File"
 msgstr ""
 
-#: collective/flow/browser/folder.py:537
+#: collective/flow/browser/folder.py:549
 #: collective/flow/profiles/default/actions.xml
 msgid "Fill the form for other person"
 msgstr ""
 
 #: collective/flow/browser/folder_templates/folder_form.pt:20
-msgid "Fill this form for other person…"
+msgid "Fill this form for other person"
 msgstr ""
 
 #: collective/flow/profiles/default/types/FlowAttachment.xml
@@ -141,7 +137,8 @@ msgstr ""
 msgid "Flow submission attachment"
 msgstr ""
 
-#: collective/flow/browser/submission.py:131
+#: collective/flow/browser/subfolder.py:138
+#: collective/flow/browser/submission.py:156
 #: collective/flow/interfaces.py:98
 msgid "Form"
 msgstr ""
@@ -178,7 +175,11 @@ msgstr ""
 msgid "Provides support evaluating default values on creation"
 msgstr ""
 
-#: collective/flow/browser/submission.py:162
+#: collective/flow/browser/submission.py:170
+msgid "Save"
+msgstr ""
+
+#: collective/flow/browser/submission.py:191
 msgid "Save and"
 msgstr ""
 
@@ -234,6 +235,7 @@ msgstr ""
 msgid "Submission workflow"
 msgstr ""
 
+#: collective/flow/browser/subfolder.py:202
 #: collective/flow/interfaces.py:103
 msgid "Submit"
 msgstr ""
@@ -259,7 +261,7 @@ msgid "XML"
 msgstr ""
 
 #: collective/flow/browser/schema.py:88
-#: collective/flow/browser/subfolder.py:85
+#: collective/flow/browser/subfolder.py:89
 msgid "design"
 msgstr ""
 

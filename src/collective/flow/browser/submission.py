@@ -3,6 +3,7 @@ from Acquisition import aq_base
 from collective.flow.browser.folder import save_form
 from collective.flow.browser.folder import validate
 from collective.flow.browser.widgets import RichTextLabelWidget
+from collective.flow.interfaces import DEFAULT_FIELDSET_LABEL_FIELD
 from collective.flow.interfaces import ICollectiveFlowLayer
 from collective.flow.interfaces import IFlowFolder
 from collective.flow.interfaces import IFlowSchemaForm
@@ -118,6 +119,8 @@ class SubmissionEditForm(DefaultEditForm):
             self._locale_postfix = ''
         else:
             self._locale_postfix = '_' + language
+        self.buttons = button.Buttons()
+        self.handlers = button.Handlers()
 
     def label(self):
         try:
@@ -143,11 +146,11 @@ class SubmissionEditForm(DefaultEditForm):
         try:
             try:
                 return self.context.aq_explicit.aq_acquire(
-                    'default_fieldset_label' + self._locale_postfix,
+                    DEFAULT_FIELDSET_LABEL_FIELD + self._locale_postfix,
                 )
             except AttributeError:
                 return self.context.aq_explicit.aq_acquire(
-                    'default_fieldset_label',
+                    DEFAULT_FIELDSET_LABEL_FIELD,
                 )
         except AttributeError:
             return _(u'Form')
@@ -164,6 +167,9 @@ class SubmissionEditForm(DefaultEditForm):
     additionalSchemata = ()
 
     def updateActions(self):
+        btn = button.Button(name='save', title=_(u'Save'))
+        self.buttons += button.Buttons(btn)
+        self.handlers.addHandler(btn, self.handleApply)
         # Get currently available workflow actions (re-use from menu)
         actions = {}
         menu = getUtility(IBrowserMenu, name='plone_contentmenu_workflow')

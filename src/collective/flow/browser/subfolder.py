@@ -7,6 +7,7 @@ from collective.flow.interfaces import DEFAULT_ATTACHMENT_WORKFLOW
 from collective.flow.interfaces import DEFAULT_FIELDSET_LABEL_FIELD
 from collective.flow.interfaces import DEFAULT_SCHEMA
 from collective.flow.interfaces import DEFAULT_SUBMISSION_WORKFLOW
+from collective.flow.interfaces import IAddFlowSchemaDynamic
 from collective.flow.interfaces import ICollectiveFlowLayer
 from collective.flow.interfaces import IFlowFolder
 from collective.flow.interfaces import IFlowSchemaContext
@@ -16,6 +17,7 @@ from collective.flow.interfaces import SUBMISSION_BEHAVIORS_FIELD
 from collective.flow.interfaces import SUBMISSION_PATH_TEMPLATE_FIELD
 from collective.flow.interfaces import SUBMISSION_TITLE_TEMPLATE_FIELD
 from collective.flow.interfaces import SUBMISSION_WORKFLOW_FIELD
+from collective.flow.interfaces import SUBMIT_LABEL_FIELD
 from collective.flow.schema import customized_schema
 from collective.flow.schema import load_schema
 from collective.flow.schema import save_schema
@@ -26,6 +28,7 @@ from plone.schemaeditor.browser.schema.traversal import SchemaContext
 from venusianconfiguration import configure
 from zope.i18n import negotiate
 from zope.i18nmessageid import MessageFactory
+from zope.interface import alsoProvides
 from zope.interface import implementer
 from zope.lifecycleevent import IObjectModifiedEvent
 from zope.publisher.interfaces import IPublishTraverse
@@ -95,27 +98,55 @@ class SubFlowSchemaContext(SchemaContext):
 )
 @implementer(IFlowSchemaForm)
 class SubFlowSubmitForm(FlowSubmitForm):
+    def __init__(self, context, request):
+        super(SubFlowSubmitForm, self).__init__(context, request)
+        language = negotiate(context=request)
+        if language == api.portal.get_default_language():
+            self._locale_postfix = ''
+        else:
+            self._locale_postfix = '_' + language
+
     def label(self):
         try:
-            return self.context.aq_explicit.aq_acquire('title')
+            return self.context.aq_explicit.aq_acquire(
+                'title' + self._locale_postfix,
+            )
         except AttributeError:
-            return self.context.title
+            return self.context.aq_explicit.aq_acquire('title')
+
+    def description(self):
+        try:
+            return self.context.aq_explicit.aq_acquire(
+                'description' + self._locale_postfix,
+            )
+        except AttributeError:
+            return self.context.aq_explicit.aq_acquire('description')
 
     @property
     def default_fieldset_label(self):
         try:
-            return self.context.aq_explicit.aq_acquire(
-                DEFAULT_FIELDSET_LABEL_FIELD,
-            )
+            try:
+                return self.context.aq_explicit.aq_acquire(
+                    DEFAULT_FIELDSET_LABEL_FIELD + self._locale_postfix,
+                )
+            except AttributeError:
+                return self.context.aq_explicit.aq_acquire(
+                    DEFAULT_FIELDSET_LABEL_FIELD,
+                )
         except AttributeError:
-            return _(u'Default')
+            return _(u'Form')
 
     @property
     def submission_title_template(self):
         try:
-            return self.context.aq_explicit.aq_acquire(
-                SUBMISSION_TITLE_TEMPLATE_FIELD,
-            )
+            try:
+                return self.context.aq_explicit.aq_acquire(
+                    SUBMISSION_TITLE_TEMPLATE_FIELD + self._locale_postfix,
+                )
+            except AttributeError:
+                return self.context.aq_explicit.aq_acquire(
+                    SUBMISSION_TITLE_TEMPLATE_FIELD,
+                )
         except AttributeError:
             return u''
 
@@ -156,15 +187,39 @@ class SubFlowSubmitForm(FlowSubmitForm):
             return DEFAULT_ATTACHMENT_WORKFLOW
 
     @property
+    def submit_label(self):
+        try:
+            try:
+                return self.context.aq_explicit.aq_acquire(
+                    SUBMIT_LABEL_FIELD + self._locale_postfix,
+                )
+            except AttributeError:
+                return self.context.aq_explicit.aq_acquire(
+                    SUBMIT_LABEL_FIELD,
+                )
+        except AttributeError:
+            return _(u'Submit')
+
+    @property
     @view.memoize
     def schema(self):
         language = negotiate(context=self.request)
         try:
-            return load_schema(
-                aq_base(self.context).schema,
-                language=language,
-                cache_key=aq_base(self.context).schema_digest,
-            )
+            try:
+                schema = load_schema(
+                    aq_base(self.context).schema,
+                    name='++add++',
+                    language=language,
+                    cache_key=aq_base(self.context).schema_digest,
+                )
+                alsoProvides(schema, IAddFlowSchemaDynamic)
+                return schema
+            except KeyError:
+                return load_schema(
+                    aq_base(self.context).schema,
+                    language=language,
+                    cache_key=aq_base(self.context).schema_digest,
+                )
         except AttributeError:
             self.request.response.redirect(
                 u'{0}/@@design'.format(self.context.absolute_url()),
