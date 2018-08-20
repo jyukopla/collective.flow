@@ -261,7 +261,15 @@ class FlowSchemaSpecificationDescriptor(ObjectSpecificationDescriptor):
 
         request = getRequest()
         annotations = IAnnotations(request)
-        digest = inst.schema_digest
+
+        try:
+            digest = inst.schema_digest
+        except AttributeError:
+            spec = getattr(inst, '__provides__', None)
+            if spec is None:
+                return implementedBy(cls)
+            else:
+                return spec
 
         # Return cached spec from request
         if not getattr(self, '__recursion__', False):
