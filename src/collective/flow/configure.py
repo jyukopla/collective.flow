@@ -39,28 +39,30 @@ scan(transforms)
 
 configure.include(package=browser, file='__init__.py')
 
-# Creation of schema repository is disabled until there is a real use-case
-# and user interfaces for it:
 
-# @configure.gs.registerProfile.post_handler(
-#     name=u'default',
-#     title=_(u'Forms, workflows and everything'),
-#     description=_(u'Activates collective.flow'),
-#     directory=u'profiles/default',
-#     provides=u'Products.GenericSetup.interfaces.EXTENSION',
-# )
-# def setup(context):
-#     portal = api.portal.get()
-#     if 'schemata' in portal.objectIds():
-#         return
-#     portal.portal_types.FlowSchemaRepository.global_allow = True
-#     api.content.create(
-#         portal,
-#         'FlowSchemaRepository',
-#         'schemata',
-#         _(u'Flow schemata'),
-#     )
-#     portal.portal_types.FlowSchemaRepository.global_allow = False
+@configure.gs.registerProfile.post_handler(
+    name=u'default',
+    title=_(u'Forms, workflows and everything'),
+    description=_(u'Activates collective.flow'),
+    directory=u'profiles/default',
+    provides=u'Products.GenericSetup.interfaces.EXTENSION',
+)
+def setup(context):
+    # Creation of schema repository is disabled until there is a real use-case
+    # and user interfaces for it:
+    pass
+    # portal = api.portal.get()
+    # if 'schemata' in portal.objectIds():
+    #     return
+    # portal.portal_types.FlowSchemaRepository.global_allow = True
+    # api.content.create(
+    #     portal,
+    #     'FlowSchemaRepository',
+    #     'schemata',
+    #     _(u'Flow schemata'),
+    # )
+    # portal.portal_types.FlowSchemaRepository.global_allow = False
+
 
 configure.gs.upgradeDepends(
     source='1000',
