@@ -111,11 +111,29 @@ class SubmissionEditForm(DefaultEditForm):
     enable_form_tabbing = False
     css_class = 'pat-folding-fieldsets'
 
+    def __init__(self, context, request):
+        super(SubmissionEditForm, self).__init__(context, request)
+        language = negotiate(context=request)
+        if language == api.portal.get_default_language():
+            self._locale_postfix = ''
+        else:
+            self._locale_postfix = '_' + language
+
     def label(self):
-        return self.context.aq_explicit.aq_acquire('title')
+        try:
+            return self.context.aq_explicit.aq_acquire(
+                'title' + self._locale_postfix,
+            )
+        except AttributeError:
+            return self.context.aq_explicit.aq_acquire('title')
 
     def description(self):
-        return self.context.aq_explicit.aq_acquire('description')
+        try:
+            return self.context.aq_explicit.aq_acquire(
+                'description' + self._locale_postfix,
+            )
+        except AttributeError:
+            return self.context.aq_explicit.aq_acquire('description')
 
     def validator(self):
         return self.context.aq_explicit.aq_acquire('validator')
@@ -123,9 +141,14 @@ class SubmissionEditForm(DefaultEditForm):
     @property
     def default_fieldset_label(self):
         try:
-            return self.context.aq_explicit.aq_acquire(
-                'default_fieldset_label',
-            )
+            try:
+                return self.context.aq_explicit.aq_acquire(
+                    'default_fieldset_label' + self._locale_postfix,
+                )
+            except AttributeError:
+                return self.context.aq_explicit.aq_acquire(
+                    'default_fieldset_label',
+                )
         except AttributeError:
             return _(u'Form')
 
