@@ -129,12 +129,7 @@ def save_form(  # noqa: C901 (this has gotten quite complex)
     try:
         for group in form.groups:
             changes.update(
-                save_form(
-                    group,
-                    data,
-                    submission,
-                    default_values,
-                ),
+                save_form(group, data, submission, default_values, force),
             )
     except AttributeError:
         pass
