@@ -1,12 +1,16 @@
 # -*- coding: utf-8 -*-
 from collective.flow.content import FlowSubmissionData
 from collective.flow.schema import SCHEMA_MODULE
+from plone.app.z3cform.converters import AjaxSelectWidgetConverter
+from plone.app.z3cform.interfaces import IAjaxSelectWidget
 from plone.supermodel.interfaces import IToUnicode
 from venusianconfiguration import configure
+from z3c.form.interfaces import IDataConverter
 from zope.component import adapter
 from zope.dottedname.resolve import resolve
 from zope.interface import implementer
 from zope.schema._bootstrapinterfaces import IFromUnicode
+from zope.schema.interfaces import ICollection
 from zope.schema.interfaces import IInterfaceField
 from zope.schema.interfaces import IObject
 
@@ -18,7 +22,6 @@ import plone.supermodel
 
 configure.include(package=plone.supermodel)
 
-
 configure.browser.resource(
     name='schemaeditor.js',
     file=os.path.join('browser/schemaeditor.js'),
@@ -26,10 +29,19 @@ configure.browser.resource(
 
 
 @configure.adapter.factory()
+@adapter(ICollection, IAjaxSelectWidget)
+@implementer(IDataConverter)
+class SafeAjaxSelectWidgetConverter(AjaxSelectWidgetConverter):
+    def toFieldValue(self, value):
+        if value is None:
+            value = ''
+        return super(SafeAjaxSelectWidgetConverter, self).toFieldValue(value)
+
+
+@configure.adapter.factory()
 @implementer(IToUnicode)
 @adapter(IInterfaceField)
 class InterfaceFieldToUnicode(object):
-
     def __init__(self, context):
         self.context = context
 
@@ -56,7 +68,6 @@ class InterfaceFieldToUnicode(object):
 @implementer(IFromUnicode)
 @adapter(IObject)
 class ObjectFromUnicode(object):
-
     def __init__(self, context):
         self.context = context
 
