@@ -1,7 +1,7 @@
 Changelog
 =========
 
-0.8.1 (unreleased)
+0.8.1 (2018-08-21)
 ------------------
 
 - Fix issue where permission check for being able to impersonate failed
