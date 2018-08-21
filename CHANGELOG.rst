@@ -1,7 +1,7 @@
 Changelog
 =========
 
-0.8.3 (unreleased)
+0.8.3 (2018-08-21)
 ------------------
 
 - Patch issue with ajax select widget converter failing with None values
