@@ -1,11 +1,37 @@
 Changelog
 =========
 
-0.7.5 (unreleased)
+0.8.0 (unreleased)
 ------------------
 
-- Nothing changed yet.
-
+- Add submission value interpolation to resolve default values for empty fields
+  [Asko Soukka]
+- Fix issue where empty submission path resulted in saving submission to root
+  flow folder
+  [Asko Soukka]
+- Add localization support for form configuration
+  [Asko Soukka]
+- Fix issue were schema specification description did fail when digest was
+  still missing
+  [Asko Soukka]
+- Fix issue where 'force' save flag was not passed when applied save for schema
+  groups
+  [Asko Soukka]
+- Fix issue where form submit button update did update shared class instead of
+  form instance
+  [Asko Soukka]
+- Allow support for sub schema ajax vocabularies
+  [Asko Soukka]
+- Add built-in impersonation for add form
+  [Asko Soukka]
+- Implement per field toggle for comments and changelog
+  [Asko Soukka]
+- Add subheading into display form views
+  [Asko Soukka]
+- Implement behavior to fill missing values
+  [Asko Soukka]
+- Fix broken transition in flow workflow
+  [Asko Soukka]
 
 0.7.4 (2018-08-15)
 ------------------
