@@ -266,7 +266,6 @@ def reset_fileupload(form):
     reset_fileupload_widgets(form)
 
 
-@unrestricted
 def get_submission_container(root, container, submission):
     try:
         template = submission.aq_explicit.aq_acquire(
@@ -284,14 +283,19 @@ def get_submission_container(root, container, submission):
         try:
             container = container[id_]
         except KeyError:
-            content = createContent('FlowSubFolder', title=title)
-            IOwned(content).changeOwnership(IOwned(container).getOwner())
-            content.id = id_
-            content.schema = container.schema
-            content.schema_digest = container.schema_digest
-            addContentToContainer(container, content, checkConstraints=False)
-            container = container[id_]
+            container = create_sub_folder(container, id_, title)
     return container
+
+
+@unrestricted
+def create_sub_folder(container, id_, title):
+    content = createContent('FlowSubFolder', title=title)
+    IOwned(content).changeOwnership(IOwned(container).getOwner())
+    content.id = id_
+    content.schema = container.schema
+    content.schema_digest = container.schema_digest
+    addContentToContainer(container, content, checkConstraints=False)
+    return container[id_]
 
 
 def get_submission_title(form, submission):

@@ -37,6 +37,7 @@ from zope.interface.declarations import ObjectSpecificationDescriptor
 from zope.lifecycleevent import Attributes
 from zope.lifecycleevent import ObjectModifiedEvent
 from zope.schema import Object
+from zope.schema._bootstrapinterfaces import IContextAwareDefaultFactory
 
 import hashlib
 import logging
@@ -440,6 +441,19 @@ def interpolate(template, ob, request=None):
         try:
             value = bound.get(ob)
         except AttributeError:
+            value = ''
+        if not value:
+            try:
+                factory = field.defaultFactory
+            except AttributeError:
+                factory = None
+            if not factory:
+                continue
+            if IContextAwareDefaultFactory.providedBy(factory):
+                value = factory(ob)
+            else:
+                value = factory()
+        if not value:
             mapping[name] = ''
             continue
         try:
