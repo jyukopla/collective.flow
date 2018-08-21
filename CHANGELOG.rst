@@ -1,7 +1,7 @@
 Changelog
 =========
 
-0.8.2 (unreleased)
+0.8.2 (2018-08-21)
 ------------------
 
 - Fix issues with localizing template values for localized submission
