@@ -4,8 +4,8 @@ Changelog
 0.8.3 (unreleased)
 ------------------
 
-- Nothing changed yet.
-
+- Patch issue with ajax select widget converter failing with None values
+  [Asko Soukka]
 
 0.8.2 (2018-08-21)
 ------------------
