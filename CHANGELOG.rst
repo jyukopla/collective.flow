@@ -4,8 +4,8 @@ Changelog
 0.8.1 (unreleased)
 ------------------
 
-- Nothing changed yet.
-
+- Fix issue where permission check for being able to impersonate failed
+  [Asko Soukka]
 
 0.8.0 (2018-08-21)
 ------------------
