@@ -1,7 +1,7 @@
 Changelog
 =========
 
-0.8.0 (unreleased)
+0.8.0 (2018-08-21)
 ------------------
 
 - Add submission value interpolation to resolve default values for empty fields
