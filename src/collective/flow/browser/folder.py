@@ -535,7 +535,7 @@ class FlowSubmitForm(DefaultAddForm):
         else:
             can_edit = checkPermission(  # noqa: P001
                 'cmf.ModifyPortalContent',
-                self.content,
+                self.context,
             )
             if can_edit:
                 self.impersonate_url = (
