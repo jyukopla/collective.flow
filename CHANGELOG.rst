@@ -4,8 +4,8 @@ Changelog
 0.8.2 (unreleased)
 ------------------
 
-- Nothing changed yet.
-
+- Fix issues with localizing template values for localized submission
+  [Asko Soukka]
 
 0.8.1 (2018-08-21)
 ------------------
