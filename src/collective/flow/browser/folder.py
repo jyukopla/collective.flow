@@ -60,6 +60,7 @@ from zope.component import getMultiAdapter
 from zope.component import getUtility
 from zope.component import queryMultiAdapter
 from zope.event import notify
+from zope.globalrequest import getRequest
 from zope.i18n import negotiate
 from zope.i18nmessageid import MessageFactory
 from zope.interface import alsoProvides
@@ -276,7 +277,10 @@ def get_submission_container(root, container, submission):
     if not template:
         return container
     container = root
-    path = datetime.utcnow().strftime(interpolate(template, submission))
+    language = api.portal.get_default_language()
+    path = datetime.utcnow().strftime(
+        interpolate(template, submission, language=language),
+    )
     normalizer = getUtility(IIDNormalizer)
     for title in filter(bool, path.split('/')):
         id_ = normalizer.normalize(title)
@@ -299,10 +303,16 @@ def create_sub_folder(container, id_, title):
 
 
 def get_submission_title(form, submission):
+    language = negotiate(context=getRequest())
     try:
-        template = submission.aq_explicit.aq_acquire(
-            'submission_title_template',
-        )
+        try:
+            template = submission.aq_explicit.aq_acquire(
+                SUBMISSION_TITLE_TEMPLATE_FIELD + '_' + language,
+            )
+        except AttributeError:
+            template = submission.aq_explicit.aq_acquire(
+                SUBMISSION_TITLE_TEMPLATE_FIELD,
+            )
         return datetime.utcnow().strftime(
             interpolate(template, submission).encode('utf-8', 'ignore'),
         ).decode('utf-8', 'ignore')

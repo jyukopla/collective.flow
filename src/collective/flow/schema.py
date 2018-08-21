@@ -5,6 +5,7 @@ from collective.flow.interfaces import IFlowFolder
 from collective.flow.interfaces import IFlowImpersonation
 from collective.flow.interfaces import IFlowSchemaContext
 from collective.flow.interfaces import IFlowSchemaDynamic
+from contextlib import contextmanager
 from lxml import etree
 from lxml.etree import tostring
 from plone.alterego import dynamic
@@ -24,8 +25,11 @@ from plone.supermodel.utils import ns
 from venusianconfiguration import configure
 from zope.annotation import IAnnotations
 from zope.component import adapter
+from zope.component import getGlobalSiteManager
+from zope.component import queryUtility
 from zope.event import notify
 from zope.globalrequest import getRequest
+from zope.i18n import INegotiator
 from zope.i18n import interpolate as i18n_interpolate
 from zope.i18n import negotiate
 from zope.i18n import translate
@@ -424,12 +428,55 @@ class FlowSchemaPolicy(object):
         return 'any'
 
 
-def interpolate(template, ob, request=None):
+@implementer(INegotiator)
+class FixedNegotiator(object):
+    def __init__(self, language):
+        self.language = language
+
+    # noinspection PyUnusedLocal
+    def getLanguage(self, *args, **kwargs):
+        return self.language
+
+
+@contextmanager
+def fixed_language(language, request=None):
+    """Context manager for forcing the current language by temporarily
+    replacing the global language negotiator with a fixed language negotiator
+    """
     if request is None:
         request = getRequest()
-    # Currently interpolation uses always the default language by purpose,
-    # because multilingual support would result e.g. in language specific
-    # folder structure (because of the current use cases of interpolation).
+    current_language = negotiate(context=request)
+    if current_language != language:
+        original = queryUtility(INegotiator)
+        if original is not None:
+            gsm = getGlobalSiteManager()
+            replacement = FixedNegotiator(language)
+            gsm.registerUtility(replacement, provided=INegotiator)
+            try:
+                yield
+            finally:
+                gsm.unregisterUtility(replacement, provided=INegotiator)
+                gsm.registerUtility(original, provided=INegotiator)
+        else:
+            yield
+    else:
+        yield
+
+
+# Currently interpolation uses always the default language by purpose,
+# because multilingual support would result e.g. in language specific
+# folder structure (because of the current use cases of interpolation).
+def interpolate(template, ob, request=None, language=None):
+    if language:
+        with fixed_language(language):
+            return _interpolate(template, ob, request)
+    else:
+        return _interpolate(template, ob, request)
+
+
+def _interpolate(template, ob, request=None):
+    if request is None:
+        request = getRequest()
     schema = load_schema(
         aq_base(ob).schema,
         cache_key=aq_base(ob).schema_digest,
