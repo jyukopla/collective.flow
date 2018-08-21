@@ -267,7 +267,7 @@ def reset_fileupload(form):
 
 
 @unrestricted
-def get_submission_container(container, submission):
+def get_submission_container(root, container, submission):
     try:
         template = submission.aq_explicit.aq_acquire(
             'submission_path_template',
@@ -276,6 +276,7 @@ def get_submission_container(container, submission):
         template = None
     if not template:
         return container
+    container = root
     path = datetime.utcnow().strftime(interpolate(template, submission))
     normalizer = getUtility(IIDNormalizer)
     for title in filter(bool, path.split('/')):
@@ -484,6 +485,7 @@ class FlowSubmitForm(DefaultAddForm):
             break
         container = get_submission_container(
             folder,
+            self.context,
             submission.__of__(self.context),
         )
         submission = addContentToContainer(
