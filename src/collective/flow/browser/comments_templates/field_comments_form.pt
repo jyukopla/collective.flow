@@ -77,8 +77,8 @@
   </table>
   </div>
 
-  <div class="reply">
-    <a href="#" i18n:translate=""
+  <div class="reply" tal:condition="has_replies">
+    <a href="#" i18n:translate="label-add-new-comment"
        style="display: block; text-align: right;"
        class="pat-aria-expand"
        aria-controls="${view/widget/id}-commenting"
@@ -88,6 +88,19 @@
       <div tal:replace="structure view/form_instance/render"></div>
     </div>
   </div>
+
+  <div class="reply" tal:condition="not:has_replies">
+    <a href="#" i18n:translate="label-add-first-comment"
+       style="display: block; text-align: right;"
+       class="pat-aria-expand"
+       aria-controls="${view/widget/id}-commenting"
+       aria-expanded="false">Add comment</a>
+    <div id="${view/widget/id}-commenting"
+         aria-hidden="true" hidden="hidden">
+      <div tal:replace="structure view/form_instance/render"></div>
+    </div>
+  </div>
+
   </div>
 
 </tal:block>

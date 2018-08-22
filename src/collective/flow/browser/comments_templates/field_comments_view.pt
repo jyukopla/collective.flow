@@ -1,5 +1,6 @@
 <tal:block tal:define="has_replies python:view.has_replies();
-                       replies python:view.get_replies();">
+                       replies python:view.get_replies();"
+           i18n:domain="collective.flow">
   <a href="#"
      style="display: block; text-align: right;"
      class="toggle-discussion-link pat-aria-expand"

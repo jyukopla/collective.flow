@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2018-08-20 19:50+0000\n"
+"POT-Creation-Date: 2018-08-22 03:12+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI +ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,10 +16,6 @@ msgstr ""
 
 #: collective/flow/configure.py:46
 msgid "Activates collective.flow"
-msgstr ""
-
-#: collective/flow/browser/comments_templates/field_comments_form.pt:81
-msgid "Add comment"
 msgstr ""
 
 #: collective/flow/interfaces.py:131
@@ -39,6 +35,7 @@ msgid "Changelog"
 msgstr ""
 
 #: collective/flow/browser/comments_templates/field_comments_form.pt:7
+#: collective/flow/browser/comments_templates/field_comments_view.pt:4
 msgid "Comments"
 msgstr ""
 
@@ -46,7 +43,7 @@ msgstr ""
 msgid "Container for editable schemas"
 msgstr ""
 
-#: collective/flow/browser/folder.py:569
+#: collective/flow/browser/folder.py:584
 msgid "Continue"
 msgstr ""
 
@@ -102,7 +99,7 @@ msgstr ""
 msgid "File"
 msgstr ""
 
-#: collective/flow/browser/folder.py:549
+#: collective/flow/browser/folder.py:564
 #: collective/flow/profiles/default/actions.xml
 msgid "Fill the form for other person"
 msgstr ""
@@ -137,9 +134,9 @@ msgstr ""
 msgid "Flow submission attachment"
 msgstr ""
 
-#: collective/flow/browser/subfolder.py:138
-#: collective/flow/browser/submission.py:156
-#: collective/flow/interfaces.py:98
+#: collective/flow/browser/folder.py:660
+#: collective/flow/browser/subfolder.py:137
+#: collective/flow/browser/submission.py:79
 msgid "Form"
 msgstr ""
 
@@ -175,11 +172,11 @@ msgstr ""
 msgid "Provides support evaluating default values on creation"
 msgstr ""
 
-#: collective/flow/browser/submission.py:170
+#: collective/flow/browser/submission.py:185
 msgid "Save"
 msgstr ""
 
-#: collective/flow/browser/submission.py:191
+#: collective/flow/browser/submission.py:206
 msgid "Save and"
 msgstr ""
 
@@ -235,7 +232,7 @@ msgstr ""
 msgid "Submission workflow"
 msgstr ""
 
-#: collective/flow/browser/subfolder.py:202
+#: collective/flow/browser/subfolder.py:201
 #: collective/flow/interfaces.py:103
 msgid "Submit"
 msgstr ""
@@ -248,7 +245,7 @@ msgstr ""
 msgid "Submit transition"
 msgstr ""
 
-#: collective/flow/browser/widgets.py:32
+#: collective/flow/browser/widgets.py:66
 msgid "Text"
 msgstr ""
 
@@ -261,8 +258,18 @@ msgid "XML"
 msgstr ""
 
 #: collective/flow/browser/schema.py:88
-#: collective/flow/browser/subfolder.py:89
+#: collective/flow/browser/subfolder.py:88
 msgid "design"
+msgstr ""
+
+#. Default: "Add comment"
+#: collective/flow/browser/comments_templates/field_comments_form.pt:93
+msgid "label-add-first-comment"
+msgstr ""
+
+#. Default: "Add comment"
+#: collective/flow/browser/comments_templates/field_comments_form.pt:81
+msgid "label-add-new-comment"
 msgstr ""
 
 #. Default: "Delete"
