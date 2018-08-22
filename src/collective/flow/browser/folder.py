@@ -647,6 +647,20 @@ class SubmissionView(WidgetsView):
         )
         super(SubmissionView, self).__init__(context, request)
 
+    @property
+    def default_fieldset_label(self):
+        language = negotiate(context=self.request)
+        try:
+            try:
+                return getattr(
+                    self.context,
+                    DEFAULT_FIELDSET_LABEL_FIELD + '_' + language,
+                )
+            except AttributeError:
+                return getattr(self.context, DEFAULT_FIELDSET_LABEL_FIELD)
+        except AttributeError:
+            return _(u'Form')
+
     def getContent(self):
         return self.content
 

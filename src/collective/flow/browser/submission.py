@@ -63,6 +63,21 @@ def on_flow_change_update_behaviors(context, event):
 )
 @implementer(IFlowSchemaForm)
 class SubmissionView(WidgetsView, ExtensibleForm):
+    @property
+    def default_fieldset_label(self):
+        language = negotiate(context=self.request)
+        try:
+            try:
+                return self.context.aq_explicit.aq_acquire(
+                    DEFAULT_FIELDSET_LABEL_FIELD + '_' + language,
+                )
+            except AttributeError:
+                return self.context.aq_explicit.aq_acquire(
+                    DEFAULT_FIELDSET_LABEL_FIELD,
+                )
+        except AttributeError:
+            return _(u'Form')
+
     @Lazy
     def schema(self):
         language = negotiate(context=self.request)

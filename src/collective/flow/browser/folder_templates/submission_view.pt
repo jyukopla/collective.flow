@@ -12,6 +12,10 @@
 
   <h1 class="documentFirstHeading" tal:content="context/Title"></h1>
 
+    <h2 class="submissionHeading"
+       tal:content="view/default_fieldset_label"
+       tal:condition="view/default_fieldset_label|nothing">Fieldset heading</h2>
+
     <tal:block repeat="widget view/widgets/values">
       <div class="field">
         <tal:label condition="widget/label|nothing">
