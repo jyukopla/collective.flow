@@ -1,5 +1,5 @@
 <form action="#" method="GET" class="flow-shortcut-button"
       i18n:domain="plone" style="display: inline"
       tal:attributes="action string:${context/absolute_url}/@@edit">
-  <input type="submit" value="Edit" i18n:attributes="value"/>
+  <input type="submit" value="Edit" class="context" i18n:attributes="value"/>
 </form>

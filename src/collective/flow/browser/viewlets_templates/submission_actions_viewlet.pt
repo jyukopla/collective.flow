@@ -1,4 +1,4 @@
-<a href="#" class="btn flow-submission-action-link"
+<a href="#" class="btn standalone flow-submission-action-link"
    i18n:domain="plone" i18n:attributes="title" i18n:translate=""
    tal:repeat="action python:view.actions().values()"
    tal:attributes="href action/action;

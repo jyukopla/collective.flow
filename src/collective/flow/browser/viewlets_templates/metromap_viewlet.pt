@@ -1,6 +1,7 @@
 <ul class="workflow-metromap" tal:condition="view/steps"
     i18n:domain="plone">
   <tal:repeat repeat="step view/steps">
+    <!--
     <li tal:attributes="class step/className|nothing"
         tal:condition="step/backward|nothing">
       <form method="POST"
@@ -10,6 +11,8 @@
             i18n:attributes="value" />
       </form>
     </li>
+    -->
+    <!--
     <li tal:attributes="class step/className|nothing"
         tal:condition="step/forward|nothing">
       <form method="POST"
@@ -19,6 +22,7 @@
             i18n:attributes="value" />
       </form>
     </li>
+    -->
     <li tal:attributes="class step/className|nothing"
         tal:condition="step/title|nothing">
       <span tal:content="step/title" i18n:translate="">
@@ -27,3 +31,16 @@
     </li>
   </tal:repeat>
 </ul>
+<div tal:condition="view/steps" style="margin-bottom: 2em">
+<form action="#" method="GET" class="flow-shortcut-button"
+   i18n:domain="plone" style="display: inline"
+   tal:attributes="action string:${context/absolute_url}/@@edit">
+  <input type="submit" value="Edit" class="context" i18n:attributes="value"/>
+</form>
+<a href="#" class="btn standalone flow-submission-action-link"
+   i18n:domain="plone" i18n:attributes="title" i18n:translate=""
+   tal:repeat="action python:view.actions().values()"
+   tal:attributes="href action/action;
+    title action/title;"
+   tal:content="action/title">Action</a>
+</div>
