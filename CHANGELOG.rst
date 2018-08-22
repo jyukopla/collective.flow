@@ -1,7 +1,7 @@
 Changelog
 =========
 
-0.8.4 (unreleased)
+0.8.4 (2018-08-22)
 ------------------
 
 - Simplify metromap and submission action buttons
