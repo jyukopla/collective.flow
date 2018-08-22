@@ -4,8 +4,14 @@ Changelog
 0.8.4 (unreleased)
 ------------------
 
-- Nothing changed yet.
-
+- Simplify metromap and submission action buttons
+  [Asko Soukka]
+- Make the default fieldest heading visible on forms
+  [Asko Soukka]
+- Fix AjaxSelectWidget to show vocabulary titles on display mode
+  [Asko Soukka]
+- Distinct add new comment button from starting a discussion button
+  [Asko Soukka]
 
 0.8.3 (2018-08-21)
 ------------------
