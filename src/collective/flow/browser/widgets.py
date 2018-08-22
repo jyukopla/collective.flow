@@ -2,18 +2,26 @@
 from collective.flow.interfaces import ICollectiveFlowLayer
 from collective.flow.interfaces import IFlowSchemaForm
 from plone.app.textfield import RichText
+from plone.app.z3cform.interfaces import ISelectWidget
+from plone.app.z3cform.widget import AjaxSelectWidget
+from plone.app.z3cform.widget import SelectWidget
 from plone.memoize import view
 from Products.Five.browser.metaconfigure import ViewMixinForTemplates
 from venusianconfiguration import configure
 from z3c.form.browser.widget import addFieldClass
 from z3c.form.browser.widget import HTMLFormElement
+from z3c.form.interfaces import DISPLAY_MODE
+from z3c.form.interfaces import IAfterWidgetUpdateEvent
+from z3c.form.interfaces import IContextAware
 from z3c.form.interfaces import IFieldWidget
+from z3c.form.interfaces import IFormAware
 from z3c.form.interfaces import IFormLayer
 from z3c.form.interfaces import IWidget
 from z3c.form.widget import FieldWidget
 from z3c.form.widget import Widget
 from zope.component import adapter
 from zope.i18nmessageid import MessageFactory
+from zope.interface import alsoProvides
 from zope.interface import Attribute
 from zope.interface import implementer
 from zope.interface import implementer_only
@@ -24,6 +32,32 @@ import os
 
 
 _ = MessageFactory('collective.flow')
+
+
+@configure.subscriber.handler(for_=IAfterWidgetUpdateEvent)
+def fixAjaxSelectWidgetDisplayMode(event):
+    if isinstance(event.widget, AjaxSelectWidget):
+        if event.widget.mode == DISPLAY_MODE:
+            # This is crazy! AjaxSelectWidget is based on select widget and
+            # therefore has completely wrong display mode; Here we replace
+            # the widget with SelectWidget, but is it really this hard?
+            tmp = FieldWidget(
+                event.widget.field,
+                SelectWidget(event.widget.request),
+            )
+            # Do what they do in z3c.form.field update
+            tmp.name = event.widget.name
+            tmp.id = event.widget.id
+            tmp.context = event.widget.context
+            tmp.form = event.widget.form
+            alsoProvides(tmp, IContextAware, IFormAware)
+            tmp.ignoreContext = event.widget.ignoreContext
+            tmp.ignoreRequest = event.widget.ignoreRequest
+            tmp.showDefault = event.widget.showDefault
+            tmp.mode = event.widget.mode
+            event.widget.__class__ = SelectWidget
+            event.widget.__dict__ = tmp.__dict__
+            event.widget.update()
 
 
 class IRichTextLabel(Interface, IField):
@@ -132,4 +166,11 @@ configure.z3c.widgetTemplate(
     widget=IRichTextLabelWidget,
     layer=IFormLayer,
     template=os.path.join('widgets_templates', 'richtextlabel_display.pt'),
+)
+
+configure.z3c.widgetTemplate(
+    mode=u'display',
+    widget=ISelectWidget,
+    layer=IFormLayer,
+    template=os.path.join('widgets_templates', 'select_display.pt'),
 )
