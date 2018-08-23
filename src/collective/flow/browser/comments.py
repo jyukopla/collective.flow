@@ -78,7 +78,7 @@ def get_comments_schema(schema_context, field):
         if IComments.providedBy(schema_context.content):
             return IFieldCommentsForm
         elif (u'submission_comments' in aq_base(
-                schema_context.content).submission_behaviors):
+                schema_context.content).submission_behaviors or []):
             return IFieldCommentsForm
     except AttributeError:
         pass
@@ -189,6 +189,13 @@ class ReplyFormTile(Tile):
         # Fix form action to target tile
         self.form.action = self.url
         # Fix submit redirect from tile to context
+
+        # if self.request.get('ajax-load'):
+        #     viewlet = CommentsViewlet(self.context, self.request, self)
+        #     viewlet.update()
+        #     return u'<html><body>{2:s}</body></html>'.format(
+        #         viewlet.render())
+
         if 'location' in self.request.response.headers:
             location = self.request.response.getHeader('location')
             self.request.response.redirect(
@@ -198,6 +205,7 @@ class ReplyFormTile(Tile):
                     location.split('#')[-1],
                 ]),
             )
+
         return u'<html><body>{0:s}</body></html>'.format(self.index())
 
 
