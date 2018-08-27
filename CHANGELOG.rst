@@ -1,7 +1,7 @@
 Changelog
 =========
 
-0.8.5 (unreleased)
+0.8.5 (2018-08-27)
 ------------------
 
 - Fix issue where views were rendered twice when adding or replying to comments
