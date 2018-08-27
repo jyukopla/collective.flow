@@ -77,8 +77,8 @@ def get_comments_schema(schema_context, field):
     try:
         if IComments.providedBy(schema_context.content):
             return IFieldCommentsForm
-        elif (u'submission_comments' in aq_base(
-                schema_context.content).submission_behaviors or []):
+        elif (u'submission_comments' in (aq_base(
+                schema_context.content).submission_behaviors or [])):
             return IFieldCommentsForm
     except AttributeError:
         pass

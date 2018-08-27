@@ -66,8 +66,8 @@ def get_changelog_schema(schema_context, field):
     try:
         if IVersionableSubmission.providedBy(schema_context.content):
             return IFieldChangelogForm
-        elif (u'submission_versioning' in aq_base(
-                schema_context.content).submission_behaviors):
+        elif (u'submission_versioning' in (aq_base(
+                schema_context.content).submission_behaviors or [])):
             return IFieldChangelogForm
     except AttributeError:
         pass
