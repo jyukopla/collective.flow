@@ -4,8 +4,14 @@ Changelog
 0.8.5 (unreleased)
 ------------------
 
-- Nothing changed yet.
-
+- Fix issue where views were rendered twice when adding or replying to comments
+  [Asko Soukka]
+- Fix issue where designer failed for forms without submission behaviors
+  [Asko Soukka]
+- Fix issue where choice field defaultFactory-values were not serialized from designer to xml
+  [Asko Soukka]
+- Fix where field settings failed when submission_behaviors was not set
+  [Asko Soukka]
 
 0.8.4 (2018-08-22)
 ------------------
