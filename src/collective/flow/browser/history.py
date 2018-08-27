@@ -151,7 +151,8 @@ class FieldHistoryView(BrowserView):
         return result
 
     def __call__(self):
-        if self.enabled():
+        # Only render when enabled; Also, assume not required or ajax loads
+        if self.enabled() and 'ajax_load' not in self.request.form:
             # noinspection PyBroadException
             try:
                 return self.index()

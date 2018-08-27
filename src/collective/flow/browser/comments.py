@@ -100,6 +100,34 @@ class FieldCommentForm(CommentForm):
         alsoProvides(comment, IFlowSubmissionComment)
         return comment
 
+    def render(self):
+        # Optimize adding new comments and replying to comments when posting
+        # with ajax_load=1:
+        # - when calling the view directly, don't redirect and render twice
+        # - when calling the dicussion tile, pass ajax_load=1 for redirect
+        # TODO: Optimize more with views and forms that allow rendering
+        #       of comments without evaluation main views or flow schemata
+        output = super(FieldCommentForm, self).render()
+        if ('@@plone.app.standardtiles' in self.request.getURL() and
+                'location' in self.request.response.headers):
+            if self.request.get('ajax_load'):
+                params = '?ajax_load=1'
+            else:
+                params = ''
+            location = self.request.response.getHeader('location')
+            self.request.response.redirect(
+                ''.join([
+                    self.context.absolute_url(),
+                    params,
+                    '#',
+                    location.split('#')[-1],
+                ]),
+            )
+        elif self.request.get('ajax_load'):
+            self.request.response.headers.pop('location', None)
+            self.request.response.status = 200
+        return output
+
 
 @configure.browser.viewlet.class_(
     name=u'plone.comments',
@@ -189,23 +217,6 @@ class ReplyFormTile(Tile):
         # Fix form action to target tile
         self.form.action = self.url
         # Fix submit redirect from tile to context
-
-        # if self.request.get('ajax-load'):
-        #     viewlet = CommentsViewlet(self.context, self.request, self)
-        #     viewlet.update()
-        #     return u'<html><body>{2:s}</body></html>'.format(
-        #         viewlet.render())
-
-        if 'location' in self.request.response.headers:
-            location = self.request.response.getHeader('location')
-            self.request.response.redirect(
-                ''.join([
-                    self.context.absolute_url(),
-                    '#',
-                    location.split('#')[-1],
-                ]),
-            )
-
         return u'<html><body>{0:s}</body></html>'.format(self.index())
 
 
