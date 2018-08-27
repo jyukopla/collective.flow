@@ -21,9 +21,14 @@ import plone.supermodel.exportimport
 
 
 # We implement good enough write support for defaultFactory
-del plone.supermodel.exportimport.BaseHandler.filteredAttributes[
-    'defaultFactory'
-]  # noqa
+plone.supermodel.exportimport.BaseHandler.filteredAttributes.pop(
+    'defaultFactory',
+    None,
+)  # noqa
+plone.supermodel.exportimport.ChoiceHandler.filteredAttributes.pop(
+    'defaultFactory',
+    None,
+)  # noqa
 
 i18n_domain('collective.flow')
 configure.i18n.registerTranslations(directory='locales')
