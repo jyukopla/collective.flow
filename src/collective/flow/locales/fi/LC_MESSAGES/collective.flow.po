@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2018-08-22 03:12+0000\n"
+"POT-Creation-Date: 2018-08-28 09:50+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI +ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -14,7 +14,7 @@ msgstr ""
 "Preferred-Encodings: utf-8 latin1\n"
 "Domain: DOMAIN\n"
 
-#: collective/flow/configure.py:46
+#: collective/flow/configure.py:51
 msgid "Activates collective.flow"
 msgstr ""
 
@@ -43,7 +43,7 @@ msgstr "Kommentit"
 msgid "Container for editable schemas"
 msgstr "Skeemavarasto"
 
-#: collective/flow/browser/folder.py:584
+#: collective/flow/browser/folder.py:585
 msgid "Continue"
 msgstr "Jatka"
 
@@ -59,7 +59,7 @@ msgstr "JavaScript"
 msgid "Custom validator"
 msgstr "Validointi"
 
-#: collective/flow/configure.py:157
+#: collective/flow/configure.py:162
 msgid "Deactivates collective.flow"
 msgstr ""
 
@@ -99,7 +99,7 @@ msgstr "Näytä kommentit"
 msgid "File"
 msgstr "Liite"
 
-#: collective/flow/browser/folder.py:564
+#: collective/flow/browser/folder.py:565
 #: collective/flow/profiles/default/actions.xml
 msgid "Fill the form for other person"
 msgstr "Täytä lomake jonkun puolesta"
@@ -134,13 +134,13 @@ msgstr "Täytetty lomake"
 msgid "Flow submission attachment"
 msgstr "Täytetyn lomakkeen liite"
 
-#: collective/flow/browser/folder.py:660
+#: collective/flow/browser/folder.py:662
 #: collective/flow/browser/subfolder.py:137
 #: collective/flow/browser/submission.py:79
 msgid "Form"
 msgstr "Lomake"
 
-#: collective/flow/configure.py:45
+#: collective/flow/configure.py:50
 msgid "Forms, workflows and everything"
 msgstr "Lomakepohjaiset työnkulut"
 
