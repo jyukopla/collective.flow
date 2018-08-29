@@ -2,7 +2,7 @@
       xmlns:metal="http://xml.zope.org/namespaces/metal"
       xmlns:tal="http://xml.zope.org/namespaces/tal"
       xmlns:i18n="http://xml.zope.org/namespaces/i18n"
-   i18n:domain="plone"
+   i18n:domain="collective.flow"
    metal:use-macro="context/main_template/macros/master">
 
 <metal:block fill-slot="main">
@@ -11,15 +11,39 @@
      tal:content="view/label | nothing"
      i18n:translate="">Form</h1>
 
-  <div id="content-core">
-    <form action="${url}" method="GET"
-        i18n:domain="collective.flow"
-        tal:define="url view/impersonate_url|nothing"
-        tal:condition="url">
-      <p>
-        <input type="submit" value="Fill this form for other person" i18n:attributes="value"/>
-      </p>
-    </form>
+  <div id="content-core"
+       tal:define="Batch python:modules['Products.CMFPlone'].Batch;
+                   b_size python:int(request.get('b_size', 20));
+                   b_start python:int(request.get('b_start', 0));
+                   results python:context.restrictedTraverse('@@contentlisting')(batch=True, b_size=b_size, b_start=b_start);
+                   batch python:Batch(results, b_size, b_start);
+                   toLocalizedTime nocall: context/@@plone/toLocalizedTime;">
+    <fieldset id="folder-listing" tal:condition="results|nothing">
+      <legend i18n:translate="">Existing items</legend>
+      <ul>
+        <li tal:repeat="item results">
+         <a href="#"
+            tal:attributes="href item/getURL; title item/Title"
+            tal:content="item/Title">Item</a>
+         <span class="discreet"
+               tal:content="python:toLocalizedTime(item.modified, long_format=1)">
+         August 16, 2001 at 23:35:59
+         </span>
+        </li>
+        <div metal:use-macro="context/batch_macros/macros/navigation">Batching</div>
+      </ul>
+    </fieldset>
+    <fieldset id="new-submission" tal:omit-tag="not:results|nothing">
+      <legend i18n:translate="" tal:condition="results|nothing">Submit new</legend>
+      <form action="${url}" method="GET"
+         i18n:domain="collective.flow"
+         tal:define="url view/impersonate_url|nothing"
+         tal:condition="url">
+        <p>
+          <input type="submit" value="Fill this form for other person" i18n:attributes="value"/>
+        </p>
+      </form>
+    </fieldset>
     <metal:block use-macro="context/@@ploneform-macros/titlelessform" />
   </div>
 

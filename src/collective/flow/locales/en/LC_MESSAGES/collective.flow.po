@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2018-08-22 03:12+0000\n"
+"POT-Creation-Date: 2018-08-29 12:40+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI +ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -14,7 +14,7 @@ msgstr ""
 "Preferred-Encodings: utf-8 latin1\n"
 "Domain: DOMAIN\n"
 
-#: collective/flow/configure.py:46
+#: collective/flow/configure.py:51
 msgid "Activates collective.flow"
 msgstr ""
 
@@ -43,7 +43,7 @@ msgstr ""
 msgid "Container for editable schemas"
 msgstr ""
 
-#: collective/flow/browser/folder.py:584
+#: collective/flow/browser/folder.py:619
 msgid "Continue"
 msgstr ""
 
@@ -59,7 +59,7 @@ msgstr ""
 msgid "Custom validator"
 msgstr ""
 
-#: collective/flow/configure.py:157
+#: collective/flow/configure.py:162
 msgid "Deactivates collective.flow"
 msgstr ""
 
@@ -95,16 +95,20 @@ msgstr ""
 msgid "Enable comments"
 msgstr ""
 
+#: collective/flow/browser/folder_templates/folder_form.pt:22
+msgid "Existing items"
+msgstr ""
+
 #: collective/flow/interfaces.py:255
 msgid "File"
 msgstr ""
 
-#: collective/flow/browser/folder.py:564
+#: collective/flow/browser/folder.py:599
 #: collective/flow/profiles/default/actions.xml
 msgid "Fill the form for other person"
 msgstr ""
 
-#: collective/flow/browser/folder_templates/folder_form.pt:20
+#: collective/flow/browser/folder_templates/folder_form.pt:43
 msgid "Fill this form for other person"
 msgstr ""
 
@@ -112,7 +116,6 @@ msgstr ""
 msgid "Flow file"
 msgstr ""
 
-#: collective/flow/profiles/default/types/FlowFolder.xml
 #: collective/flow/profiles/default/types/FlowSubFolder.xml
 msgid "Flow folder"
 msgstr ""
@@ -134,13 +137,17 @@ msgstr ""
 msgid "Flow submission attachment"
 msgstr ""
 
-#: collective/flow/browser/folder.py:660
-#: collective/flow/browser/subfolder.py:137
+#: collective/flow/browser/folder.py:696
+#: collective/flow/browser/subfolder.py:147
 #: collective/flow/browser/submission.py:79
 msgid "Form"
 msgstr ""
 
-#: collective/flow/configure.py:45
+#: collective/flow/profiles/default/types/FlowFolder.xml
+msgid "Form flow"
+msgstr ""
+
+#: collective/flow/configure.py:50
 msgid "Forms, workflows and everything"
 msgstr ""
 
@@ -232,13 +239,17 @@ msgstr ""
 msgid "Submission workflow"
 msgstr ""
 
-#: collective/flow/browser/subfolder.py:201
+#: collective/flow/browser/subfolder.py:211
 #: collective/flow/interfaces.py:103
 msgid "Submit"
 msgstr ""
 
 #: collective/flow/interfaces.py:102
 msgid "Submit button label"
+msgstr ""
+
+#: collective/flow/browser/folder_templates/folder_form.pt:37
+msgid "Submit new"
 msgstr ""
 
 #: collective/flow/interfaces.py:181
@@ -258,7 +269,7 @@ msgid "XML"
 msgstr ""
 
 #: collective/flow/browser/schema.py:88
-#: collective/flow/browser/subfolder.py:88
+#: collective/flow/browser/subfolder.py:89
 msgid "design"
 msgstr ""
 

@@ -23,7 +23,7 @@ from collective.flow.utils import prepare_restricted_function
 from collective.flow.utils import unrestricted
 from datetime import datetime
 from persistent.mapping import PersistentMapping
-from plone import api
+from plone.app.contentlisting.interfaces import IContentListing
 from plone.app.widgets.interfaces import IFieldPermissionChecker
 from plone.autoform.form import AutoExtensibleForm
 from plone.autoform.view import WidgetsView
@@ -41,6 +41,7 @@ from plone.namedfile.interfaces import INamedFileField
 from plone.uuid.interfaces import IMutableUUID
 from plone.uuid.interfaces import IUUID
 from plone.z3cform.fieldsets.group import Group
+from Products.Five import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from uuid import uuid4
 from venusianconfiguration import configure
@@ -74,6 +75,7 @@ from ZPublisher.HTTPRequest import FileUpload
 import hashlib
 import new
 import os
+import plone.api as api
 
 
 _ = MessageFactory('collective.flow')
@@ -326,6 +328,37 @@ def get_submission_title(form, submission):
 # noinspection PyAbstractClass
 class FlowSubmitFormGroup(Group):
     pass
+
+
+@configure.browser.page.class_(
+    name=u'contentlisting',
+    for_=IFlowFolder,
+    permission=u'zope2.View',
+)
+class FolderListing(BrowserView):
+    def __call__(self, batch=False, b_size=20, b_start=0, orphan=0, **kw):
+        query = {}
+        query.update(kw)
+
+        query['path'] = '/'.join(self.context.getPhysicalPath())
+        query['portal_type'] = ['FlowSubmission']
+
+        user = api.user.get_current()
+        if 'Creator' not in query and user:
+            query['Creator'] = user.getId()
+        if 'sort_on' not in query:
+            query['sort_on'] = 'modified'
+        if 'sort_order' not in query:
+            query['sort_order'] = 'descending'
+
+        # Provide batching hints to the catalog
+        if batch:
+            query['b_start'] = b_start
+            query['b_size'] = b_size + orphan
+
+        catalog = api.portal.get_tool('portal_catalog')
+        results = catalog(query)
+        return IContentListing(results)
 
 
 @configure.browser.page.class_(

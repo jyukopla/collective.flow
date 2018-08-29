@@ -2,6 +2,7 @@
 from collective.flow.interfaces import IFlowSubmission
 from plone import api
 from plone.app.layout.globals.interfaces import IViewView
+from plone.app.layout.viewlets.interfaces import IAboveContentBody
 from plone.app.layout.viewlets.interfaces import IAboveContentTitle
 from plone.app.layout.viewlets.interfaces import IBelowContentBody
 from plone.memoize import view
@@ -68,6 +69,15 @@ configure.browser.viewlet(
     name='collective.flow.submission.edit',
     for_=IFlowSubmission,
     view=IViewView,
+    manager=IAboveContentBody,
+    permission='cmf.ModifyPortalContent',
+    template=os.path.join('viewlets_templates', 'submission_edit_viewlet.pt'),
+)
+
+configure.browser.viewlet(
+    name='collective.flow.submission.edit',
+    for_=IFlowSubmission,
+    view=IViewView,
     manager=IBelowContentBody,
     permission='cmf.ModifyPortalContent',
     template=os.path.join('viewlets_templates', 'submission_edit_viewlet.pt'),
@@ -89,6 +99,17 @@ configure.browser.viewlet(
     manager=IAboveContentTitle,
     permission='cmf.ReviewPortalContent',
     template=os.path.join('viewlets_templates', 'metromap_viewlet.pt'),
+)
+@configure.browser.viewlet.class_(
+    name='collective.flow.submission.actions',
+    for_=IFlowSubmission,
+    view=IViewView,
+    manager=IAboveContentBody,
+    permission='zope2.View',
+    template=os.path.join(
+        'viewlets_templates',
+        'submission_actions_viewlet.pt',
+    ),
 )
 @configure.browser.viewlet.class_(
     name='collective.flow.submission.actions',
