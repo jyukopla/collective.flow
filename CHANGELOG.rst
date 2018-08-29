@@ -4,8 +4,11 @@ Changelog
 0.8.6 (unreleased)
 ------------------
 
-- Nothing changed yet.
-
+- Add listing for creator's own submissions for add form
+  [Asko Soukka]
+- Fix to render all edit buttons in dedicated viewlets to apply permissions
+  properly
+  [Asko Soukka]
 
 0.8.5 (2018-08-27)
 ------------------
