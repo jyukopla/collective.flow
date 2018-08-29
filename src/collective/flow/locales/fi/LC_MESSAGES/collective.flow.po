@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2018-08-28 09:50+0000\n"
+"POT-Creation-Date: 2018-08-29 12:40+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI +ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -43,7 +43,7 @@ msgstr "Kommentit"
 msgid "Container for editable schemas"
 msgstr "Skeemavarasto"
 
-#: collective/flow/browser/folder.py:585
+#: collective/flow/browser/folder.py:619
 msgid "Continue"
 msgstr "Jatka"
 
@@ -95,16 +95,20 @@ msgstr "Näytä muutosloki"
 msgid "Enable comments"
 msgstr "Näytä kommentit"
 
+#: collective/flow/browser/folder_templates/folder_form.pt:22
+msgid "Existing items"
+msgstr "Aikaisemmat"
+
 #: collective/flow/interfaces.py:255
 msgid "File"
 msgstr "Liite"
 
-#: collective/flow/browser/folder.py:565
+#: collective/flow/browser/folder.py:599
 #: collective/flow/profiles/default/actions.xml
 msgid "Fill the form for other person"
 msgstr "Täytä lomake jonkun puolesta"
 
-#: collective/flow/browser/folder_templates/folder_form.pt:20
+#: collective/flow/browser/folder_templates/folder_form.pt:43
 msgid "Fill this form for other person"
 msgstr "Täytä lomake jonkun puolesta"
 
@@ -112,10 +116,9 @@ msgstr "Täytä lomake jonkun puolesta"
 msgid "Flow file"
 msgstr "Liitetiedosto"
 
-#: collective/flow/profiles/default/types/FlowFolder.xml
 #: collective/flow/profiles/default/types/FlowSubFolder.xml
 msgid "Flow folder"
-msgstr "Lomaketyönkulku"
+msgstr "Lomakekansio"
 
 #: collective/flow/profiles/default/types/FlowSchema.xml
 msgid "Flow schema"
@@ -134,11 +137,15 @@ msgstr "Täytetty lomake"
 msgid "Flow submission attachment"
 msgstr "Täytetyn lomakkeen liite"
 
-#: collective/flow/browser/folder.py:662
-#: collective/flow/browser/subfolder.py:137
+#: collective/flow/browser/folder.py:696
+#: collective/flow/browser/subfolder.py:147
 #: collective/flow/browser/submission.py:79
 msgid "Form"
 msgstr "Lomake"
+
+#: collective/flow/profiles/default/types/FlowFolder.xml
+msgid "Form flow"
+msgstr "Lomaketyönkulku"
 
 #: collective/flow/configure.py:50
 msgid "Forms, workflows and everything"
@@ -232,7 +239,7 @@ msgstr "Täytetyn lomakkeen versiointi"
 msgid "Submission workflow"
 msgstr "Täytetyn lomakkeen työnkulku"
 
-#: collective/flow/browser/subfolder.py:201
+#: collective/flow/browser/subfolder.py:211
 #: collective/flow/interfaces.py:103
 msgid "Submit"
 msgstr "Lähetä"
@@ -240,6 +247,10 @@ msgstr "Lähetä"
 #: collective/flow/interfaces.py:102
 msgid "Submit button label"
 msgstr "Lähetyspainikkeen nimike"
+
+#: collective/flow/browser/folder_templates/folder_form.pt:37
+msgid "Submit new"
+msgstr "Täytä uusi"
 
 #: collective/flow/interfaces.py:181
 msgid "Submit transition"
@@ -258,7 +269,7 @@ msgid "XML"
 msgstr ""
 
 #: collective/flow/browser/schema.py:88
-#: collective/flow/browser/subfolder.py:88
+#: collective/flow/browser/subfolder.py:89
 msgid "design"
 msgstr ""
 

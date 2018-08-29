@@ -16,6 +16,3 @@ msgstr ""
 
 msgid "Acknowledge"
 msgstr "Merkitse käsitellyksi"
-
-msgid "Update"
-msgstr "Takaisin luonnos"

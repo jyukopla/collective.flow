@@ -2,12 +2,11 @@
 from Acquisition import aq_base
 from collective.flow.browser.folder import FlowImpersonationForm
 from collective.flow.browser.folder import FlowSubmitForm
+from collective.flow.browser.folder import FolderListing
 from collective.flow.interfaces import ATTACHMENT_WORKFLOW_FIELD
 from collective.flow.interfaces import DEFAULT_ATTACHMENT_WORKFLOW
 from collective.flow.interfaces import DEFAULT_FIELDSET_LABEL_FIELD
-from collective.flow.interfaces import DEFAULT_SCHEMA
 from collective.flow.interfaces import DEFAULT_SUBMISSION_WORKFLOW
-from collective.flow.interfaces import IAddFlowSchemaDynamic
 from collective.flow.interfaces import ICollectiveFlowLayer
 from collective.flow.interfaces import IFlowFolder
 from collective.flow.interfaces import IFlowSchemaContext
@@ -23,12 +22,10 @@ from collective.flow.schema import load_schema
 from collective.flow.schema import save_schema
 from OFS.interfaces import IItem
 from plone import api
-from plone.memoize import view
 from plone.schemaeditor.browser.schema.traversal import SchemaContext
 from venusianconfiguration import configure
 from zope.i18n import negotiate
 from zope.i18nmessageid import MessageFactory
-from zope.interface import alsoProvides
 from zope.interface import implementer
 from zope.lifecycleevent import IObjectModifiedEvent
 from zope.publisher.interfaces import IPublishTraverse
@@ -88,6 +85,15 @@ class SubFlowSchemaContext(SchemaContext):
             title=_(u'design'),
         )
         self.content = context
+
+
+@configure.browser.page.class_(
+    name=u'contentlisting',
+    for_=IFlowSubFolder,
+    permission=u'zope2.View',
+)
+class SubFolderListing(FolderListing):
+    pass
 
 
 @configure.browser.page.class_(
@@ -199,32 +205,6 @@ class SubFlowSubmitForm(FlowSubmitForm):
                 )
         except AttributeError:
             return _(u'Submit')
-
-    @property
-    @view.memoize
-    def schema(self):
-        language = negotiate(context=self.request)
-        try:
-            try:
-                schema = load_schema(
-                    aq_base(self.context).schema,
-                    name='++add++',
-                    language=language,
-                    cache_key=aq_base(self.context).schema_digest,
-                )
-                alsoProvides(schema, IAddFlowSchemaDynamic)
-                return schema
-            except KeyError:
-                return load_schema(
-                    aq_base(self.context).schema,
-                    language=language,
-                    cache_key=aq_base(self.context).schema_digest,
-                )
-        except AttributeError:
-            self.request.response.redirect(
-                u'{0}/@@design'.format(self.context.absolute_url()),
-            )
-            return load_schema(DEFAULT_SCHEMA, cache_key=None)
 
 
 @configure.browser.page.class_(
