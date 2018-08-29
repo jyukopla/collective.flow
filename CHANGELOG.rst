@@ -1,7 +1,7 @@
 Changelog
 =========
 
-0.8.6 (unreleased)
+0.9.0 (2018-08-29)
 ------------------
 
 - Add listing for creator's own submissions for add form
