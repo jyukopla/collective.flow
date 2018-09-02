@@ -1,11 +1,16 @@
 Changelog
 =========
 
-0.9.1 (unreleased)
+1.0.0 (unreleased)
 ------------------
 
-- Nothing changed yet.
-
+- Fix issue where portal repository usage resulted in false CSRF-warning
+  [Asko Soukka]
+- Optimize to not render history or comments viewlets when
+  collective.futures is awaiting to capture the request
+  [Asko Soukka]
+- Add impersonation, top buttons and bottom buttons submission behaviors
+  [Asko Soukka]
 
 0.9.0 (2018-08-29)
 ------------------
