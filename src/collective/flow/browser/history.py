@@ -12,6 +12,7 @@ from Products.Five import BrowserView
 from venusianconfiguration import configure
 from z3c.form.interfaces import IWidget
 from zope import schema
+from zope.annotation import IAnnotations
 from zope.component import adapter
 from zope.interface import alsoProvides
 from zope.interface import implementer
@@ -151,6 +152,10 @@ class FieldHistoryView(BrowserView):
         return result
 
     def __call__(self):
+        if IAnnotations(self.request).get('collective.promises'):
+            # skip rendering when unsolved promises exist
+            return u''
+
         # Only render when enabled; Also, assume not required or ajax loads
         if self.enabled() and 'ajax_load' not in self.request.form:
             # noinspection PyBroadException

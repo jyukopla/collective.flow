@@ -19,6 +19,7 @@ from Products.Five import BrowserView
 from venusianconfiguration import configure
 from z3c.form.interfaces import IWidget
 from zope import schema
+from zope.annotation import IAnnotations
 from zope.component import adapter
 from zope.interface import alsoProvides
 from zope.interface import implementer
@@ -283,6 +284,10 @@ class FieldCommentsView(BrowserView):
         self.form_instance.update()
 
     def __call__(self):
+        if IAnnotations(self.request).get('collective.promises'):
+            # skip rendering when unsolved promises exist
+            return u''
+
         if self.enabled():
             try:
                 self.update()
