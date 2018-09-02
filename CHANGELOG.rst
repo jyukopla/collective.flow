@@ -1,7 +1,7 @@
 Changelog
 =========
 
-1.0.0 (unreleased)
+1.0.0 (2018-09-02)
 ------------------
 
 - Fix issue where portal repository usage resulted in false CSRF-warning
