@@ -11,6 +11,7 @@ from plone.uuid.interfaces import IUUID
 from Products.Five import BrowserView
 from venusianconfiguration import configure
 from z3c.form.interfaces import IWidget
+from zExceptions import Unauthorized
 from zope import schema
 from zope.annotation import IAnnotations
 from zope.component import adapter
@@ -79,24 +80,40 @@ def cache_key(self, context, portal_repository, request=request):
     return 'collective.flow.history.' + IUUID(context)  # noqa: P001
 
 
-# noinspection PyUnusedLocal,PyShadowingNames
+# noinspection PyUnusedLocal,PyShadowingNames,PyProtectedMember
 @request.cache(cache_key)
 def get_history(context, portal_repository, request=request):
     """Return renderable widgets for available version history of given
     context
     """
     history = []
+
+    registered_objects = {}
+    for name, conn in context._p_jar.connections.items():
+        registered_objects[name] = conn._registered_objects[:]
+
     for version in portal_repository.getHistory(
             context,
             oldestFirst=True,
             countPurged=False,
     ):
-        view = version.object.restrictedTraverse('@@view')
+        try:
+            view = version.object.restrictedTraverse('@@view')
+        except Unauthorized:
+            continue  # the current user has not permission for this version
         view.update()
         widgets = dict(view.widgets)
         for group in getattr(view, 'groups', None) or []:
             widgets.update(group.widgets)
         history.append((version.object.modified(), widgets))
+
+    # Bug(?) in CMFEditions injects unmodified objects into transaction objects
+    for name, conn in context._p_jar.connections.items():
+        for obj in conn._registered_objects:
+            if obj not in registered_objects[name] and not obj._p_changed:
+                # We need to remove them to avoid false CSRF detection
+                conn._registered_objects.remove(obj)
+
     return history
 
 
