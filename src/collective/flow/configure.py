@@ -3,6 +3,7 @@ from Acquisition import aq_base
 from collective.flow import _
 from collective.flow import behaviors
 from collective.flow import browser
+from collective.flow import buttons
 from collective.flow import comments
 from collective.flow import content
 from collective.flow import defaults
@@ -34,8 +35,9 @@ i18n_domain('collective.flow')
 configure.i18n.registerTranslations(directory='locales')
 
 scan(behaviors)
-scan(content)
+scan(buttons)
 scan(comments)
+scan(content)
 scan(defaults)
 scan(fields)
 scan(history)
@@ -108,6 +110,14 @@ configure.gs.upgradeDepends(
     description=u'',
     profile='collective.flow:default',
 )
+@configure.gs.upgradeStep.handler(
+    source='1008',
+    destination='1009',
+    sortkey='1008',
+    title=u'Migrate FlowFolder content objects',
+    description=u'',
+    profile='collective.flow:default',
+)
 def addMissingAttributes(context):
     pc = api.portal.get_tool('portal_catalog')
     for brain in pc.unrestrictedSearchResults(portal_type='FlowFolder'):
@@ -124,6 +134,10 @@ def addMissingAttributes(context):
             assert aq_base(ob).submission_behaviors is not None
         except (AttributeError, AssertionError):
             ob.submission_behaviors = []
+        try:
+            assert aq_base(ob).submission_impersonation is not None
+        except (AttributeError, AssertionError):
+            ob.submission_impersonation = False
 
 
 configure.gs.upgradeDepends(

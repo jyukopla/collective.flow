@@ -439,6 +439,10 @@ class FlowSubmitForm(DefaultAddForm):
         return self.context.submission_behaviors
 
     @property
+    def submission_impersonation(self):
+        return self.context.submission_impersonation
+
+    @property
     def submission_workflow(self):
         return self.context.submission_workflow
 
@@ -580,7 +584,7 @@ class FlowSubmitForm(DefaultAddForm):
                 'cmf.ModifyPortalContent',
                 self.context,
             )
-            if can_edit:
+            if can_edit and self.submission_impersonation:
                 self.impersonate_url = (
                     self.context.absolute_url() + u'/@@impersonate'
                 )

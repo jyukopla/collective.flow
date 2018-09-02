@@ -13,6 +13,7 @@ from collective.flow.interfaces import IFlowSchemaContext
 from collective.flow.interfaces import IFlowSchemaForm
 from collective.flow.interfaces import IFlowSubFolder
 from collective.flow.interfaces import SUBMISSION_BEHAVIORS_FIELD
+from collective.flow.interfaces import SUBMISSION_IMPERSONATION_FIELD
 from collective.flow.interfaces import SUBMISSION_PATH_TEMPLATE_FIELD
 from collective.flow.interfaces import SUBMISSION_TITLE_TEMPLATE_FIELD
 from collective.flow.interfaces import SUBMISSION_WORKFLOW_FIELD
@@ -173,6 +174,15 @@ class SubFlowSubmitForm(FlowSubmitForm):
             )
         except AttributeError:
             return []
+
+    @property
+    def submission_impersonation(self):
+        try:
+            return self.context.aq_explicit.aq_acquire(
+                SUBMISSION_IMPERSONATION_FIELD,
+            )
+        except AttributeError:
+            return False
 
     @property
     def submission_workflow(self):

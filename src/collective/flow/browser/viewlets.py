@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+from collective.flow.buttons import IBottomButtons
+from collective.flow.buttons import ITopButtons
 from collective.flow.interfaces import IFlowSubmission
 from plone import api
 from plone.app.layout.globals.interfaces import IViewView
@@ -67,7 +69,7 @@ def get_default_metromap(wf):
 
 configure.browser.viewlet(
     name='collective.flow.submission.edit',
-    for_=IFlowSubmission,
+    for_=ITopButtons,
     view=IViewView,
     manager=IAboveContentBody,
     permission='cmf.ModifyPortalContent',
@@ -76,7 +78,7 @@ configure.browser.viewlet(
 
 configure.browser.viewlet(
     name='collective.flow.submission.edit',
-    for_=IFlowSubmission,
+    for_=IBottomButtons,
     view=IViewView,
     manager=IBelowContentBody,
     permission='cmf.ModifyPortalContent',
@@ -85,7 +87,7 @@ configure.browser.viewlet(
 
 
 @configure.browser.viewlet.class_(
-    name='jyu.ytolapp.metromap.requester',
+    name='collective.flow.metromap.requester',
     for_=IFlowSubmission,
     view=IViewView,
     manager=IAboveContentTitle,
@@ -93,7 +95,7 @@ configure.browser.viewlet(
     template=os.path.join('viewlets_templates', 'metromap_viewlet.pt'),
 )
 @configure.browser.viewlet.class_(
-    name='jyu.ytolapp.metromap.reviewer',
+    name='collective.flow.metromap.reviewer',
     for_=IFlowSubmission,
     view=IViewView,
     manager=IAboveContentTitle,
@@ -102,7 +104,7 @@ configure.browser.viewlet(
 )
 @configure.browser.viewlet.class_(
     name='collective.flow.submission.actions',
-    for_=IFlowSubmission,
+    for_=ITopButtons,
     view=IViewView,
     manager=IAboveContentBody,
     permission='zope2.View',
@@ -113,7 +115,7 @@ configure.browser.viewlet(
 )
 @configure.browser.viewlet.class_(
     name='collective.flow.submission.actions',
-    for_=IFlowSubmission,
+    for_=IBottomButtons,
     view=IViewView,
     manager=IBelowContentBody,
     permission='zope2.View',

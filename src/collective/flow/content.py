@@ -125,6 +125,7 @@ class FlowDataSpecificationDescriptor(ObjectSpecificationDescriptor):
 @implementer(IFlowSchema, IContained)
 class FlowSubmissionData(PersistentMapping):
     __providedBy__ = FlowDataSpecificationDescriptor()
+    __allow_access_to_unprotected_subobjects__ = 1
 
     __parent__ = None
     __name__ = None

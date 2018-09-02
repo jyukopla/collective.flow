@@ -38,6 +38,7 @@ DEFAULT_ATTACHMENT_WORKFLOW = 'always_private_workflow'
 
 DEFAULT_FIELDSET_LABEL_FIELD = u'default_fieldset_label'
 SUBMISSION_BEHAVIORS_FIELD = u'submission_behaviors'
+SUBMISSION_IMPERSONATION_FIELD = u'submission_impersonation'
 SUBMISSION_PATH_TEMPLATE_FIELD = u'submission_path_template'
 SUBMISSION_TITLE_TEMPLATE_FIELD = u'submission_title_template'
 SUBMIT_LABEL_FIELD = u'submit_label'
@@ -133,6 +134,7 @@ class IFlowFolder(IFlowSchema):
             SUBMISSION_TITLE_TEMPLATE_FIELD,
             SUBMISSION_PATH_TEMPLATE_FIELD,
             SUBMISSION_BEHAVIORS_FIELD,
+            SUBMISSION_IMPERSONATION_FIELD,
             SUBMISSION_WORKFLOW_FIELD,
             SUBMISSION_TRANSITION_FIELD,
             ATTACHMENT_WORKFLOW_FIELD,
@@ -169,6 +171,14 @@ class IFlowFolder(IFlowSchema):
             vocabulary='collective.flow.submission.behaviors',
         ),
         required=False,
+    )
+
+    submission_impersonation = schema.Bool(
+        title=_(u'Impersonated submissions'),
+        description=_(
+            u'Allow editors to submit forms impersonating '
+            u'as someone else',
+        ),
     )
 
     submission_workflow = schema.Choice(
