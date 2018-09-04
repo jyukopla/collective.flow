@@ -1,7 +1,7 @@
 Changelog
 =========
 
-1.0.1 (unreleased)
+1.0.1 (2018-09-04)
 ------------------
 
 - Fix issue where CMFEditions raised ConflictError by skipping history view on
