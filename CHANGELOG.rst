@@ -4,8 +4,11 @@ Changelog
 1.0.1 (unreleased)
 ------------------
 
-- Nothing changed yet.
-
+- Fix issue where CMFEditions raised ConflictError by skipping history view on
+  those situations
+  [Asko Soukka]
+- Back to development: 1.0.1
+  [Asko Soukka]
 
 1.0.0 (2018-09-02)
 ------------------
