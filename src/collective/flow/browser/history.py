@@ -12,6 +12,7 @@ from Products.Five import BrowserView
 from venusianconfiguration import configure
 from z3c.form.interfaces import IWidget
 from zExceptions import Unauthorized
+from ZODB.POSException import ConflictError
 from zope import schema
 from zope.annotation import IAnnotations
 from zope.component import adapter
@@ -149,7 +150,15 @@ class FieldHistoryView(BrowserView):
         seen = []
         result = []
 
-        versions = get_history(self.context, self._pr, request=self.request)
+        try:
+            versions = get_history(
+                self.context,
+                self._pr,
+                request=self.request,
+            )
+        except ConflictError:
+            # CMFEditions does that...
+            versions = []
         for version in versions:
             try:
                 modified, widgets = version
