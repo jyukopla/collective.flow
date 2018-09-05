@@ -290,7 +290,8 @@ class FlowSchemaSpecificationDescriptor(ObjectSpecificationDescriptor):
         schemata = [
             model.schemata[name]
             for name in model.schemata
-            if name == u'' or IS_TRANSLATION.match(name)
+            if name in [u'', u'++add++'] or
+            IS_TRANSLATION.match(name.split(u'++add++')[0])
         ]
         schemata.append(spec)
 
@@ -318,6 +319,42 @@ class FlowSchemaSpecificationDescriptor(ObjectSpecificationDescriptor):
         return spec
 
 
+def iterFlowSchemata(context, with_impersonation=False):
+    try:
+        schema = load_schema(
+            aq_base(context).schema,
+            cache_key=aq_base(context).schema_digest,
+        )
+        yield schema
+        for name in schema:
+            value_type = getattr(schema[name], 'value_type', None)
+            schema_ = getattr(value_type, 'schema', None)
+            if schema_:
+                yield schema_
+    except AttributeError:
+        pass
+    try:
+        schema = load_schema(
+            aq_base(context).schema,
+            name='++add++',
+            cache_key=aq_base(context).schema_digest,
+        )
+        yield schema
+    except (AttributeError, KeyError):
+        pass
+    if with_impersonation:
+        try:
+            schema = load_schema(
+                aq_base(context).schema,
+                name='@@impersonate',
+                cache_key=aq_base(context).schema_digest,
+            )
+            yield schema
+        except (AttributeError, KeyError):
+            pass
+        yield IFlowImpersonation
+
+
 @configure.adapter.factory()
 @implementer(IFieldPermissionChecker)
 @adapter(IFlowSchemaDynamic)
@@ -325,40 +362,9 @@ class FlowSchemaFieldPermissionChecker(DXFieldPermissionChecker):
     DEFAULT_PERMISSION = 'Modify portal content'
 
     def _get_schemata(self):
-        schemata = list(iterSchemata(self.context))
-        try:
-            schema = load_schema(
-                aq_base(self.context).schema,
-                cache_key=aq_base(self.context).schema_digest,
-            )
-            schemata.append(schema)
-            for name in schema:
-                value_type = getattr(schema[name], 'value_type', None)
-                schema_ = getattr(value_type, 'schema', None)
-                if schema_:
-                    schemata.append(schema_)
-        except AttributeError:
-            pass
-        try:
-            schema = load_schema(
-                aq_base(self.context).schema,
-                name='++add++',
-                cache_key=aq_base(self.context).schema_digest,
-            )
-            schemata.append(schema)
-        except (AttributeError, KeyError):
-            pass
-        try:
-            schema = load_schema(
-                aq_base(self.context).schema,
-                name='@@impersonate',
-                cache_key=aq_base(self.context).schema_digest,
-            )
-            schemata.append(schema)
-        except (AttributeError, KeyError):
-            pass
-        schemata.append(IFlowImpersonation)
-        return tuple(schemata)
+        return list(iterSchemata(self.context)) + list(
+            iterFlowSchemata(self.context, with_impersonation=True),
+        )
 
 
 def save_schema(context, schema=None, xml=None, language=u''):
