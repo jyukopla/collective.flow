@@ -194,7 +194,7 @@ def validate(form, code, data):
         errors[name] = snippet
 
     # return errors
-    return errors
+    return errors.values()
 
 
 def extract_attachments(data, context, prefix=u''):
