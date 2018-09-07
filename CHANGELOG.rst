@@ -4,8 +4,12 @@ Changelog
 1.0.2 (unreleased)
 ------------------
 
-- Nothing changed yet.
-
+- Fix issue where inline_validation calls failed when validation got errors
+  from TTW validators
+  [Asko Soukka]
+- Fix issues where date picker and ajax select widgets were not usable without
+  javascript
+  [Asko Soukka]
 
 1.0.1 (2018-09-04)
 ------------------
