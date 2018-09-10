@@ -147,18 +147,20 @@ class FieldHistoryView(BrowserView):
         ) and IVersionableField.providedBy(self.field)
 
     def history(self):
+        try:
+            return self._history()
+        except ConflictError:
+            return []
+
+    def _history(self):
         seen = []
         result = []
 
-        try:
-            versions = get_history(
-                self.context,
-                self._pr,
-                request=self.request,
-            )
-        except ConflictError:
-            # CMFEditions does that...
-            versions = []
+        versions = get_history(
+            self.context,
+            self._pr,
+            request=self.request,
+        )
         for version in versions:
             try:
                 modified, widgets = version
