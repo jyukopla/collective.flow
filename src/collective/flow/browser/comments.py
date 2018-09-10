@@ -269,9 +269,11 @@ class FieldCommentsView(BrowserView):
         super(FieldCommentsView, self).__init__(widget.context, request)
 
     def enabled(self):
-        return IComments.providedBy(
-            self.context,
-        ) and IDiscussableField.providedBy(self.field)
+        return all([
+            IComments.providedBy(self.context),
+            IDiscussableField.providedBy(self.field),
+            self.widget.value in [[], None],
+        ])
 
     def update(self):
         self.form_instance = self.form_klass(

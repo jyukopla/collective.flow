@@ -13,6 +13,7 @@ from collective.flow import schema
 from collective.flow import transforms
 from Products.CMFPlone.interfaces import INonInstallable
 from venusianconfiguration import configure
+from venusianconfiguration import has_package
 from venusianconfiguration import i18n_domain
 from venusianconfiguration import scan
 from zope.interface import implementer
@@ -45,6 +46,12 @@ scan(schema)
 scan(transforms)
 
 configure.include(package=browser, file='__init__.py')
+
+if has_package('plone.restapi'):
+    from collective.flow import restapi
+    import plone.rest
+    configure.include(package=plone.rest, file='meta.zcml')
+    scan(restapi)
 
 
 @configure.gs.registerProfile.post_handler(
