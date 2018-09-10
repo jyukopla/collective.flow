@@ -1,7 +1,7 @@
 Changelog
 =========
 
-1.1.0 (unreleased)
+1.1.0 (2018-09-10)
 ------------------
 
 - Implement Plone REST API expansion
