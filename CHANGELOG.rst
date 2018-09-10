@@ -4,8 +4,8 @@ Changelog
 1.0.3 (unreleased)
 ------------------
 
-- Nothing changed yet.
-
+- Fix to better catch CMFEditions history lookup ConflictErrors
+  [Asko Soukka]
 
 1.0.2 (2018-09-07)
 ------------------
