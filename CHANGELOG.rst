@@ -1,11 +1,13 @@
 Changelog
 =========
 
-1.0.4 (unreleased)
+1.1.0 (unreleased)
 ------------------
 
-- Nothing changed yet.
-
+- Implement Plone REST API expansion
+  [Asko Soukka]
+- Change to only show comment option for fields with values
+  [Asko Soukka]
 
 1.0.3 (2018-09-10)
 ------------------
