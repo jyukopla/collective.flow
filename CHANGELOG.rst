@@ -4,8 +4,8 @@ Changelog
 1.1.1 (unreleased)
 ------------------
 
-- Nothing changed yet.
-
+- Fix issue where comments were not shown
+  [Asko Soukka]
 
 1.1.0 (2018-09-10)
 ------------------
