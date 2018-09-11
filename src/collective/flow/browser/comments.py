@@ -272,7 +272,7 @@ class FieldCommentsView(BrowserView):
         return all([
             IComments.providedBy(self.context),
             IDiscussableField.providedBy(self.field),
-            self.widget.value in [[], None],
+            self.widget.value not in [[], None, u''],
         ])
 
     def update(self):
