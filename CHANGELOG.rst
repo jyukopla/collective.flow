@@ -1,7 +1,7 @@
 Changelog
 =========
 
-1.1.1 (unreleased)
+1.1.1 (2018-09-11)
 ------------------
 
 - Fix issue where comments were not shown
