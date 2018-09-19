@@ -4,8 +4,9 @@ Changelog
 1.1.2 (unreleased)
 ------------------
 
-- Nothing changed yet.
-
+- Change to use _v_volatile caching for field history and disable history on
+  POSTs to mitigate with CMFEditions' conflict errors
+  [Asko Soukka]
 
 1.1.1 (2018-09-11)
 ------------------
