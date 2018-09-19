@@ -7,7 +7,6 @@ from plone.app.versioningbehavior.behaviors import IVersioningSupport
 from plone.memoize import request
 from plone.schemaeditor.interfaces import IFieldEditorExtender
 from plone.schemaeditor.interfaces import ISchemaContext
-from plone.uuid.interfaces import IUUID
 from Products.Five import BrowserView
 from venusianconfiguration import configure
 from z3c.form.interfaces import IWidget
@@ -76,13 +75,6 @@ def get_changelog_schema(schema_context, field):
         pass
 
 
-# noinspection PyUnusedLocal,PyShadowingNames
-def cache_key(self, context, portal_repository, request=request):
-    return 'collective.flow.history.' + IUUID(context)  # noqa: P001
-
-
-# noinspection PyUnusedLocal,PyShadowingNames,PyProtectedMember
-@request.cache(cache_key)
 def get_history(context, portal_repository, request=request):
     """Return renderable widgets for available version history of given
     context
@@ -106,7 +98,15 @@ def get_history(context, portal_repository, request=request):
         widgets = dict(view.widgets)
         for group in getattr(view, 'groups', None) or []:
             widgets.update(group.widgets)
-        history.append((version.object.modified(), widgets))
+        result = {}
+        for widget in widgets.values():
+            if IVersionableField.providedBy(widget.field):
+                result[widget.field.__name__] = {
+                    'value': widget.value,
+                    # Drop duplicate IDs
+                    'render': re.sub('\sid="[^"]+"', '', widget.render()),
+                }
+        history.append((version.object.modified(), result))
 
     # Bug(?) in CMFEditions injects unmodified objects into transaction objects
     for name, conn in context._p_jar.connections.items():
@@ -147,36 +147,42 @@ class FieldHistoryView(BrowserView):
         ) and IVersionableField.providedBy(self.field)
 
     def history(self):
-        try:
-            return self._history()
-        except ConflictError:
-            return []
-
-    def _history(self):
         seen = []
         result = []
 
-        versions = get_history(
-            self.context,
-            self._pr,
-            request=self.request,
-        )
-        for version in versions:
+        for version in self._history():
             try:
                 modified, widgets = version
                 widget = widgets[self.field.__name__]
             except KeyError:
                 continue
-            if all([widget.value, widget.value != self.widget.value,
-                    widget.value not in seen]):
-                seen.append(widget.value)
-                # Drop duplicate IDs
-                widget.render = re.sub('\sid="[^"]+"', '', widget.render())
+            if all([widget['value'], widget['value'] != self.widget.value,
+                    widget['value'] not in seen]):
+                seen.append(widget['value'])
                 result.append({
                     'modified': modified,
                     'widget': widget,
                 })
 
+        return result
+
+    def _history(self):
+        try:
+            result = self.context._v_collective_flow_field_history
+        except AttributeError:
+            if self.request.method == 'POST':
+                # Accessing history during POST may not be safe
+                result = []
+            else:
+                try:
+                    result = get_history(
+                        self.context,
+                        self._pr,
+                        request=self.request,
+                    )
+                    self.context._v_collective_flow_field_history = result
+                except ConflictError:
+                    result = []
         return result
 
     def __call__(self):
