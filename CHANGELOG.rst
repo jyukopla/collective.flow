@@ -1,7 +1,7 @@
 Changelog
 =========
 
-1.1.2 (unreleased)
+1.1.2 (2018-09-19)
 ------------------
 
 - Change to use _v_volatile caching for field history and disable history on
