@@ -71,7 +71,7 @@ def parents(context, iface=None):
     context = aq_inner(context)
 
     while context is not None:
-        if iface.providedBy(context):
+        if iface is None or iface.providedBy(context):
             yield context
 
         func = getattr(context, 'im_self', None)
