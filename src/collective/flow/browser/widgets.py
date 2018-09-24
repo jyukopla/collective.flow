@@ -26,6 +26,7 @@ from zope.interface import Attribute
 from zope.interface import implementer
 from zope.interface import implementer_only
 from zope.interface import Interface
+from zope.schema.interfaces import ICollection
 from zope.schema.interfaces import IField
 
 import os
@@ -36,28 +37,35 @@ _ = MessageFactory('collective.flow')
 
 @configure.subscriber.handler(for_=IAfterWidgetUpdateEvent)
 def fixAjaxSelectWidgetDisplayMode(event):
-    if isinstance(event.widget, AjaxSelectWidget):
-        if event.widget.mode == DISPLAY_MODE:
-            # This is crazy! AjaxSelectWidget is based on select widget and
-            # therefore has completely wrong display mode; Here we replace
-            # the widget with SelectWidget, but is it really this hard?
-            tmp = FieldWidget(
-                event.widget.field,
-                SelectWidget(event.widget.request),
-            )
-            # Do what they do in z3c.form.field update
-            tmp.name = event.widget.name
-            tmp.id = event.widget.id
-            tmp.context = event.widget.context
-            tmp.form = event.widget.form
-            alsoProvides(tmp, IContextAware, IFormAware)
-            tmp.ignoreContext = event.widget.ignoreContext
-            tmp.ignoreRequest = event.widget.ignoreRequest
-            tmp.showDefault = event.widget.showDefault
-            tmp.mode = event.widget.mode
-            event.widget.__class__ = SelectWidget
-            event.widget.__dict__ = tmp.__dict__
-            event.widget.update()
+    if (isinstance(event.widget, AjaxSelectWidget) and
+            event.widget.mode == DISPLAY_MODE and event.widget.vocabulary):
+        # Sanity check
+        field = getattr(event.widget, 'field', None)
+        if ICollection.providedBy(field):
+            field = field.value_type
+        if field is None or not getattr(field, 'vocabularyName', None):
+            # Field doesn't know its vocabulary and SelectWidget cannot be used
+            return
+        # This is crazy! AjaxSelectWidget is based on select widget and
+        # therefore has completely wrong display mode; Here we replace
+        # the widget with SelectWidget, but is it really this hard?
+        tmp = FieldWidget(
+            event.widget.field,
+            SelectWidget(event.widget.request),
+        )
+        # Do what they do in z3c.form.field update
+        tmp.name = event.widget.name
+        tmp.id = event.widget.id
+        tmp.context = event.widget.context
+        tmp.form = event.widget.form
+        alsoProvides(tmp, IContextAware, IFormAware)
+        tmp.ignoreContext = event.widget.ignoreContext
+        tmp.ignoreRequest = event.widget.ignoreRequest
+        tmp.showDefault = event.widget.showDefault
+        tmp.mode = event.widget.mode
+        event.widget.__class__ = SelectWidget
+        event.widget.__dict__ = tmp.__dict__
+        event.widget.update()
 
 
 class IRichTextLabel(Interface, IField):
