@@ -4,8 +4,10 @@ Changelog
 1.1.3 (unreleased)
 ------------------
 
-- Nothing changed yet.
-
+- Fix parents helper to be usable without iface filter
+  [Asko Soukka]
+- Fix issue where AjaxSelectWidget dislay mode broke keywords widget
+  [Asko Soukka]
 
 1.1.2 (2018-09-19)
 ------------------
