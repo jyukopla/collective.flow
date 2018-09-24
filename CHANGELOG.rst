@@ -1,7 +1,7 @@
 Changelog
 =========
 
-1.1.3 (unreleased)
+1.1.3 (2018-09-24)
 ------------------
 
 - Fix parents helper to be usable without iface filter
