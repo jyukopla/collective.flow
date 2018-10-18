@@ -1,12 +1,15 @@
-{ pkgs ? import <nixpkgs> {}
-, pythonPackages ? pkgs.python27Packages
-, setup ? import ../setup.nix
+{ pkgs ? import (fetchTarball {
+    url = "https://github.com/NixOS/nixpkgs-channels/archive/81f5c2698a87c65b4970c69d472960c574ea0db4.tar.gz";
+    sha256 = "0p4x9532d3qlbykyyq8zk62k8py9mxd1s7zgbv54zmv597rs5y35";
+  }) {}
+, setup ? import (fetchTarball {
+    url = "https://github.com/datakurre/setup.nix/archive/d3025ac35cc348d7bb233ee171629630bb4d6864.tar.gz";
+    sha256 = "09czivsv81y1qydl7jnqa634bili8z9zvzsj0h3snbr8pk5dzwkj";
+ })
+, pythonPackages ? pkgs.python2Packages
 }:
 
 let overrides = self: super:  {
-  Pillow = super.pillow;
-
-  pytest = pythonPackages.pytest;
 
   "eggtestinfo" = super.buildPythonPackage {
     name = "eggtestinfo-0.3";
@@ -40,6 +43,15 @@ let overrides = self: super:  {
     };
     installFlags = [ "--no-deps" ];
     propagatedBuildInputs = [];
+  });
+
+  "flake8-print" = super."flake8-print".overridePythonAttrs (old: {
+    propagatedBuildInputs = old.propagatedBuildInputs ++ [
+      self."enum34"
+      self."pyflakes"
+      self."mccabe"
+      self."configparser"
+    ];
   });
 
   "BTrees" = super."BTrees".overridePythonAttrs (old: {
@@ -84,9 +96,14 @@ let overrides = self: super:  {
     propagatedBuildInputs = [];
   });
 
-  "sauna.reload" = super."sauna.reload".overridePythonAttrs (old: {
+  "sauna.reload " = super."sauna.reload".overridePythonAttrs (old: {
     installFlags = [ "--no-deps" ];
-    src = ../sauna.reload;
+    src = pkgs.fetchFromGitHub {
+      owner = "collective";
+      repo = "sauna.reload";
+      rev = "e12a0a9e01204de324ab934aec5754773ac30bd6";
+      sha256 = "11izl11cz70lnn6ycq8rv32gqkgfnp5yvs300rgql5dlg3pz58w0";
+    };
   });
 };
 
