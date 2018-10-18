@@ -412,7 +412,7 @@ def save_schema_from_schema_context(schema_context, event=None):
     save_schema(
         schema_context.content,
         schema=schema_context.schema,
-        language=language != default_language and language or u'',
+        language=default_language.startswith(language) and language or u'',
     )
 
 

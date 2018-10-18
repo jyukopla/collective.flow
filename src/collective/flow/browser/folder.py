@@ -279,7 +279,7 @@ def get_submission_container(root, container, submission):
     if not template:
         return container
     container = root
-    language = api.portal.get_default_language()
+    language = api.portal.get_default_language().split('-')[0]
     path = datetime.utcnow().strftime(
         interpolate(template, submission, language=language),
     )
@@ -822,7 +822,7 @@ class LanguageFieldsProxy(ProxyBase):
 class FlowFolderEditForm(DefaultEditForm):
     def getContent(self):
         language = negotiate(context=self.request)
-        if language == api.portal.get_default_language():
+        if api.portal.get_default_language().startswith(language):
             return self.context
         else:
             proxy = LanguageFieldsProxy(self.context)
