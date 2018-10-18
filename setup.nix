@@ -48,10 +48,10 @@ let overrides = self: super:  {
   "flake8-print" = super."flake8-print".overridePythonAttrs (old: {
     propagatedBuildInputs = old.propagatedBuildInputs ++ [
       self."enum34"
-      self."pyflakes"
       self."mccabe"
       self."configparser"
     ];
+    installFlags = [ "--no-deps" ];
   });
 
   "BTrees" = super."BTrees".overridePythonAttrs (old: {

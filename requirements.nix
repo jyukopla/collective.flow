@@ -3885,11 +3885,11 @@ self: super: {
     };
   };
   "pyflakes" = super.buildPythonPackage {
-    name = "pyflakes-2.0.0";
+    name = "pyflakes-1.6.0";
     doCheck = false;
     src = fetchurl {
-      url = "https://files.pythonhosted.org/packages/92/9e/386c0d9deef14996eb90d9deebbcb9d3ceb70296840b09615cb61b2ae231/pyflakes-2.0.0.tar.gz";
-      sha256 = "0jba28czyvimdc72llms3f17swp3i8jdcabf5w0j00adfbn64xls";
+      url = "https://files.pythonhosted.org/packages/26/85/f6a315cd3c1aa597fb3a04cc7d7dbea5b3cc66ea6bd13dfa0478bf4876e6/pyflakes-1.6.0.tar.gz";
+      sha256 = "01c87qiadz71sbqrclrsr85vx601p20g4hs7nlcvyg945ww6lqcd";
     };
   };
   "pytest-runner" = super.buildPythonPackage {
