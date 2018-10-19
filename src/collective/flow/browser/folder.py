@@ -279,7 +279,8 @@ def get_submission_container(root, container, submission):
     if not template:
         return container
     container = root
-    language = api.portal.get_default_language().split('-')[0]
+    navigation_root = api.portal.get_navigation_root()
+    language = api.portal.get_current_language(navigation_root).split('-')[0]
     path = datetime.utcnow().strftime(
         interpolate(template, submission, language=language),
     )
@@ -386,7 +387,9 @@ class FlowSubmitForm(DefaultAddForm):
     def __init__(self, context, request):
         super(FlowSubmitForm, self).__init__(context, request)
         language = negotiate(context=self.request)
-        if api.portal.get_default_language().startswith(language):
+        navigation_root = api.portal.get_navigation_root(self.context)
+        default_language = api.portal.get_current_language(navigation_root)
+        if default_language.startswith(language):
             self.localized_context = context
         else:
             proxy = LanguageFieldsProxy(self.context)
@@ -822,7 +825,9 @@ class LanguageFieldsProxy(ProxyBase):
 class FlowFolderEditForm(DefaultEditForm):
     def getContent(self):
         language = negotiate(context=self.request)
-        if api.portal.get_default_language().startswith(language):
+        navigation_root = api.portal.get_navigation_root(self.context)
+        default_language = api.portal.get_current_language(navigation_root)
+        if default_language.startswith(language):
             return self.context
         else:
             proxy = LanguageFieldsProxy(self.context)

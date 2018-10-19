@@ -408,7 +408,8 @@ def save_schema(context, schema=None, xml=None, language=u''):
 def save_schema_from_schema_context(schema_context, event=None):
     assert event
     language = negotiate(context=getRequest())
-    default_language = api.portal.get_default_language()
+    navigation_root = api.portal.get_navigation_root(schema_context.content)
+    default_language = api.portal.get_current_language(navigation_root)
     save_schema(
         schema_context.content,
         schema=schema_context.schema,

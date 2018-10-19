@@ -108,7 +108,9 @@ class SubFlowSubmitForm(FlowSubmitForm):
     def __init__(self, context, request):
         super(SubFlowSubmitForm, self).__init__(context, request)
         language = negotiate(context=request)
-        if api.portal.get_default_language().startswith(language):
+        navigation_root = api.portal.get_navigation_root(self.context)
+        default_language = api.portal.get_current_language(navigation_root)
+        if default_language.startswith(language):
             self._locale_postfix = ''
         else:
             self._locale_postfix = '_' + language
