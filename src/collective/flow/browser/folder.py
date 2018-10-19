@@ -386,7 +386,7 @@ class FlowSubmitForm(DefaultAddForm):
     def __init__(self, context, request):
         super(FlowSubmitForm, self).__init__(context, request)
         language = negotiate(context=self.request)
-        if language == api.portal.get_default_language():
+        if api.portal.get_default_language().startswith(language):
             self.localized_context = context
         else:
             proxy = LanguageFieldsProxy(self.context)
