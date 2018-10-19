@@ -42,7 +42,8 @@ except pkg_resources.VersionConflict:
     pass
 
 venusianconfiguration.configure.includePluginsOverrides(
-    package=u'plone', file='overrides.py'
+    package=u'plone',
+    file='overrides.py',
 )
 
 ORDER_SCHEMA = """\
@@ -111,7 +112,8 @@ class MockMailHostLayer(z2.Layer):
                 sm = getSiteManager(context=portal)
                 sm.unregisterUtility(provided=IMailHost)
                 sm.registerUtility(
-                    aq_base(portal._original_MailHost), provided=IMailHost
+                    aq_base(portal._original_MailHost),
+                    provided=IMailHost,
                 )
 
 
@@ -138,7 +140,7 @@ class FlowLayer(PloneSandboxLayer):
         language_tool = api.portal.get_tool('portal_languages')
         try:
             language_tool.settings.available_languages = [
-                os.environ.get('LANGUAGE', 'en')
+                os.environ.get('LANGUAGE', 'en'),
             ]
         except AttributeError:
             pass

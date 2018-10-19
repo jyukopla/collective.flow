@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from collective.flow import _
 from collective.flow.interfaces import FLOW_NAMESPACE
 from collective.flow.interfaces import FLOW_PREFIX
 from plone.supermodel.parser import IFieldMetadataHandler

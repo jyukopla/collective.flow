@@ -47,7 +47,6 @@ from zope.schema._bootstrapinterfaces import IContextAwareDefaultFactory
 
 import hashlib
 import logging
-import plone.api as api
 import re
 import threading
 
@@ -207,7 +206,8 @@ def customized_schema(original, custom):
                 for node in [child for child in field.getchildren()
                              if child.tag in fields[schema_name][name]]:
                     field.replace(
-                        node, fields[schema_name][name].pop(node.tag)
+                        node,
+                        fields[schema_name][name].pop(node.tag),
                     )
                 for node in fields[schema_name][name].values():
                     field.append(node)

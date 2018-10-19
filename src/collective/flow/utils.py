@@ -35,7 +35,7 @@ def unrestricted(func):
 def get_navigation_root_language(context):
     try:
         return (
-            aq_inner(api.portal.get_navigation_root(context)).Language() or
+            aq_inner(api.portal.get_navigation_root(context)).Language() or  # noqa: P001,E501
             api.portal.get_default_language()
         )
     except AttributeError:

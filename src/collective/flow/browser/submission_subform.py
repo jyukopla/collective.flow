@@ -30,7 +30,7 @@ class SubmissionObjectSubForm(ObjectSubForm, AutoObjectSubForm):
 @implementer(ISubformFactory)
 @adapter(
     Interface, ICollectiveFlowLayer, Interface, Interface, IObjectWidget,
-    Interface, IFlowSchemaDynamic
+    Interface, IFlowSchemaDynamic,
 )
 class SubmissionSubFormAdapter(SubformAdapter):
     factory = SubmissionObjectSubForm
