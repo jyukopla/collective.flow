@@ -22,13 +22,13 @@ build: $(BUILDOUT_BIN)
 
 .PHONY: docs
 docs: bin/pocompile bin/sphinx-build
-	bin/pocompile
+	bin/pocompile src
 	LANGUAGE=fi bin/sphinx-build docs html
 
 .PHONY: test
 export ZSERVER_PORT=55001
 test: bin/pocompile bin/code-analysis bin/test bin/pybot
-	bin/pocompile
+	bin/pocompile src
 	bin/code-analysis
 	bin/test --all
 	LANGUAGE=fi bin/pybot $(PYBOT_ARGS) -d parts/test docs
