@@ -189,6 +189,16 @@ configure.gs.upgradeDepends(
     import_steps='typeinfo viewlets workflow',
 )
 
+configure.gs.upgradeDepends(
+    source='1009',
+    destination='1010',
+    sortkey='1009',
+    title=u'Upgrade collective.flow from 1009 to 1010',
+    description=u'Update actions',
+    profile='collective.flow:default',
+    import_steps='actions',
+)
+
 configure.gs.registerProfile(
     name=u'uninstall',
     title=_(u'Forms, workflows and everything'),
