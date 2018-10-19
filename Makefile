@@ -26,6 +26,7 @@ docs: bin/pocompile bin/sphinx-build
 	LANGUAGE=fi bin/sphinx-build docs html
 
 .PHONY: test
+export ZSERVER_PORT=55001
 test: bin/pocompile bin/code-analysis bin/test bin/pybot
 	bin/pocompile
 	bin/code-analysis
