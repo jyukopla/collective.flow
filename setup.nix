@@ -96,13 +96,11 @@ let overrides = self: super:  {
     propagatedBuildInputs = [];
   });
 
-  "sauna.reload " = super."sauna.reload".overridePythonAttrs (old: {
+  "sauna.reload" = super."sauna.reload".overridePythonAttrs (old: {
     installFlags = [ "--no-deps" ];
-    src = pkgs.fetchFromGitHub {
-      owner = "collective";
-      repo = "sauna.reload";
-      rev = "e12a0a9e01204de324ab934aec5754773ac30bd6";
-      sha256 = "11izl11cz70lnn6ycq8rv32gqkgfnp5yvs300rgql5dlg3pz58w0";
+    src = fetchTarball {
+      url = "https://github.com/collective/sauna.reload/archive/e12a0a9e01204de324ab934aec5754773ac30bd6.tar.gz";
+      sha256 = "1hshs9b4693hwlm2n0jx6miq6q18wc7qq2a5l7nqmxxgs21x9a3c";
     };
   });
 };

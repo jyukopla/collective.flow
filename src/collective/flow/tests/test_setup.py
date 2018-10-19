@@ -22,13 +22,11 @@ class TestSetup(unittest.TestCase):
 
     def test_product_installed(self):
         """Test if collective.flow is installed."""
-        self.assertTrue(self.installer.isProductInstalled(
-            'collective.flow'))
+        self.assertTrue(self.installer.isProductInstalled('collective.flow'))
 
     def test_browserlayer(self):
         """Test that IFLOWLayer is registered."""
-        from collective.flow.interfaces import (
-            ICollectiveFlowLayer)
+        from collective.flow.interfaces import (ICollectiveFlowLayer)
         from plone.browserlayer import utils
         self.assertIn(ICollectiveFlowLayer, utils.registered_layers())
 
@@ -42,11 +40,10 @@ class TestUninstall(unittest.TestCase):
         self.installer = api.portal.get_tool('portal_quickinstaller')
 
         # Uninstall as Manager
-        setRoles(self.portal, TEST_USER_ID, ('Manager',))
+        setRoles(self.portal, TEST_USER_ID, ('Manager', ))
         login(self.portal, TEST_USER_NAME)
         self.installer.uninstallProducts(['collective.flow'])
 
     def test_product_uninstalled(self):
         """Test if collective.flow is cleanly uninstalled."""
-        self.assertFalse(self.installer.isProductInstalled(
-            'collective.flow'))
+        self.assertFalse(self.installer.isProductInstalled('collective.flow'))

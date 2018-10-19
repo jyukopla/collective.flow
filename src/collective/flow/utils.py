@@ -11,6 +11,7 @@ from plone.memoize import forever
 from RestrictedPython import compile_restricted_function
 
 import logging
+import plone.api as api
 
 
 logger = logging.getLogger('collective.flow')
@@ -29,6 +30,16 @@ def unrestricted(func):
             setSecurityManager(old_security_manager)  # noqa: P001
 
     return wrapper
+
+
+def get_navigation_root_language(context):
+    try:
+        return (
+            aq_inner(api.portal.get_navigation_root(context)).Language() or
+            api.portal.get_default_language()
+        )
+    except AttributeError:
+        return api.portal.get_default_language()
 
 
 @forever.memoize

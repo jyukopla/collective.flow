@@ -33,7 +33,6 @@ import venusianconfiguration
 
 _ = MessageFactory('collective.flow')
 
-
 try:
     HAVE_PLONE_5 = False
     if pkg_resources.get_distribution('Products.CMFPlone>=5.0'):
@@ -42,10 +41,9 @@ try:
 except pkg_resources.VersionConflict:
     pass
 
-
 venusianconfiguration.configure.includePluginsOverrides(
-    package=u'plone', file='overrides.py')
-
+    package=u'plone', file='overrides.py'
+)
 
 ORDER_SCHEMA = """\
 <?xml version="1.0" encoding="UTF-8"?>
@@ -74,7 +72,7 @@ ORDER_SCHEMA = """\
 
 
 def populate(portal, target_language):
-    setRoles(portal, TEST_USER_ID, ('Manager',))
+    setRoles(portal, TEST_USER_ID, ('Manager', ))
     login(portal, TEST_USER_NAME)
     ob = api.content.create(
         portal,
@@ -90,7 +88,7 @@ def populate(portal, target_language):
 
 
 class MockMailHostLayer(z2.Layer):
-    defaultBases = (PLONE_FIXTURE,)
+    defaultBases = (PLONE_FIXTURE, )
 
     def setUp(self):
         # zope.testing-set environment variable is in place.
@@ -112,8 +110,9 @@ class MockMailHostLayer(z2.Layer):
                 portal.MailHost = portal._original_MailHost
                 sm = getSiteManager(context=portal)
                 sm.unregisterUtility(provided=IMailHost)
-                sm.registerUtility(aq_base(portal._original_MailHost),
-                                   provided=IMailHost)
+                sm.registerUtility(
+                    aq_base(portal._original_MailHost), provided=IMailHost
+                )
 
 
 MOCK_MAILHOST_FIXTURE = MockMailHostLayer()
@@ -121,7 +120,7 @@ MOCK_MAILHOST_FIXTURE = MockMailHostLayer()
 
 class FlowLayer(PloneSandboxLayer):
 
-    defaultBases = (PLONE_FIXTURE,)
+    defaultBases = (PLONE_FIXTURE, )
 
     def setUpZope(self, app, configurationContext):
         if HAVE_PLONE_5:
@@ -139,7 +138,8 @@ class FlowLayer(PloneSandboxLayer):
         language_tool = api.portal.get_tool('portal_languages')
         try:
             language_tool.settings.available_languages = [
-                os.environ.get('LANGUAGE', 'en')]
+                os.environ.get('LANGUAGE', 'en')
+            ]
         except AttributeError:
             pass
         language_tool.setDefaultLanguage(os.environ.get('LANGUAGE', 'en'))
@@ -154,30 +154,20 @@ class Flow(object):
 
 
 FLOW_REMOTE_LIBRARY_BUNDLE_FIXTURE = RemoteLibraryLayer(
-    bases=(PLONE_FIXTURE,),
-    libraries=(AutoLogin,
-               Users, I18N, MockMailHost,
-               Zope2ServerRemote,
-               Flow),
+    bases=(PLONE_FIXTURE, ),
+    libraries=(AutoLogin, Users, I18N, MockMailHost, Zope2ServerRemote, Flow),
     name='RemoteLibraryBundle:RobotRemote',
 )
 
-
 FLOW_INTEGRATION_TESTING = IntegrationTesting(
-    bases=(
-        FLOW_FIXTURE,
-    ),
+    bases=(FLOW_FIXTURE, ),
     name='FlowLayer:IntegrationTesting',
 )
 
-
 FLOW_FUNCTIONAL_TESTING = FunctionalTesting(
-    bases=(
-        FLOW_FIXTURE,
-    ),
+    bases=(FLOW_FIXTURE, ),
     name='FlowLayer:FunctionalTesting',
 )
-
 
 FLOW_ACCEPTANCE_TESTING = FunctionalTesting(
     bases=(

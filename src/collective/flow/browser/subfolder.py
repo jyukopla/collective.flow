@@ -21,18 +21,63 @@ from collective.flow.interfaces import SUBMIT_LABEL_FIELD
 from collective.flow.schema import customized_schema
 from collective.flow.schema import load_schema
 from collective.flow.schema import save_schema
+from collective.flow.subfolder import ICustomizableField
+from collective.flow.utils import get_navigation_root_language
 from OFS.interfaces import IItem
 from plone import api
 from plone.schemaeditor.browser.schema.traversal import SchemaContext
+from plone.schemaeditor.interfaces import IFieldEditorExtender
+from plone.schemaeditor.interfaces import ISchemaContext
 from venusianconfiguration import configure
+from zope import schema
+from zope.component import adapter
 from zope.i18n import negotiate
 from zope.i18nmessageid import MessageFactory
+from zope.interface import alsoProvides
 from zope.interface import implementer
+from zope.interface import Interface
+from zope.interface import noLongerProvides
 from zope.lifecycleevent import IObjectModifiedEvent
 from zope.publisher.interfaces import IPublishTraverse
+from zope.schema.interfaces import IField
 
 
 _ = MessageFactory('collective.flow')
+
+
+class IFieldCustomizableForm(Interface):
+    comments = schema.Bool(
+        title=_(u'Allow flow folder customization'),
+        required=False,
+    )
+
+
+@configure.adapter.factory(
+    name='collective.flow.customizable',
+    provides=IFieldEditorExtender,
+)
+@adapter(ISchemaContext, IField)
+def get_customization_schema(schema_context, field):
+    return IFieldCustomizableForm
+
+
+@configure.adapter.factory(provides=IFieldCustomizableForm)
+@implementer(IFieldCustomizableForm)
+@adapter(IField)
+class FieldCustomizableAdapter(object):
+    def __init__(self, field):
+        self.field = field
+
+    def _read_comments(self):
+        return ICustomizableField.providedBy(self.field)
+
+    def _write_comments(self, value):
+        if value:
+            alsoProvides(self.field, ICustomizableField)
+        else:
+            noLongerProvides(self.field, ICustomizableField)
+
+    comments = property(_read_comments, _write_comments)
 
 
 @configure.subscriber.handler(
@@ -108,9 +153,8 @@ class SubFlowSubmitForm(FlowSubmitForm):
     def __init__(self, context, request):
         super(SubFlowSubmitForm, self).__init__(context, request)
         language = negotiate(context=request)
-        navigation_root = api.portal.get_navigation_root(self.context)
-        default_language = api.portal.get_current_language(navigation_root)
-        if default_language.startswith(language):
+        context_language = get_navigation_root_language(self.context)
+        if context_language.startswith(language):
             self._locale_postfix = ''
         else:
             self._locale_postfix = '_' + language

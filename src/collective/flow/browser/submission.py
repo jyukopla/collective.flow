@@ -9,6 +9,7 @@ from collective.flow.interfaces import IFlowFolder
 from collective.flow.interfaces import IFlowSchemaForm
 from collective.flow.interfaces import IFlowSubmission
 from collective.flow.schema import load_schema
+from collective.flow.utils import get_navigation_root_language
 from plone.autoform.view import WidgetsView
 from plone.dexterity.browser.edit import DefaultEditForm
 from plone.z3cform.fieldsets.extensible import ExtensibleForm
@@ -130,9 +131,8 @@ class SubmissionEditForm(DefaultEditForm):
     def __init__(self, context, request):
         super(SubmissionEditForm, self).__init__(context, request)
         language = negotiate(context=request)
-        navigation_root = api.portal.get_navigation_root(self.context)
-        default_language = api.portal.get_current_language(navigation_root)
-        if default_language.startswith(language):
+        context_language = get_navigation_root_language(self.context)
+        if context_language.startswith(language):
             self._locale_postfix = ''
         else:
             self._locale_postfix = '_' + language

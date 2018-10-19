@@ -10,6 +10,7 @@ from collective.flow import defaults
 from collective.flow import fields
 from collective.flow import history
 from collective.flow import schema
+from collective.flow import subfolder
 from collective.flow import transforms
 from Products.CMFPlone.interfaces import INonInstallable
 from venusianconfiguration import configure
@@ -43,6 +44,7 @@ scan(defaults)
 scan(fields)
 scan(history)
 scan(schema)
+scan(subfolder)
 scan(transforms)
 
 configure.include(package=browser, file='__init__.py')

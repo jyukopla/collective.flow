@@ -18,6 +18,7 @@ from collective.flow.schema import FlowSchemaFieldPermissionChecker
 from collective.flow.schema import interpolate
 from collective.flow.schema import load_schema
 from collective.flow.schema import remove_attachments
+from collective.flow.utils import get_navigation_root_language
 from collective.flow.utils import parents
 from collective.flow.utils import prepare_restricted_function
 from collective.flow.utils import unrestricted
@@ -279,8 +280,7 @@ def get_submission_container(root, container, submission):
     if not template:
         return container
     container = root
-    navigation_root = api.portal.get_navigation_root()
-    language = api.portal.get_current_language(navigation_root).split('-')[0]
+    language = get_navigation_root_language(container).split('-')[0]
     path = datetime.utcnow().strftime(
         interpolate(template, submission, language=language),
     )
@@ -387,9 +387,8 @@ class FlowSubmitForm(DefaultAddForm):
     def __init__(self, context, request):
         super(FlowSubmitForm, self).__init__(context, request)
         language = negotiate(context=self.request)
-        navigation_root = api.portal.get_navigation_root(self.context)
-        default_language = api.portal.get_current_language(navigation_root)
-        if default_language.startswith(language):
+        context_language = get_navigation_root_language(self.context)
+        if context_language.startswith(language):
             self.localized_context = context
         else:
             proxy = LanguageFieldsProxy(self.context)
@@ -825,9 +824,8 @@ class LanguageFieldsProxy(ProxyBase):
 class FlowFolderEditForm(DefaultEditForm):
     def getContent(self):
         language = negotiate(context=self.request)
-        navigation_root = api.portal.get_navigation_root(self.context)
-        default_language = api.portal.get_current_language(navigation_root)
-        if default_language.startswith(language):
+        context_language = get_navigation_root_language(self.context)
+        if context_language.startswith(language):
             return self.context
         else:
             proxy = LanguageFieldsProxy(self.context)

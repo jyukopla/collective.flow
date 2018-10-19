@@ -1,10 +1,12 @@
 # -*- coding: utf-8 -*-
 from Acquisition import aq_base
 from collective.flow.interfaces import DEFAULT_SCHEMA
+from collective.flow.interfaces import FLOW_NAMESPACE
 from collective.flow.interfaces import IFlowFolder
 from collective.flow.interfaces import IFlowImpersonation
 from collective.flow.interfaces import IFlowSchemaContext
 from collective.flow.interfaces import IFlowSchemaDynamic
+from collective.flow.utils import get_navigation_root_language
 from contextlib import contextmanager
 from lxml import etree
 from lxml.etree import tostring
@@ -177,8 +179,8 @@ def customized_schema(original, custom):
 
     # copy customizable data from customized schema
     for schema in root.findall(ns('schema')):
-        if schema.attrib.get('name', u'') != u'':
-            continue
+        schema_name = schema.attrib.get('name') or u''
+        fields.setdefault(schema_name, {})
         for field in schema.xpath(
                 'supermodel:field',
                 namespaces=dict(supermodel=XML_NAMESPACE),
@@ -186,28 +188,28 @@ def customized_schema(original, custom):
             name = field.attrib['name']
             for node in [child for child in field.getchildren()
                          if child.tag in CUSTOMIZABLE_TAGS]:
-                fields.setdefault(name, {})
-                fields[name][node.tag] = node
+                fields[schema_name].setdefault(name, {})
+                fields[schema_name][name][node.tag] = node
 
     # apply customizations for copy of original schema
     root = etree.fromstring(original)
     for schema in root.findall(ns('schema')):
-        if schema.attrib.get('name', u'') != u'':
-            continue
-        for name in fields:
+        schema_name = schema.attrib.get('name') or u''
+        fields.setdefault(schema_name, {})
+        for name in fields[schema_name]:
+            fields[schema_name].setdefault(name, {})
             for field in schema.xpath(
-                    'supermodel:field[@name="{0:s}"]'.format(name),
-                    namespaces=dict(supermodel=XML_NAMESPACE),
+                ('supermodel:field[@name="{0:s}" and '
+                 '@flow:customizable="true"]').format(name),
+                    namespaces=dict(supermodel=XML_NAMESPACE,
+                                    flow=FLOW_NAMESPACE),
             ):
                 for node in [child for child in field.getchildren()
-                             if child.tag in fields[name]]:
-                    if (node.text or u'').strip() or node.getchildren():
-                        # if master has value, drop the customization
-                        del fields[name][node.tag]
-                    else:
-                        # if master is empty, apply the customization
-                        field.replace(node, fields[name].pop(node.tag))
-                for node in fields[name].values():
+                             if child.tag in fields[schema_name][name]]:
+                    field.replace(
+                        node, fields[schema_name][name].pop(node.tag)
+                    )
+                for node in fields[schema_name][name].values():
                     field.append(node)
 
     # serialize
@@ -408,12 +410,11 @@ def save_schema(context, schema=None, xml=None, language=u''):
 def save_schema_from_schema_context(schema_context, event=None):
     assert event
     language = negotiate(context=getRequest())
-    navigation_root = api.portal.get_navigation_root(schema_context.content)
-    default_language = api.portal.get_current_language(navigation_root)
+    context_language = get_navigation_root_language(schema_context.content)
     save_schema(
         schema_context.content,
         schema=schema_context.schema,
-        language=not default_language.startswith(language) and language or u'',
+        language=not context_language.startswith(language) and language or u'',
     )
 
 

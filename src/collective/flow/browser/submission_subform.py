@@ -19,7 +19,6 @@ _ = MessageFactory('collective.flow')
 
 @implementer(IAutoObjectSubForm)
 class SubmissionObjectSubForm(ObjectSubForm, AutoObjectSubForm):
-
     def setupFields(self):
         self.updateFieldsFromSchemata()
 
@@ -29,7 +28,9 @@ class SubmissionObjectSubForm(ObjectSubForm, AutoObjectSubForm):
 
 @configure.adapter.factory()
 @implementer(ISubformFactory)
-@adapter(Interface, ICollectiveFlowLayer, Interface, Interface,
-         IObjectWidget, Interface, IFlowSchemaDynamic)
+@adapter(
+    Interface, ICollectiveFlowLayer, Interface, Interface, IObjectWidget,
+    Interface, IFlowSchemaDynamic
+)
 class SubmissionSubFormAdapter(SubformAdapter):
     factory = SubmissionObjectSubForm
