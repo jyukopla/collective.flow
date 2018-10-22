@@ -1,11 +1,23 @@
 Changelog
 =========
 
-1.1.4 (unreleased)
+1.2.0 (unreleased)
 ------------------
 
-- Nothing changed yet.
-
+- Tweak metromap heuristics to better skip reopen transitions when seeking for
+  the next state
+  [Asko Soukka]
+- Make flow folder customizable fields configurable in schema per field
+  [Asko Soukka]
+- Change language negotiation to use the language of the closest navigation
+  root as the default language
+  [Asko Soukka]
+- Fix issue where language specific schema was create for default language
+  [Asko Soukka]
+- Fix issue where action urls were broken on schema context
+  [Asko Soukka]
+- Fix issue where default language (en-us) did not match negotiated language (en)
+  [Asko Soukka]
 
 1.1.3 (2018-09-24)
 ------------------
