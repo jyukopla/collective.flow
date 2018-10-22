@@ -21,6 +21,8 @@ import re
 
 
 def get_default_metromap(wf):
+    """Return heuristically guessed "happy path" version of the workflow
+    """
     states = {}
     transitions = {}
     for state_id in wf.states:
@@ -39,19 +41,22 @@ def get_default_metromap(wf):
                ]['reopen_transition'].append(transition_id)
 
     metro = []
+    reopen_transitions = []
     stack = [states.pop(wf.initial_state)]
     while stack:
         state = stack.pop()
+        reopen_transitions.extend(state['reopen_transition'])
         state['reopen_transition'] = sorted(
             set(transitions).intersection(set(state['reopen_transition'])),
-            key=lambda x: transitions[x],
+            key=lambda x: (transitions[x], x[0]),
         )[:1]
-        for transition_id in state['reopen_transition']:
-            transitions.pop(transition_id)
+        for transition_id in reopen_transitions:
+            if transition_id in transitions:
+                transitions.pop(transition_id)
         state['next_transition'] = sorted(
             set(transitions).intersection(set(state['next_transition'])),
-            key=lambda x: transitions[x],
-        )[:1]
+            key=lambda x: (transitions[x], x[0]),
+        )[:1]  # because of :1 , transition forward gets ignored
         for transition_id in state['next_transition']:
             transitions.pop(transition_id)
             if transition_id in wf.transitions:
