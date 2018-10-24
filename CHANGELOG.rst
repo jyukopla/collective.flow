@@ -1,7 +1,7 @@
 Changelog
 =========
 
-1.3.0 (unreleased)
+1.3.0 (2018-10-24)
 ------------------
 
 - Implement submission_transition and attachment_transition
