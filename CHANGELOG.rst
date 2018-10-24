@@ -4,8 +4,8 @@ Changelog
 1.3.2 (unreleased)
 ------------------
 
-- Nothing changed yet.
-
+- Tweak metromap to include exceptional states not in the heuristic happy path
+  [Asko Soukka]
 
 1.3.1 (2018-10-24)
 ------------------
