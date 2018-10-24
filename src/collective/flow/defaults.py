@@ -2,11 +2,13 @@
 from Acquisition import aq_base
 from collective.flow import _
 from collective.flow.schema import load_schema
+from copy import deepcopy
 from plone.supermodel.interfaces import IDefaultFactory
 from venusianconfiguration import configure
 from zope.interface import Interface
 from zope.interface import provider
 from zope.lifecycleevent import IObjectAddedEvent
+from zope.location.interfaces import IContained
 from zope.schema._bootstrapinterfaces import IContextAwareDefaultFactory
 
 import datetime
@@ -15,13 +17,26 @@ import plone.api as api
 
 @configure.plone.behavior.provides(
     name=u'submission_default_values',
-    title=_(u'Submission (calculated) default values'),
+    title=_(u'Submission default values burner'),
     description=_(
         u'Provides support evaluating default values on creation',
     ),
 )
 class IDefaultValues(Interface):
     """Marker interface for submission comments behavior"""
+
+
+def set_contained(value, name, parent):
+    # Set contained information of schema.Object
+    if IContained.providedBy(value):
+        value.__name__ = name
+        value.__parent__ = aq_base(parent)
+    # Set contained information of schema.List|Tuple(value_type=Object)
+    if isinstance(value, list) or isinstance(value, tuple):
+        for item in value:
+            if IContained.providedBy(item):
+                item.__name__ = name
+                item.__parent__ = aq_base(parent)
 
 
 @configure.subscriber.handler(
@@ -38,7 +53,11 @@ def burnDefaultValues(ob, event):
             factory = field.defaultFactory
         except AttributeError:
             factory = None
-        if not factory:
+        try:
+            default = field.default
+        except AttributeError:
+            default = None
+        if not (factory or default):
             continue
         bound = field.bind(ob)
         try:
@@ -47,12 +66,16 @@ def burnDefaultValues(ob, event):
             value = None
         if value:
             continue
-        if IContextAwareDefaultFactory.providedBy(factory):
-            value = factory(ob)
+        if factory:
+            if IContextAwareDefaultFactory.providedBy(factory):
+                value = factory(ob)
+            else:
+                value = factory()
         else:
-            value = factory()
+            value = deepcopy(default)
         if value:
             bound.set(ob, value)
+            set_contained(value, name, ob)
 
 
 @provider(IDefaultFactory)
