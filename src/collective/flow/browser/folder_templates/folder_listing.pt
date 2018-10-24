@@ -15,7 +15,7 @@
        tal:condition="view/context/Description|nothing">Description</div>
 
   <fieldset id="folder-listing" tal:condition="view/context/objectIds|nothing">
-    <legend i18n:translate="" i18n:domain="plone">Contents</legend>
+    <legend i18n:translate="" i18n:domain="collective.flow">Available forms</legend>
     <tal:block define="view nocall:context/folder_listing; listing_macro view/macros/listing">
       <metal:use_macro use-macro="listing_macro" />
     </tal:block>

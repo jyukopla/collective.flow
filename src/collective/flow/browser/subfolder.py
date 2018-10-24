@@ -49,7 +49,11 @@ _ = MessageFactory('collective.flow')
 
 class IFieldCustomizableForm(Interface):
     comments = schema.Bool(
-        title=_(u'Allow flow folder customization'),
+        title=_(u'Allow customizations in form flow sub-folders'),
+        description=_(
+            u'Allows customization of default and choice values '
+            u'in form flow sub-folders (form specializations)',
+        ),
         required=False,
     )
 
