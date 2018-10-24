@@ -3,6 +3,7 @@ from Acquisition import aq_base
 from collective.flow.browser.folder import FlowImpersonationForm
 from collective.flow.browser.folder import FlowSubmitForm
 from collective.flow.browser.folder import FolderListing
+from collective.flow.interfaces import ATTACHMENT_TRANSITION_FIELD
 from collective.flow.interfaces import ATTACHMENT_WORKFLOW_FIELD
 from collective.flow.interfaces import DEFAULT_ATTACHMENT_WORKFLOW
 from collective.flow.interfaces import DEFAULT_FIELDSET_LABEL_FIELD
@@ -16,6 +17,7 @@ from collective.flow.interfaces import SUBMISSION_BEHAVIORS_FIELD
 from collective.flow.interfaces import SUBMISSION_IMPERSONATION_FIELD
 from collective.flow.interfaces import SUBMISSION_PATH_TEMPLATE_FIELD
 from collective.flow.interfaces import SUBMISSION_TITLE_TEMPLATE_FIELD
+from collective.flow.interfaces import SUBMISSION_TRANSITION_FIELD
 from collective.flow.interfaces import SUBMISSION_WORKFLOW_FIELD
 from collective.flow.interfaces import SUBMIT_LABEL_FIELD
 from collective.flow.schema import customized_schema
@@ -240,6 +242,15 @@ class SubFlowSubmitForm(FlowSubmitForm):
             return DEFAULT_SUBMISSION_WORKFLOW
 
     @property
+    def submission_transition(self):
+        try:
+            return self.context.aq_explicit.aq_acquire(
+                SUBMISSION_TRANSITION_FIELD,
+            )
+        except AttributeError:
+            return None
+
+    @property
     def attachment_workflow(self):
         try:
             return self.context.aq_explicit.aq_acquire(
@@ -247,6 +258,15 @@ class SubFlowSubmitForm(FlowSubmitForm):
             )
         except AttributeError:
             return DEFAULT_ATTACHMENT_WORKFLOW
+
+    @property
+    def attachment_transition(self):
+        try:
+            return self.context.aq_explicit.aq_acquire(
+                ATTACHMENT_TRANSITION_FIELD,
+            )
+        except AttributeError:
+            return None
 
     @property
     def submit_label(self):

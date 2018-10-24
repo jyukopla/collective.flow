@@ -24,6 +24,7 @@ from collective.flow.utils import prepare_restricted_function
 from collective.flow.utils import unrestricted
 from datetime import datetime
 from persistent.mapping import PersistentMapping
+from plone.api.exc import InvalidParameterError
 from plone.app.contentlisting.interfaces import IContentListing
 from plone.app.widgets.interfaces import IFieldPermissionChecker
 from plone.autoform.form import AutoExtensibleForm
@@ -74,12 +75,15 @@ from zope.publisher.interfaces import IPublishTraverse
 from ZPublisher.HTTPRequest import FileUpload
 
 import hashlib
+import logging
 import new
 import os
 import plone.api as api
 
 
 _ = MessageFactory('collective.flow')
+
+logger = logging.getLogger('collective.flow')
 
 
 def save_form(  # noqa: C901 (this has gotten quite complex)
@@ -305,6 +309,38 @@ def create_sub_folder(container, id_, title):
     return container[id_]
 
 
+@unrestricted
+def fire_default_transitions(
+        submission,
+        submission_transition,
+        attachment_transition,
+):
+    if submission_transition:
+        try:
+            api.content.transition(
+                submission,
+                transition=submission_transition,
+                comment=u'Form submitted',
+            )
+            return
+        except InvalidParameterError:
+            logger.exception(u'Initial transition failed:')
+            pass
+    if attachment_transition:
+        for attachment in submission.objectValues():
+            if attachment.portal_type == u'FlowSubmission':
+                try:
+                    api.content.transition(
+                        attachment,
+                        transition=attachment_transition,
+                        comment=u'Form submitted',
+                    )
+                    return
+                except InvalidParameterError:
+                    logger.exception(u'Initial transition failed:')
+                    pass
+
+
 def get_submission_title(form, submission):
     language = negotiate(context=getRequest())
     try:
@@ -449,8 +485,16 @@ class FlowSubmitForm(DefaultAddForm):
         return self.context.submission_workflow
 
     @property
+    def submission_transition(self):
+        return self.context.submission_transition
+
+    @property
     def attachment_workflow(self):
         return self.context.attachment_workflow
+
+    @property
+    def attachment_transition(self):
+        return self.context.attachment_transition
 
     @property
     @view.memoize
@@ -519,7 +563,7 @@ class FlowSubmitForm(DefaultAddForm):
         submission.schema_digest = hashlib.md5(submission.schema).hexdigest()
 
         # we cannot acquire from parent FlowFolder, because behaviors
-        # are resolved (this method called) without acquisition chain
+        # are resolved without acquisition chain
         submission.submission_behaviors = self.submission_behaviors
 
         return aq_base(submission)
@@ -552,6 +596,14 @@ class FlowSubmitForm(DefaultAddForm):
                 attachment,
                 checkConstraints=False,
             )
+
+        # fire submission and attachment transitions
+        fire_default_transitions(
+            submission,
+            self.submission_transition,
+            self.attachment_transition,
+        )
+
         content = submission.__of__(self.context)
         submission.title = get_submission_title(folder, content)
         submission.reindexObject(idxs=['title'])
