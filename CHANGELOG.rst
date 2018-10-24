@@ -1,7 +1,7 @@
 Changelog
 =========
 
-1.3.2 (unreleased)
+1.3.2 (2018-10-24)
 ------------------
 
 - Tweak metromap to include exceptional states not in the heuristic happy path
