@@ -1,11 +1,13 @@
 Changelog
 =========
 
-1.2.1 (unreleased)
+1.3.0 (unreleased)
 ------------------
 
-- Nothing changed yet.
-
+- Implement submission_transition and attachment_transition
+  [Asko Soukka]
+- Add default value burning behavior to also set static default values
+  [Asko Soukka]
 
 1.2.0 (2018-10-22)
 ------------------
