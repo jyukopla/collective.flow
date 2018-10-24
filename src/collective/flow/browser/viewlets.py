@@ -20,7 +20,19 @@ import os.path
 import re
 
 
-def get_default_metromap(wf):
+def override_with_current_state(state, wf, current_state_id):
+    # Enforce that current state otherwise being dropped is shown
+    for transition_id in state['next_transition']:
+        if transition_id in wf.transitions:
+            state_id = wf.transitions[transition_id].new_state_id
+            if state_id == current_state_id:
+                state['state'] = current_state_id
+                state['className'] = 'exception'
+                break
+    return state
+
+
+def get_default_metromap(wf, current_state_id=None):
     """Return heuristically guessed "happy path" version of the workflow
     """
     states = {}
@@ -43,26 +55,38 @@ def get_default_metromap(wf):
     metro = []
     reopen_transitions = []
     stack = [states.pop(wf.initial_state)]
+    seen_current_state_id = False
+
     while stack:
         state = stack.pop()
+        if state['state'] == current_state_id:
+            seen_current_state_id = True
         reopen_transitions.extend(state['reopen_transition'])
         state['reopen_transition'] = sorted(
             set(transitions).intersection(set(state['reopen_transition'])),
             key=lambda x: (transitions[x], x[0]),
-        )[:1]
+        )
         for transition_id in reopen_transitions:
             if transition_id in transitions:
                 transitions.pop(transition_id)
+            break
         state['next_transition'] = sorted(
             set(transitions).intersection(set(state['next_transition'])),
             key=lambda x: (transitions[x], x[0]),
-        )[:1]  # because of :1 , transition forward gets ignored
+        )
         for transition_id in state['next_transition']:
             transitions.pop(transition_id)
             if transition_id in wf.transitions:
                 state_id = wf.transitions[transition_id].new_state_id
                 if state_id in states:
                     stack.append(states.pop(state_id))
+                if state_id == current_state_id:
+                    seen_current_state_id = True
+            break
+
+        if current_state_id and not seen_current_state_id:
+            state = override_with_current_state(state, wf, current_state_id)
+
         metro.append(state)
 
     for state in metro:
@@ -184,7 +208,7 @@ class MetroMapViewlet(BrowserView):
         try:
             metro = metro_expression.default_expr(getExprContext(self.context))
         except AttributeError:
-            metro = get_default_metromap(wf)
+            metro = get_default_metromap(wf, status.get('review_state'))
 
         # Build data for our metro map
         forward = None
@@ -195,6 +219,9 @@ class MetroMapViewlet(BrowserView):
 
             # Define CSS class
             classes = []  # [u'state-{0:s}'.format(state.id)]
+
+            if 'className' in step:
+                classes.append(step['className'])
 
             if future:
                 classes.append('in-future')
