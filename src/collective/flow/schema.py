@@ -164,6 +164,16 @@ def update_schema(xml, schema, name=u'', language=u''):
             root.append(el)
             break
 
+    # Drop default values from fields with defaultFactories
+    for factory in root.xpath(
+        '//supermodel:defaultFactory',
+        namespaces=dict(supermodel=XML_NAMESPACE),
+    ):
+        for default in factory.itersiblings(ns('default'), preceding=False):
+            default.getparent().remove(default)
+        for default in factory.itersiblings(ns('default'), preceding=True):
+            default.getparent().remove(default)
+
     return etree.tostring(
         root,
         pretty_print=True,
