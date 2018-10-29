@@ -4,8 +4,8 @@ Changelog
 1.3.3 (unreleased)
 ------------------
 
-- Nothing changed yet.
-
+- Fix issue where default values were saved for fields with defaultFactories
+  [Asko Soukka]
 
 1.3.2 (2018-10-24)
 ------------------
