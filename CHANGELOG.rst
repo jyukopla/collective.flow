@@ -1,7 +1,7 @@
 Changelog
 =========
 
-1.3.3 (unreleased)
+1.3.3 (2018-10-29)
 ------------------
 
 - Fix issue where default values were saved for fields with defaultFactories
