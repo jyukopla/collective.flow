@@ -104,7 +104,7 @@ def get_history(context, portal_repository, request=request):
                 result[widget.field.__name__] = {
                     'value': widget.value,
                     # Drop duplicate IDs
-                    'render': re.sub('\sid="[^"]+"', '', widget.render()),
+                    'render': re.sub(r'\sid="[^"]+"', '', widget.render()),
                 }
         history.append((version.object.modified(), result))
 
