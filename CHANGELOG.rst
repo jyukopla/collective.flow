@@ -1,7 +1,7 @@
 Changelog
 =========
 
-1.3.4 (unreleased)
+1.3.4 (2018-10-31)
 ------------------
 
 - Fix issue where form:validator -validators were not serialized from schema
