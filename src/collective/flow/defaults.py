@@ -108,6 +108,15 @@ def lastname():
 
 
 @provider(IDefaultFactory)
+def givenname():
+    name = api.user.get_current().getProperty('givenname', u'')
+    if isinstance(name, bytes):
+        return unicode(name, 'utf-8', 'ignore') or firstname()
+    else:
+        return name or firstname()
+
+
+@provider(IDefaultFactory)
 def today():
     return datetime.datetime.now().date()
 

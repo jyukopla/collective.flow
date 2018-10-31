@@ -8,13 +8,17 @@ from plone.app.z3cform.converters import DateWidgetConverter
 from plone.app.z3cform.interfaces import IAjaxSelectWidget
 from plone.app.z3cform.interfaces import IDatetimeWidget
 from plone.app.z3cform.interfaces import IDateWidget
+from plone.autoform.supermodel import FormSchema
 from plone.supermodel.interfaces import IToUnicode
+from plone.supermodel.utils import ns
 from venusianconfiguration import configure
 from z3c.form.converter import FieldDataConverter
 from z3c.form.interfaces import IDataConverter
+from z3c.form.interfaces import IValidator
 from zope.annotation import IAnnotations
 from zope.component import adapter
 from zope.component import getUtility
+from zope.component import queryMultiAdapter
 from zope.dottedname.resolve import resolve
 from zope.globalrequest import getRequest
 from zope.i18n import translate
@@ -178,6 +182,29 @@ class InterfaceFieldToUnicode(object):
                 frame = frame.f_back
 
         return ret
+
+
+@configure.utility.factory(name='collective.flow.form.validator.write')
+class FormSchemaValidatorWriter(FormSchema):
+    def write(self, fieldNode, schema, field):
+        validator = queryMultiAdapter(
+            (None, None, None, field, None),
+            IValidator,
+        )
+        if validator:
+            try:
+                validator = '.'.join([
+                    validator.__class__.__module__,
+                    validator.__class__.__name__,
+                ])
+                if not any([
+                        validator.startswith('z3c.form.'),
+                        validator.startswith('plone.z3cform.'),
+                        validator.startswith('plone.app.z3cform.'),
+                ]):
+                    fieldNode.set(ns('validator', self.namespace), validator)
+            except AttributeError:
+                pass
 
 
 @configure.adapter.factory()
