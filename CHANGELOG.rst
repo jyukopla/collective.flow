@@ -4,8 +4,9 @@ Changelog
 1.3.3 (unreleased)
 ------------------
 
-- Nothing changed yet.
-
+- Fix issue where form:validator -validators were not serialized from schema
+  into XML
+  [Asko Soukka]
 
 1.3.2 (2018-10-24)
 ------------------
