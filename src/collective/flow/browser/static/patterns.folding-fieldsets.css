@@ -1,7 +1,15 @@
+.pat-folding-fieldsets {
+  counter-reset: fieldset;
+}
 .pat-folding-fieldsets legend a {
   display: block;
   position: relative;
   margin-left: 1em;
+  font-weight: bold;
+}
+.pat-folding-fieldsets legend a[aria-controls]:before {
+  counter-increment: fieldset;
+  content: counter(fieldset) ". ";
 }
 .pat-folding-fieldsets legend a[aria-controls]:after {
   display: inline-block;

@@ -1,8 +1,17 @@
 .pat-folding-fieldsets {
+  counter-reset: fieldset;
+
   legend a {
     display: block;
     position: relative;
     margin-left: 1em;
+    font-weight: bold;
+
+    &[aria-controls]:before {
+      counter-increment: fieldset;
+      content: counter(fieldset) ". ";
+    }
+
     &[aria-controls]:after {
       display: inline-block;
       content: ">";
@@ -11,6 +20,7 @@
       font-weight: bold;
       transition: transform 0.1s linear;
     }
+
     &[aria-expanded="true"]:after {
       transform: rotate(90deg);
     }

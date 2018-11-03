@@ -1,29 +1,49 @@
 <?xml version="1.0"?>
 <registry>
 
-  <!-- this line can be removed once upgraded at production -->
-  <record name="plone.resources/plone-logged-in.js">
-    <value>++resource++plone-logged-in.js</value>
+  <record name="plone.resources/resource-plone-app-discussion-javascripts-comments.js"
+          interface="Products.CMFPlone.interfaces.resources.IResourceRegistry"
+          field="js">
+    <field type="plone.registry.field.ASCIILine">
+      <required>False</required>
+    </field>
+    <value>++plone++collective.flow/comments.js</value>
   </record>
 
-  <records prefix="plone.resources/flow-default"
-           interface='Products.CMFPlone.interfaces.IResourceRegistry'>
+  <records prefix="plone.resources/flow-default-resources"
+           interface="Products.CMFPlone.interfaces.IResourceRegistry">
     <value key="js">++plone++collective.flow/default.js</value>
     <value key="css">
       <element>++plone++collective.flow/default.less</element>
     </value>
   </records>
 
-  <records prefix="plone.resources/flow-logged-in"
-           interface='Products.CMFPlone.interfaces.IResourceRegistry'>
+  <records prefix="plone.resources/flow-logged-in-resources"
+           interface="Products.CMFPlone.interfaces.IResourceRegistry">
     <value key="js">++plone++collective.flow/logged-in.js</value>
     <value key="css">
       <element>++plone++collective.flow/logged-in.less</element>
     </value>
   </records>
 
+  <records prefix="plone.resources/flow-patterns-aria-expand"
+           interface="Products.CMFPlone.interfaces.IResourceRegistry">
+    <value key="js">++plone++collective.flow/patterns.aria-expand.js</value>
+    <value key="css">
+      <element>++plone++collective.flow/patterns.aria-expand.less</element>
+    </value>
+  </records>
+
+  <records prefix="plone.resources/flow-patterns-folding-fieldsets"
+           interface="Products.CMFPlone.interfaces.IResourceRegistry">
+    <value key="js">++plone++collective.flow/patterns.folding-fieldsets.js</value>
+    <value key="css">
+      <element>++plone++collective.flow/patterns.folding-fieldsets.less</element>
+    </value>
+  </records>
+
   <records prefix="plone.resources/flow-patterns-script-editor"
-           interface='Products.CMFPlone.interfaces.IResourceRegistry'>
+           interface="Products.CMFPlone.interfaces.IResourceRegistry">
     <value key="js">++plone++collective.flow/patterns.script-editor.js</value>
     <value key="css">
       <element>++plone++collective.flow/patterns.script-editor.less</element>
@@ -31,7 +51,7 @@
   </records>
 
   <records prefix="plone.resources/flow-patterns-style-editor"
-           interface='Products.CMFPlone.interfaces.IResourceRegistry'>
+           interface="Products.CMFPlone.interfaces.IResourceRegistry">
     <value key="js">++plone++collective.flow/patterns.style-editor.js</value>
     <value key="css">
       <element>++plone++collective.flow/patterns.style-editor.less</element>
@@ -39,49 +59,11 @@
   </records>
 
   <records prefix="plone.resources/flow-patterns-python-editor"
-           interface='Products.CMFPlone.interfaces.IResourceRegistry'>
+           interface="Products.CMFPlone.interfaces.IResourceRegistry">
     <value key="js">++plone++collective.flow/patterns.python-editor.js</value>
     <value key="css">
       <element>++plone++collective.flow/patterns.python-editor.less</element>
     </value>
-  </records>
-
-  <records prefix="plone.resources/flow-patterns-folding-fieldsets"
-           interface='Products.CMFPlone.interfaces.IResourceRegistry'>
-    <value key="js">++plone++collective.flow/patterns.folding-fieldsets.js</value>
-    <value key="css">
-      <element>++plone++collective.flow/patterns.folding-fieldsets.less</element>
-    </value>
-  </records>
-
-  <records prefix="plone.bundles/flow-default"
-           interface='Products.CMFPlone.interfaces.IBundleRegistry'>
-    <value key="resources">
-      <element>flow-default</element>
-    </value>
-    <value key="compile">true</value>
-    <value key="depends">plone</value>
-    <value key="enabled">true</value>
-    <value key="merge_with">default</value>
-  </records>
-
-  <records prefix="plone.bundles/flow-logged-in"
-           interface='Products.CMFPlone.interfaces.IBundleRegistry'>
-    <value key="resources">
-      <element>flow-patterns-folding-fieldsets</element>
-      <element>flow-patterns-python-editor</element>
-      <element>flow-patterns-script-editor</element>
-      <element>flow-patterns-style-editor</element>
-      <element>flow-logged-in</element>
-    </value>
-    <value key="stub_js_modules">
-      <element>jquery</element>
-      <element>pat-base</element>
-    </value>
-    <value key="compile">true</value>
-    <value key="depends">plone</value>
-    <value key="enabled">true</value>
-    <value key="merge_with">logged-in</value>
   </records>
 
 </registry>

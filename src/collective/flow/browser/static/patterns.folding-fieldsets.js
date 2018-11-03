@@ -1,6 +1,6 @@
 define([
   'jquery',
-  'pat-base',
+  'pat-base'
 ], function($, Base) {
   'use strict';
 
