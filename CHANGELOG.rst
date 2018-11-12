@@ -4,8 +4,9 @@ Changelog
 1.3.5 (unreleased)
 ------------------
 
-- Nothing changed yet.
-
+- Fix to clear locks when saving with worklflow action fix issue where lock
+  prevented workflow action
+  [Asko Soukka]
 
 1.3.4 (2018-10-31)
 ------------------
