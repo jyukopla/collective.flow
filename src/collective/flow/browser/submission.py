@@ -12,6 +12,7 @@ from collective.flow.schema import load_schema
 from collective.flow.utils import get_navigation_root_language
 from plone.autoform.view import WidgetsView
 from plone.dexterity.browser.edit import DefaultEditForm
+from plone.locking.interfaces import ILockable
 from plone.z3cform.fieldsets.extensible import ExtensibleForm
 from venusianconfiguration import configure
 from z3c.form import button
@@ -229,6 +230,9 @@ class SubmissionEditForm(DefaultEditForm):
         save = self.handlers.getHandler(self.buttons['save'])
         save(form, button_action)
         if not self.status:
+            # Force unlock before redirect to allow workflow transitions
+            lockable = ILockable(self.context)
+            lockable.clear_locks()
             self.request.response.redirect(url)
 
     # noinspection PyPep8Naming
