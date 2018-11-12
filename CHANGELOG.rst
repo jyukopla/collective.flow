@@ -1,7 +1,7 @@
 Changelog
 =========
 
-1.3.5 (unreleased)
+1.3.5 (2018-11-12)
 ------------------
 
 - Fix to clear locks when saving with worklflow action fix issue where lock
