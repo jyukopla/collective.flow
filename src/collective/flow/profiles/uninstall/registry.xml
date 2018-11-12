@@ -1,11 +1,28 @@
 <?xml version="1.0"?>
 <registry>
 
-  <records prefix="plone.resources/flow-default"
+  <record name="plone.resources/resource-plone-app-discussion-javascripts-comments.js"
+          interface="Products.CMFPlone.interfaces.resources.IResourceRegistry"
+          field="js">
+    <field type="plone.registry.field.ASCIILine">
+      <required>False</required>
+    </field>
+    <value>++resource++plone.app.discussion.javascripts/comments.js</value>
+  </record>
+
+  <records prefix="plone.resources/flow-default-resources"
            interface='Products.CMFPlone.interfaces.IResourceRegistry'
            remove="true"/>
 
-  <records prefix="plone.resources/flow-logged-in"
+  <records prefix="plone.resources/flow-logged-in-resources"
+           interface='Products.CMFPlone.interfaces.IResourceRegistry'
+           remove="true"/>
+
+  <records prefix="plone.resources/flow-patterns-aria-expand"
+           interface='Products.CMFPlone.interfaces.IResourceRegistry'
+           remove="true"/>
+
+  <records prefix="plone.resources/flow-patterns-folding-fieldsets"
            interface='Products.CMFPlone.interfaces.IResourceRegistry'
            remove="true"/>
 
@@ -18,6 +35,16 @@
            remove="true"/>
 
   <records prefix="plone.resources/flow-patterns-style-editor"
+           interface='Products.CMFPlone.interfaces.IResourceRegistry'
+           remove="true"/>
+
+  <!-- Legacy resources and bundles -->
+
+  <records prefix="plone.resources/flow-default"
+           interface='Products.CMFPlone.interfaces.IResourceRegistry'
+           remove="true"/>
+
+  <records prefix="plone.resources/flow-logged-in"
            interface='Products.CMFPlone.interfaces.IResourceRegistry'
            remove="true"/>
 

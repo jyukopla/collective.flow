@@ -163,3 +163,162 @@ a.toggle-discussion-link[aria-expanded="true"]:before,
 a.toggle-field-history-link[aria-expanded="true"]:before {
   transform: rotate(90deg);
 }
+.portaltype-flowfolder #content-core > .form > form .option label,
+.portaltype-flowsubfolder #content-core > .form > form .option label,
+.portaltype-flowschema #content-core > .form > form .option label,
+.portaltype-flowsubmission #content-core > .form > form .option label,
+.portaltype-flowfolder #content-core > form .option label,
+.portaltype-flowsubfolder #content-core > form .option label,
+.portaltype-flowschema #content-core > form .option label,
+.portaltype-flowsubmission #content-core > form .option label,
+.portaltype-flowfolder #content-core > .field .option label,
+.portaltype-flowsubfolder #content-core > .field .option label,
+.portaltype-flowschema #content-core > .field .option label,
+.portaltype-flowsubmission #content-core > .field .option label {
+  display: block;
+  position: relative;
+  margin-left: 3.25ex;
+}
+.portaltype-flowfolder #content-core > .form > form .option label input.radio-widget,
+.portaltype-flowsubfolder #content-core > .form > form .option label input.radio-widget,
+.portaltype-flowschema #content-core > .form > form .option label input.radio-widget,
+.portaltype-flowsubmission #content-core > .form > form .option label input.radio-widget,
+.portaltype-flowfolder #content-core > form .option label input.radio-widget,
+.portaltype-flowsubfolder #content-core > form .option label input.radio-widget,
+.portaltype-flowschema #content-core > form .option label input.radio-widget,
+.portaltype-flowsubmission #content-core > form .option label input.radio-widget,
+.portaltype-flowfolder #content-core > .field .option label input.radio-widget,
+.portaltype-flowsubfolder #content-core > .field .option label input.radio-widget,
+.portaltype-flowschema #content-core > .field .option label input.radio-widget,
+.portaltype-flowsubmission #content-core > .field .option label input.radio-widget {
+  position: absolute;
+  left: -3.25ex;
+  margin-top: 0;
+}
+.portaltype-flowfolder #content-core > .form > form .option .single-checkbox-widget + label,
+.portaltype-flowsubfolder #content-core > .form > form .option .single-checkbox-widget + label,
+.portaltype-flowschema #content-core > .form > form .option .single-checkbox-widget + label,
+.portaltype-flowsubmission #content-core > .form > form .option .single-checkbox-widget + label,
+.portaltype-flowfolder #content-core > form .option .single-checkbox-widget + label,
+.portaltype-flowsubfolder #content-core > form .option .single-checkbox-widget + label,
+.portaltype-flowschema #content-core > form .option .single-checkbox-widget + label,
+.portaltype-flowsubmission #content-core > form .option .single-checkbox-widget + label,
+.portaltype-flowfolder #content-core > .field .option .single-checkbox-widget + label,
+.portaltype-flowsubfolder #content-core > .field .option .single-checkbox-widget + label,
+.portaltype-flowschema #content-core > .field .option .single-checkbox-widget + label,
+.portaltype-flowsubmission #content-core > .field .option .single-checkbox-widget + label {
+  display: inline;
+  margin-left: 0;
+}
+.portaltype-flowfolder h1,
+.portaltype-flowsubfolder h1,
+.portaltype-flowschema h1,
+.portaltype-flowsubmission h1,
+.portaltype-flowfolder h2,
+.portaltype-flowsubfolder h2,
+.portaltype-flowschema h2,
+.portaltype-flowsubmission h2,
+.portaltype-flowfolder h3,
+.portaltype-flowsubfolder h3,
+.portaltype-flowschema h3,
+.portaltype-flowsubmission h3,
+.portaltype-flowfolder h4,
+.portaltype-flowsubfolder h4,
+.portaltype-flowschema h4,
+.portaltype-flowsubmission h4,
+.portaltype-flowfolder h5,
+.portaltype-flowsubfolder h5,
+.portaltype-flowschema h5,
+.portaltype-flowsubmission h5,
+.portaltype-flowfolder h6,
+.portaltype-flowsubfolder h6,
+.portaltype-flowschema h6,
+.portaltype-flowsubmission h6 {
+  clear: left;
+}
+.portaltype-flowfolder #content-core fieldset legend a,
+.portaltype-flowsubfolder #content-core fieldset legend a,
+.portaltype-flowschema #content-core fieldset legend a,
+.portaltype-flowsubmission #content-core fieldset legend a,
+.portaltype-flowfolder #content-core a.toggle-field-history-link,
+.portaltype-flowsubfolder #content-core a.toggle-field-history-link,
+.portaltype-flowschema #content-core a.toggle-field-history-link,
+.portaltype-flowsubmission #content-core a.toggle-field-history-link,
+.portaltype-flowfolder #content-core a.toggle-discussion-link,
+.portaltype-flowsubfolder #content-core a.toggle-discussion-link,
+.portaltype-flowschema #content-core a.toggle-discussion-link,
+.portaltype-flowsubmission #content-core a.toggle-discussion-link,
+.portaltype-flowfolder #content-core .reply a,
+.portaltype-flowsubfolder #content-core .reply a,
+.portaltype-flowschema #content-core .reply a,
+.portaltype-flowsubmission #content-core .reply a {
+  border-bottom: none;
+}
+.portaltype-flowfolder a.toggle-field-history-link,
+.portaltype-flowsubfolder a.toggle-field-history-link,
+.portaltype-flowschema a.toggle-field-history-link,
+.portaltype-flowsubmission a.toggle-field-history-link,
+.portaltype-flowfolder a.toggle-discussion-link,
+.portaltype-flowsubfolder a.toggle-discussion-link,
+.portaltype-flowschema a.toggle-discussion-link,
+.portaltype-flowsubmission a.toggle-discussion-link {
+  font-size: 0.75em;
+}
+.portaltype-flowfolder a.toggle-field-history-link,
+.portaltype-flowsubfolder a.toggle-field-history-link,
+.portaltype-flowschema a.toggle-field-history-link,
+.portaltype-flowsubmission a.toggle-field-history-link {
+  font-size: 0.75em;
+}
+.portaltype-flowfolder a.toggle-discussion-link,
+.portaltype-flowsubfolder a.toggle-discussion-link,
+.portaltype-flowschema a.toggle-discussion-link,
+.portaltype-flowsubmission a.toggle-discussion-link {
+  font-size: 0.75em;
+}
+.portaltype-flowfolder form a.toggle-discussion-link,
+.portaltype-flowsubfolder form a.toggle-discussion-link,
+.portaltype-flowschema form a.toggle-discussion-link,
+.portaltype-flowsubmission form a.toggle-discussion-link {
+  margin-top: 0;
+  font-size: 0.75em;
+}
+.portaltype-flowfolder .field-history td,
+.portaltype-flowsubfolder .field-history td,
+.portaltype-flowschema .field-history td,
+.portaltype-flowsubmission .field-history td {
+  padding: 1ex;
+}
+.portaltype-flowfolder .field-history td:first-child,
+.portaltype-flowsubfolder .field-history td:first-child,
+.portaltype-flowschema .field-history td:first-child,
+.portaltype-flowsubmission .field-history td:first-child {
+  font-size: 12px;
+}
+.portaltype-flowfolder .discussion td.commentByLine,
+.portaltype-flowsubfolder .discussion td.commentByLine,
+.portaltype-flowschema .discussion td.commentByLine,
+.portaltype-flowsubmission .discussion td.commentByLine {
+  padding: 1ex;
+  font-size: 1em;
+}
+.portaltype-flowfolder .discussion td.commentBody,
+.portaltype-flowsubfolder .discussion td.commentBody,
+.portaltype-flowschema .discussion td.commentBody,
+.portaltype-flowsubmission .discussion td.commentBody {
+  padding: 1ex;
+  font-size: 1em;
+  border: 0;
+}
+.portaltype-flowfolder .field .reply > a,
+.portaltype-flowsubfolder .field .reply > a,
+.portaltype-flowschema .field .reply > a,
+.portaltype-flowsubmission .field .reply > a {
+  font-size: 0.75em;
+}
+.portaltype-flowfolder .main .field .discussion + .reply,
+.portaltype-flowsubfolder .main .field .discussion + .reply,
+.portaltype-flowschema .main .field .discussion + .reply,
+.portaltype-flowsubmission .main .field .discussion + .reply {
+  margin-top: 0;
+}

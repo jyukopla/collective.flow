@@ -147,3 +147,88 @@ a.toggle-discussion-link, a.toggle-field-history-link {
     transform: rotate(90deg);
   }
 }
+
+.portaltype-flowfolder,
+.portaltype-flowsubfolder,
+.portaltype-flowschema,
+.portaltype-flowsubmission
+{
+  #content-core > .form > form,
+  #content-core > form, #content-core > .field {
+    .option label {
+      display: block;
+      position: relative;
+      margin-left: 3.25ex;
+      input.radio-widget {
+        position: absolute;
+        left: -3.25ex;
+        margin-top: 0;
+      }
+    }
+    .option {
+      .single-checkbox-widget + label {
+        display: inline;
+        margin-left: 0;
+      }
+    }
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    clear: left;
+  }
+
+  #content-core {
+    fieldset legend a,
+    a.toggle-field-history-link,
+    a.toggle-discussion-link,
+    .reply a {
+      border-bottom: none;
+    }
+  }
+
+  a.toggle-field-history-link,
+  a.toggle-discussion-link {
+    font-size: 0.75em;
+  }
+
+  a.toggle-field-history-link {
+    font-size: 0.75em;
+  }
+
+  a.toggle-discussion-link {
+    font-size: 0.75em;
+  }
+
+  form a.toggle-discussion-link {
+    margin-top: 0;
+    font-size: 0.75em;
+  }
+
+  .field-history td {
+    padding: 1ex;
+    &:first-child {
+      font-size: 12px;
+    }
+  }
+
+  .discussion td.commentByLine {
+    padding: 1ex;
+    font-size: 1em;
+  }
+
+  .discussion td.commentBody {
+    padding: 1ex;
+    font-size: 1em;
+    border: 0;
+  }
+
+  .field .reply {
+    > a {
+      font-size: 0.75em;
+    }
+  }
+
+  .main .field .discussion + .reply {
+    margin-top: 0;
+  }
+}
