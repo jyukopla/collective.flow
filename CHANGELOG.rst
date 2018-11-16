@@ -4,8 +4,11 @@ Changelog
 1.3.6 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Add edit form cancel button with behavior
+  [Asko Soukka]
 
+- Change edit form save and workflow action buttons to depend on behavior
+  [Asko Soukka]
 
 1.3.5 (2018-11-12)
 ------------------
