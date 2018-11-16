@@ -1,7 +1,7 @@
 Changelog
 =========
 
-1.3.6 (unreleased)
+1.4.0 (2018-11-16)
 ------------------
 
 - Add edit form cancel button with behavior
