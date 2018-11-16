@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2018-10-24 11:40+0000\n"
+"POT-Creation-Date: 2018-11-16 10:33+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI +ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -22,7 +22,7 @@ msgstr ""
 msgid "Advanced"
 msgstr "Asetukset"
 
-#: collective/flow/browser/subfolder.py:51
+#: collective/flow/browser/subfolder.py:52
 msgid "Allow customizations in form flow sub-folders"
 msgstr ""
 
@@ -30,7 +30,7 @@ msgstr ""
 msgid "Allow editors to submit forms impersonating as someone else"
 msgstr ""
 
-#: collective/flow/browser/subfolder.py:52
+#: collective/flow/browser/subfolder.py:53
 msgid "Allows customization of default and choice values in form flow sub-folders (form specializations)"
 msgstr ""
 
@@ -45,6 +45,10 @@ msgstr "Liitteiden työnkulku"
 #: collective/flow/browser/folder_templates/folder_listing.pt:18
 msgid "Available forms"
 msgstr "Lomakkeet"
+
+#: collective/flow/browser/submission.py:197
+msgid "Cancel"
+msgstr "Peru muutokset"
 
 #: collective/flow/browser/history_templates/field_history_view.pt:4
 msgid "Changelog"
@@ -75,11 +79,11 @@ msgstr "JavaScript"
 msgid "Custom validator"
 msgstr "Validointi"
 
-#: collective/flow/overrides.py:58
+#: collective/flow/overrides.py:62
 msgid "Date must be in international numerical format (YYYY-MM-DD)."
 msgstr "Päivämäärä täytyy syöttää kansainvälisessä numeerisessa muodossa (YYYY-MM-DD)."
 
-#: collective/flow/overrides.py:76
+#: collective/flow/overrides.py:80
 msgid "Date with time must be in international numerical format (YYYY-MM-DD HH:MM)."
 msgstr "Päivämäärä ja aika täytyy syöttää kansainvälisessä numeerisessa muodossa (MMMM-YY-DD HH:MM)."
 
@@ -95,11 +99,11 @@ msgstr "Perustietokenttien otsake"
 msgid "Designer"
 msgstr "Suunnittele"
 
-#: collective/flow/overrides.py:132
+#: collective/flow/overrides.py:136
 msgid "Did you mean ${candidates} or ${last_candidate}? Separate multiple values with \";\"."
 msgstr "Tarkoititko ${candidates} tai ${last_candidate}? Erota useampi kuin yksi arvo merkillä \";\"."
 
-#: collective/flow/overrides.py:124
+#: collective/flow/overrides.py:128
 msgid "Did you mean ${candidate}? Separate multiple values with \";\"."
 msgstr "Tarkoititko ${candidate}? Erota useampi kuin yksi arvo merkillä \";\"."
 
@@ -126,6 +130,14 @@ msgstr "Näytä muutosloki"
 #: collective/flow/browser/comments.py:45
 msgid "Enable comments"
 msgstr "Näytä kommentit"
+
+#: collective/flow/behaviors.py:74
+msgid "Enables \"Save and ...\" buttons on submission edit form"
+msgstr ""
+
+#: collective/flow/behaviors.py:63
+msgid "Enables cancel button on submission edit form"
+msgstr ""
 
 #: collective/flow/browser/folder_templates/folder_form.pt:22
 msgid "Existing items"
@@ -170,8 +182,8 @@ msgid "Flow submission attachment"
 msgstr "Täytetyn lomakkeen liite"
 
 #: collective/flow/browser/folder.py:753
-#: collective/flow/browser/subfolder.py:195
-#: collective/flow/browser/submission.py:80
+#: collective/flow/browser/subfolder.py:196
+#: collective/flow/browser/submission.py:82
 msgid "Form"
 msgstr "Lomake"
 
@@ -219,11 +231,11 @@ msgstr ""
 msgid "Provides support evaluating default values on creation"
 msgstr ""
 
-#: collective/flow/browser/submission.py:187
+#: collective/flow/browser/submission.py:189
 msgid "Save"
 msgstr "Tallenna"
 
-#: collective/flow/browser/submission.py:208
+#: collective/flow/browser/submission.py:248
 msgid "Save and"
 msgstr "Tallenna ja"
 
@@ -259,6 +271,10 @@ msgstr "Täytetyn lomakkeen toiminnot"
 msgid "Submission bottom buttons"
 msgstr ""
 
+#: collective/flow/behaviors.py:62
+msgid "Submission cancel edit button"
+msgstr ""
+
 #: collective/flow/comments.py:15
 msgid "Submission commenting"
 msgstr "Täytetyn lomakkeen kommentointi"
@@ -270,6 +286,10 @@ msgstr ""
 #: collective/flow/interfaces.py:157
 msgid "Submission filing template"
 msgstr "Täytetyn lomakkeen tallennuspolku"
+
+#: collective/flow/behaviors.py:73
+msgid "Submission save and action buttons"
+msgstr ""
 
 #: collective/flow/interfaces.py:146
 msgid "Submission title template"
@@ -287,7 +307,7 @@ msgstr "Täytetyn lomakkeen versiointi"
 msgid "Submission workflow"
 msgstr "Täytetyn lomakkeen työnkulku"
 
-#: collective/flow/browser/subfolder.py:286
+#: collective/flow/browser/subfolder.py:287
 #: collective/flow/interfaces.py:104
 msgid "Submit"
 msgstr "Lähetä"
@@ -317,7 +337,7 @@ msgid "XML"
 msgstr ""
 
 #: collective/flow/browser/schema.py:88
-#: collective/flow/browser/subfolder.py:136
+#: collective/flow/browser/subfolder.py:137
 msgid "design"
 msgstr ""
 

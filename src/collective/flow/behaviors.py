@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from Acquisition import aq_base
+from collective.flow import _
 from collective.flow.interfaces import IFlowSubmission
 from plone.behavior.interfaces import IBehavior
 from plone.behavior.interfaces import IBehaviorAssignable
@@ -10,6 +11,7 @@ from zope.component import ComponentLookupError
 from zope.component import getUtilitiesFor
 from zope.component import getUtility
 from zope.interface import implementer
+from zope.interface import Interface
 from zope.schema.interfaces import IVocabularyFactory
 from zope.schema.vocabulary import SimpleTerm
 from zope.schema.vocabulary import SimpleVocabulary
@@ -53,3 +55,25 @@ class SubmissionBehaviorsVocabulary(object):
                     ),
                 )
         return SimpleVocabulary(terms)
+
+
+@configure.plone.behavior.provides(
+    name=u'submission_cancel_button',
+    title=_(u'Submission cancel edit button'),
+    description=_(
+        u'Enables cancel button on submission edit form',
+    ),
+)
+class ICancelButton(Interface):
+    """Marker interface for submission cancel button"""
+
+
+@configure.plone.behavior.provides(
+    name=u'submission_save_action_buttons',
+    title=_(u'Submission save and action buttons'),
+    description=_(
+        u'Enables "Save and ..." buttons on submission edit form',
+    ),
+)
+class ISaveAndActionButtons(Interface):
+    """Marker interface for submission cancel button"""
