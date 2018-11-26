@@ -1,7 +1,7 @@
 Changelog
 =========
 
-1.4.1 (unreleased)
+1.5.0 (2018-11-26)
 ------------------
 
 - Add to copy flow folder customizations from the default language to new
