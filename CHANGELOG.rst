@@ -4,8 +4,9 @@ Changelog
 1.4.1 (unreleased)
 ------------------
 
-- Nothing changed yet.
-
+- Add to copy flow folder customizations from the default language to new
+  translated language
+  [Asko Soukka]
 
 1.4.0 (2018-11-16)
 ------------------
