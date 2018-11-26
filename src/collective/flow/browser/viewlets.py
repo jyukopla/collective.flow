@@ -210,9 +210,9 @@ class MetroMapViewlet(BrowserView):
         except AttributeError:
             metro = get_default_metromap(wf)
             # Fix issue where default metro missed the current state
-            if status and status.get('review_state') not in [
-                step.get('state') for step in metro
-            ]:
+            if status and status.get('review_state') not in [step.get('state')
+                                                             for step in metro
+                                                             ]:
                 metro = get_default_metromap(wf, status.get('review_state'))
 
         # Build data for our metro map

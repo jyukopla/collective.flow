@@ -29,8 +29,13 @@ class SubmissionObjectSubForm(ObjectSubForm, AutoObjectSubForm):
 @configure.adapter.factory()
 @implementer(ISubformFactory)
 @adapter(
-    Interface, ICollectiveFlowLayer, Interface, Interface, IObjectWidget,
-    Interface, IFlowSchemaDynamic,
+    Interface,
+    ICollectiveFlowLayer,
+    Interface,
+    Interface,
+    IObjectWidget,
+    Interface,
+    IFlowSchemaDynamic,
 )
 class SubmissionSubFormAdapter(SubformAdapter):
     factory = SubmissionObjectSubForm

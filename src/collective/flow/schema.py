@@ -8,6 +8,7 @@ from collective.flow.interfaces import IFlowSchemaContext
 from collective.flow.interfaces import IFlowSchemaDynamic
 from collective.flow.utils import get_navigation_root_language
 from contextlib import contextmanager
+from copy import deepcopy
 from lxml import etree
 from lxml.etree import tostring
 from plone.alterego import dynamic
@@ -166,8 +167,8 @@ def update_schema(xml, schema, name=u'', language=u''):
 
     # Drop default values from fields with defaultFactories
     for factory in root.xpath(
-        '//supermodel:defaultFactory',
-        namespaces=dict(supermodel=XML_NAMESPACE),
+            '//supermodel:defaultFactory',
+            namespaces=dict(supermodel=XML_NAMESPACE),
     ):
         for default in factory.itersiblings(ns('default'), preceding=False):
             default.getparent().remove(default)
@@ -185,11 +186,13 @@ def update_schema(xml, schema, name=u'', language=u''):
 def customized_schema(original, custom):
     root = etree.fromstring(custom)
     fields = {}
+    # fields_schemata = {}
 
     # copy customizable data from customized schema
     for schema in root.findall(ns('schema')):
         schema_name = schema.attrib.get('name') or u''
         fields.setdefault(schema_name, {})
+        # fields_schemata.setdefault(schema_name, {})
         for field in schema.xpath(
                 'supermodel:field',
                 namespaces=dict(supermodel=XML_NAMESPACE),
@@ -200,8 +203,79 @@ def customized_schema(original, custom):
                 fields[schema_name].setdefault(name, {})
                 fields[schema_name][name][node.tag] = node
 
-    # apply customizations for copy of original schema
+            # NOTE: This code was written to copy sub schema customizations
+            # from the default language for new translated languages, but
+            # it is not currently possible to customize sub schemas TTW.
+            #
+            # field_schemata = field.xpath(
+            #     'supermodel:schema',
+            #     namespaces=dict(supermodel=XML_NAMESPACE),
+            # ) + field.xpath(
+            #     '*/supermodel:schema',
+            #     namespaces=dict(supermodel=XML_NAMESPACE),
+            # )
+            # for schema_ in field_schemata:
+            #     name_ = schema_.text or ''
+            #     if not name_.startswith(SCHEMA_MODULE + '.'):
+            #         continue
+            #     fields_schemata[schema_name][name] = name_[
+            #         len(SCHEMA_MODULE + '.'):]
+
+    # copy original schema
     root = etree.fromstring(original)
+
+    # copy default language customizations for missing languages
+    for schema in root.findall(ns('schema')):
+        schema_name = schema.attrib.get('name') or u''
+
+        if schema_name in fields:
+            continue
+
+        if not IS_TRANSLATION.match(schema_name):
+            continue
+
+        canonical_name = schema_name[4:]
+        if canonical_name not in fields:
+            continue
+
+        fields.setdefault(
+            schema_name,
+            deepcopy(fields[canonical_name]),
+        )
+
+        # NOTE: This code was written to copy sub schema customizations
+        # from the default language for new translated languages, but
+        # it is not currently possible to customize sub schemas TTW.
+
+        # if canonical_name not in fields_schemata:
+        #     continue
+        #
+        # for field in schema.xpath(
+        #         'supermodel:field',
+        #         namespaces=dict(supermodel=XML_NAMESPACE),
+        # ):
+        #     name = field.attrib['name']
+        #     if name not in fields_schemata[canonical_name]:
+        #         continue
+        #
+        #     field_schemata = field.xpath(
+        #         'supermodel:schema',
+        #         namespaces=dict(supermodel=XML_NAMESPACE),
+        #     ) + field.xpath(
+        #         '*/supermodel:schema',
+        #         namespaces=dict(supermodel=XML_NAMESPACE),
+        #     )
+        #     for schema_ in field_schemata:
+        #         name_ = schema_.text or ''
+        #         if not name_.startswith(SCHEMA_MODULE + '.'):
+        #             continue
+        #         name_ = name_[len(SCHEMA_MODULE + '.'):]
+        #         fields.setdefault(
+        #             name_,
+        #             deepcopy(fields[fields_schemata[canonical_name][name]]),
+        #         )
+
+    # apply customizations for copy of original schema
     for schema in root.findall(ns('schema')):
         schema_name = schema.attrib.get('name') or u''
         fields.setdefault(schema_name, {})

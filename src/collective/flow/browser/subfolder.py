@@ -27,6 +27,7 @@ from collective.flow.subfolder import ICustomizableField
 from collective.flow.utils import get_navigation_root_language
 from OFS.interfaces import IItem
 from plone import api
+from plone.dexterity.browser.edit import DefaultEditForm
 from plone.schemaeditor.browser.schema.traversal import SchemaContext
 from plone.schemaeditor.interfaces import IFieldEditorExtender
 from plone.schemaeditor.interfaces import ISchemaContext
@@ -40,6 +41,7 @@ from zope.interface import implementer
 from zope.interface import Interface
 from zope.interface import noLongerProvides
 from zope.lifecycleevent import IObjectModifiedEvent
+from zope.proxy import ProxyBase
 from zope.publisher.interfaces import IPublishTraverse
 from zope.schema.interfaces import IField
 
@@ -312,3 +314,53 @@ class ImpersonatedSubFlowSubmitForm(SubFlowSubmitForm):
         else:
             with api.env.adopt_user(username=self.username):
                 return super(ImpersonatedSubFlowSubmitForm, self).__call__()
+
+
+class LanguageFieldsProxy(ProxyBase):
+    __slots__ = ['_context', '_language']
+
+    def __init__(self, context):
+        super(LanguageFieldsProxy, self).__init__(context)
+        self._context = context
+        self._language = None
+
+    def get_title(self):
+        try:
+            return getattr(self._context, 'title' + '_' + self._language)
+        except AttributeError:
+            return self._context.title
+
+    def set_title(self, value):
+        setattr(self._context, 'title' + '_' + self._language, value)
+
+    title = property(get_title, set_title)
+
+    def get_description(self):
+        try:
+            return getattr(self._context, 'description' + '_' + self._language)
+        except AttributeError:
+            return self._context.description
+
+    def set_description(self, value):
+        setattr(self._context, 'description' + '_' + self._language, value)
+
+    description = property(get_description, set_description)
+
+
+@configure.browser.page.class_(
+    name='edit',
+    for_=IFlowSubFolder,
+    layer=ICollectiveFlowLayer,
+    permission='cmf.ModifyPortalContent',
+)
+@implementer(IFlowSchemaForm)
+class FlowSubFolderEditForm(DefaultEditForm):
+    def getContent(self):
+        language = negotiate(context=self.request)
+        context_language = get_navigation_root_language(self.context)
+        if context_language.startswith(language):
+            return self.context
+        else:
+            proxy = LanguageFieldsProxy(self.context)
+            proxy._language = language
+            return proxy
