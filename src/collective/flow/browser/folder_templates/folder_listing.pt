@@ -9,19 +9,63 @@
 
 <metal:main fill-slot="main">
 
-  <h1 class="documentFirstHeading" tal:content="view/context/Title">Title</h1>
+  <h1 class="documentFirstHeading" tal:content="view/label">Title</h1>
 
-  <div class="documentDescription" tal:content="view/context/Description"
-       tal:condition="view/context/Description|nothing">Description</div>
+  <div class="documentDescription" tal:content="view/description"
+       tal:condition="view/description|view/context/Description|nothing">Description</div>
 
   <fieldset id="folder-listing" tal:condition="view/context/objectIds|nothing">
     <legend i18n:translate="" i18n:domain="collective.flow">Available forms</legend>
-    <tal:block define="view nocall:context/folder_listing; listing_macro view/macros/listing">
-      <metal:use_macro use-macro="listing_macro" />
+    <tal:block
+      define="view nocall:context/folder_listing;
+              listing_macro view/macros/listing;
+              entries_macro view/macros/entries">
+      <metal:use_macro use-macro="listing_macro">
+        <metal:entries fill-slot="entries">
+          <tal:block condition="python: context.portal_type in ['FlowFolder', 'FlowSubFolder']">
+            <metal:use_macro use-macro="template/macros/flowentries" />
+          </tal:block>
+          <tal:block condition="python: context.portal_type not in ['FlowFolder', 'FlowSubFolder']">
+            <metal:use_macro use-macro="entries_macro" />
+          </tal:block>
+        </metal:entries>
+      </metal:use_macro>
     </tal:block>
   </fieldset>
 
 </metal:main>
+
+<metal:macro define-macro="flowentries"
+             tal:define="listitem view/macros/listitem"
+             tal:repeat="item batch">
+  <tal:block tal:define="obj item/getObject;
+                localized_context nocall:obj/@@view;
+                item_url item/getURL;
+                item_id item/getId;
+                item_title localized_context/label;
+                item_title python:item_title or item_id;
+                item_description localized_context/description;
+                item_type item/PortalType;
+                item_modified item/ModificationDate;
+                item_created item/CreationDate;
+                item_wf_state item/review_state;
+                item_wf_state_class python:'state-' + view.normalizeString(item_wf_state);
+                item_creator item/Creator;
+                item_link python:item_type in view.use_view_action and item_url+'/view' or item_url;
+                item_is_event python:view.is_event(obj);
+                item_has_image python:item.getIcon;
+                item_type_class python:('contenttype-' + view.normalizeString(item_type)) if showicons else '' ;
+                ">
+    <article class="entry">
+      <metal:use_macro use-macro="listitem" />
+      <p class="description discreet"
+         tal:condition="item_description"
+         tal:content="item_description">
+         description
+      </p>
+    </article>
+  </tal:block>
+</metal:macro>
 
 </body>
 </html>
