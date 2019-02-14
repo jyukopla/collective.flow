@@ -3,23 +3,12 @@ from Acquisition import aq_base
 from collective.flow.browser.folder import FlowImpersonationForm
 from collective.flow.browser.folder import FlowSubmitForm
 from collective.flow.browser.folder import FolderListing
-from collective.flow.interfaces import ATTACHMENT_TRANSITION_FIELD
-from collective.flow.interfaces import ATTACHMENT_WORKFLOW_FIELD
-from collective.flow.interfaces import DEFAULT_ATTACHMENT_WORKFLOW
-from collective.flow.interfaces import DEFAULT_FIELDSET_LABEL_FIELD
-from collective.flow.interfaces import DEFAULT_SUBMISSION_WORKFLOW
+from collective.flow.browser.localization import LanguageFieldsProxy
 from collective.flow.interfaces import ICollectiveFlowLayer
 from collective.flow.interfaces import IFlowFolder
 from collective.flow.interfaces import IFlowSchemaContext
 from collective.flow.interfaces import IFlowSchemaForm
 from collective.flow.interfaces import IFlowSubFolder
-from collective.flow.interfaces import SUBMISSION_BEHAVIORS_FIELD
-from collective.flow.interfaces import SUBMISSION_IMPERSONATION_FIELD
-from collective.flow.interfaces import SUBMISSION_PATH_TEMPLATE_FIELD
-from collective.flow.interfaces import SUBMISSION_TITLE_TEMPLATE_FIELD
-from collective.flow.interfaces import SUBMISSION_TRANSITION_FIELD
-from collective.flow.interfaces import SUBMISSION_WORKFLOW_FIELD
-from collective.flow.interfaces import SUBMIT_LABEL_FIELD
 from collective.flow.schema import customized_schema
 from collective.flow.schema import load_schema
 from collective.flow.schema import save_schema
@@ -41,7 +30,6 @@ from zope.interface import implementer
 from zope.interface import Interface
 from zope.interface import noLongerProvides
 from zope.lifecycleevent import IObjectModifiedEvent
-from zope.proxy import ProxyBase
 from zope.publisher.interfaces import IPublishTraverse
 from zope.schema.interfaces import IField
 
@@ -158,135 +146,17 @@ class SubFolderListing(FolderListing):
 )
 @implementer(IFlowSchemaForm)
 class SubFlowSubmitForm(FlowSubmitForm):
+
     def __init__(self, context, request):
         super(SubFlowSubmitForm, self).__init__(context, request)
         language = negotiate(context=request)
         context_language = get_navigation_root_language(self.context)
         if context_language.startswith(language):
-            self._locale_postfix = ''
+            self.localized_context = context
         else:
-            self._locale_postfix = '_' + language
-
-    def label(self):
-        try:
-            return self.context.aq_explicit.aq_acquire(
-                'title' + self._locale_postfix,
-            )
-        except AttributeError:
-            return self.context.aq_explicit.aq_acquire('title')
-
-    def description(self):
-        try:
-            return self.context.aq_explicit.aq_acquire(
-                'description' + self._locale_postfix,
-            )
-        except AttributeError:
-            return self.context.aq_explicit.aq_acquire('description')
-
-    @property
-    def default_fieldset_label(self):
-        try:
-            try:
-                return self.context.aq_explicit.aq_acquire(
-                    DEFAULT_FIELDSET_LABEL_FIELD + self._locale_postfix,
-                )
-            except AttributeError:
-                return self.context.aq_explicit.aq_acquire(
-                    DEFAULT_FIELDSET_LABEL_FIELD,
-                )
-        except AttributeError:
-            return _(u'Form')
-
-    @property
-    def submission_title_template(self):
-        try:
-            try:
-                return self.context.aq_explicit.aq_acquire(
-                    SUBMISSION_TITLE_TEMPLATE_FIELD + self._locale_postfix,
-                )
-            except AttributeError:
-                return self.context.aq_explicit.aq_acquire(
-                    SUBMISSION_TITLE_TEMPLATE_FIELD,
-                )
-        except AttributeError:
-            return u''
-
-    @property
-    def submission_path_template(self):
-        try:
-            return self.context.aq_explicit.aq_acquire(
-                SUBMISSION_PATH_TEMPLATE_FIELD,
-            )
-        except AttributeError:
-            return u''
-
-    @property
-    def submission_behaviors(self):
-        try:
-            return self.context.aq_explicit.aq_acquire(
-                SUBMISSION_BEHAVIORS_FIELD,
-            )
-        except AttributeError:
-            return []
-
-    @property
-    def submission_impersonation(self):
-        try:
-            return self.context.aq_explicit.aq_acquire(
-                SUBMISSION_IMPERSONATION_FIELD,
-            )
-        except AttributeError:
-            return False
-
-    @property
-    def submission_workflow(self):
-        try:
-            return self.context.aq_explicit.aq_acquire(
-                SUBMISSION_WORKFLOW_FIELD,
-            )
-        except AttributeError:
-            return DEFAULT_SUBMISSION_WORKFLOW
-
-    @property
-    def submission_transition(self):
-        try:
-            return self.context.aq_explicit.aq_acquire(
-                SUBMISSION_TRANSITION_FIELD,
-            )
-        except AttributeError:
-            return None
-
-    @property
-    def attachment_workflow(self):
-        try:
-            return self.context.aq_explicit.aq_acquire(
-                ATTACHMENT_WORKFLOW_FIELD,
-            )
-        except AttributeError:
-            return DEFAULT_ATTACHMENT_WORKFLOW
-
-    @property
-    def attachment_transition(self):
-        try:
-            return self.context.aq_explicit.aq_acquire(
-                ATTACHMENT_TRANSITION_FIELD,
-            )
-        except AttributeError:
-            return None
-
-    @property
-    def submit_label(self):
-        try:
-            try:
-                return self.context.aq_explicit.aq_acquire(
-                    SUBMIT_LABEL_FIELD + self._locale_postfix,
-                )
-            except AttributeError:
-                return self.context.aq_explicit.aq_acquire(
-                    SUBMIT_LABEL_FIELD,
-                )
-        except AttributeError:
-            return _(u'Submit')
+            proxy = LanguageFieldsProxy(self.context)
+            proxy._language = language
+            self.localized_context = proxy
 
 
 @configure.browser.page.class_(
@@ -314,37 +184,6 @@ class ImpersonatedSubFlowSubmitForm(SubFlowSubmitForm):
         else:
             with api.env.adopt_user(username=self.username):
                 return super(ImpersonatedSubFlowSubmitForm, self).__call__()
-
-
-class LanguageFieldsProxy(ProxyBase):
-    __slots__ = ['_context', '_language']
-
-    def __init__(self, context):
-        super(LanguageFieldsProxy, self).__init__(context)
-        self._context = context
-        self._language = None
-
-    def get_title(self):
-        try:
-            return getattr(self._context, 'title' + '_' + self._language)
-        except AttributeError:
-            return self._context.title
-
-    def set_title(self, value):
-        setattr(self._context, 'title' + '_' + self._language, value)
-
-    title = property(get_title, set_title)
-
-    def get_description(self):
-        try:
-            return getattr(self._context, 'description' + '_' + self._language)
-        except AttributeError:
-            return self._context.description
-
-    def set_description(self, value):
-        setattr(self._context, 'description' + '_' + self._language, value)
-
-    description = property(get_description, set_description)
 
 
 @configure.browser.page.class_(
