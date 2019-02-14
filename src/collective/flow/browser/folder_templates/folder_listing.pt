@@ -16,18 +16,10 @@
 
   <fieldset id="folder-listing" tal:condition="view/context/objectIds|nothing">
     <legend i18n:translate="" i18n:domain="collective.flow">Available forms</legend>
-    <tal:block
-      define="view nocall:context/folder_listing;
-              listing_macro view/macros/listing;
-              entries_macro view/macros/entries">
-      <metal:use_macro use-macro="listing_macro">
+    <tal:block define="view nocall:context/folder_listing">
+      <metal:use_macro use-macro="view/macros/listing">
         <metal:entries fill-slot="entries">
-          <tal:block condition="python: context.portal_type in ['FlowFolder', 'FlowSubFolder']">
-            <metal:use_macro use-macro="template/macros/flowentries" />
-          </tal:block>
-          <tal:block condition="python: context.portal_type not in ['FlowFolder', 'FlowSubFolder']">
-            <metal:use_macro use-macro="entries_macro" />
-          </tal:block>
+          <metal:use_macro use-macro="template/macros/flowentries" />
         </metal:entries>
       </metal:use_macro>
     </tal:block>
@@ -35,16 +27,15 @@
 
 </metal:main>
 
-<metal:macro define-macro="flowentries"
-             tal:define="listitem view/macros/listitem"
-             tal:repeat="item batch">
-  <tal:block tal:define="obj item/getObject;
-                localized_context nocall:obj/@@view;
+<metal:macro define-macro="flowentries">
+  <tal:block repeat="item batch">
+    <tal:block tal:define="obj item/getObject;
+                localized_context nocall:obj/@@view/localized_context|nothing;
                 item_url item/getURL;
                 item_id item/getId;
-                item_title localized_context/label;
+                item_title python: localized_context.title if localized_context else item.Title;
                 item_title python:item_title or item_id;
-                item_description localized_context/description;
+                item_description python: localized_context.description if localized_context else item.Description;
                 item_type item/PortalType;
                 item_modified item/ModificationDate;
                 item_created item/CreationDate;
@@ -57,13 +48,14 @@
                 item_type_class python:('contenttype-' + view.normalizeString(item_type)) if showicons else '' ;
                 ">
     <article class="entry">
-      <metal:use_macro use-macro="listitem" />
+      <metal:use_macro use-macro="view/macros/listitem" />
       <p class="description discreet"
          tal:condition="item_description"
          tal:content="item_description">
          description
       </p>
     </article>
+  </tal:block>
   </tal:block>
 </metal:macro>
 
