@@ -18,46 +18,44 @@
     <legend i18n:translate="" i18n:domain="collective.flow">Available forms</legend>
     <tal:block define="view nocall:context/folder_listing">
       <metal:use_macro use-macro="view/macros/listing">
-        <metal:entries fill-slot="entries">
-          <metal:use_macro use-macro="template/macros/flowentries" />
-        </metal:entries>
+        <metal:entry fill-slot="entry">
+          <metal:use_macro use-macro="template/macros/entry" />
+        </metal:entry>
       </metal:use_macro>
     </tal:block>
   </fieldset>
 
 </metal:main>
 
-<metal:macro define-macro="flowentries">
-  <tal:block repeat="item batch">
-    <tal:block tal:define="obj item/getObject;
-                localized_context nocall:obj/@@view/localized_context|nothing;
-                item_url item/getURL;
-                item_id item/getId;
-                item_title python: localized_context.title if localized_context else item.Title;
-                item_title python:item_title or item_id;
-                item_description python: localized_context.description if localized_context else item.Description;
-                item_type item/PortalType;
-                item_modified item/ModificationDate;
-                item_created item/CreationDate;
-                item_wf_state item/review_state;
-                item_wf_state_class python:'state-' + view.normalizeString(item_wf_state);
-                item_creator item/Creator;
-                item_link python:item_type in view.use_view_action and item_url+'/view' or item_url;
-                item_is_event python:view.is_event(obj);
-                item_has_image python:item.getIcon;
-                item_type_class python:'contenttype-' + view.normalizeString(item_type);
-                ">
-    <article class="entry">
-      <metal:use_macro use-macro="view/macros/listitem" />
-      <p class="description discreet"
-         tal:condition="item_description"
-         tal:content="item_description">
-         description
-      </p>
-    </article>
+
+<metal:entry define-macro="entry">
+  <tal:block define="is_flowitem python: item.PortalType() in ['FlowFolder', 'FlowSubFolder']">
+    <tal:flowitem condition="is_flowitem">
+      <tal:redefine
+        define="localized_context nocall:obj/@@view/localized_context|nothing;
+        item_title python: localized_context.title if localized_context else item.Title;
+        item_description python: localized_context.description if localized_context else item.Description">
+        <metal:use_macro use-macro="template/macros/listitem" />
+      </tal:redefine>
+    </tal:flowitem>
+    <tal:notflowitem condition="not:is_flowitem">
+      <metal:use_macro use-macro="template/macros/listitem" />
+    </tal:notflowitem>
   </tal:block>
-  </tal:block>
-</metal:macro>
+</metal:entry>
+
+
+<metal:listitem define-macro="listitem">
+  <article class="entry">
+    <metal:use_macro use-macro="view/macros/listitem" />
+    <p class="description discreet"
+       tal:condition="item_description"
+       tal:content="item_description">
+    description
+    </p>
+  </article>
+</metal:listitem>
+
 
 </body>
 </html>
