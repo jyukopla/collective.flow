@@ -9,19 +9,53 @@
 
 <metal:main fill-slot="main">
 
-  <h1 class="documentFirstHeading" tal:content="view/context/Title">Title</h1>
+  <h1 class="documentFirstHeading" tal:content="view/label">Title</h1>
 
-  <div class="documentDescription" tal:content="view/context/Description"
-       tal:condition="view/context/Description|nothing">Description</div>
+  <div class="documentDescription" tal:content="view/description"
+       tal:condition="view/description|view/context/Description|nothing">Description</div>
 
   <fieldset id="folder-listing" tal:condition="view/context/objectIds|nothing">
     <legend i18n:translate="" i18n:domain="collective.flow">Available forms</legend>
-    <tal:block define="view nocall:context/folder_listing; listing_macro view/macros/listing">
-      <metal:use_macro use-macro="listing_macro" />
+    <tal:block define="view nocall:context/folder_listing">
+      <metal:use_macro use-macro="view/macros/listing">
+        <metal:entry fill-slot="entry">
+          <metal:use_macro use-macro="template/macros/entry" />
+        </metal:entry>
+      </metal:use_macro>
     </tal:block>
   </fieldset>
 
 </metal:main>
+
+
+<metal:entry define-macro="entry">
+  <tal:block define="is_flowitem python: item.PortalType() in ['FlowFolder', 'FlowSubFolder']">
+    <tal:flowitem condition="is_flowitem">
+      <tal:redefine
+        define="localized_context nocall:obj/@@view/localized_context|nothing;
+        item_title python: localized_context.title if localized_context else item.Title;
+        item_description python: localized_context.description if localized_context else item.Description">
+        <metal:use_macro use-macro="template/macros/listitem" />
+      </tal:redefine>
+    </tal:flowitem>
+    <tal:notflowitem condition="not:is_flowitem">
+      <metal:use_macro use-macro="template/macros/listitem" />
+    </tal:notflowitem>
+  </tal:block>
+</metal:entry>
+
+
+<metal:listitem define-macro="listitem">
+  <article class="entry">
+    <metal:use_macro use-macro="view/macros/listitem" />
+    <p class="description discreet"
+       tal:condition="item_description"
+       tal:content="item_description">
+    description
+    </p>
+  </article>
+</metal:listitem>
+
 
 </body>
 </html>
