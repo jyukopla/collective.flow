@@ -1,7 +1,7 @@
 Changelog
 =========
 
-1.5.1 (unreleased)
+1.5.1 (2019-02-18)
 ------------------
 
 - Update translations in folder listing template
