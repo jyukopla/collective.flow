@@ -4,7 +4,8 @@ Changelog
 1.5.1 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Update translations in folder listing template
+  [Valtteri Karppinen]
 
 
 1.5.0 (2018-11-26)
