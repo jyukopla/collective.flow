@@ -4,7 +4,8 @@ Changelog
 1.5.2 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Fix error rendering actions in plone toolbar.
+  [Valtteri Karppinen]
 
 
 1.5.1 (2019-02-18)
