@@ -431,11 +431,10 @@ class FlowSubmitForm(DefaultAddForm):
             self.localized_context = proxy
         self.buttons = button.Buttons()
         self.handlers = button.Handlers()
-
-    def __call__(self):
         if 'disable_border' in self.request.form:
             del self.request.form['disable_border']
 
+    def __call__(self):
         pc = api.portal.get_tool('portal_catalog')
         path = '/'.join(self.context.getPhysicalPath())
         if (not self.submission_path_template and
