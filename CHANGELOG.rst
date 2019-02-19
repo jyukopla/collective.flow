@@ -1,7 +1,7 @@
 Changelog
 =========
 
-1.5.2 (unreleased)
+1.5.2 (2019-02-19)
 ------------------
 
 - Fix error rendering actions in plone toolbar.
