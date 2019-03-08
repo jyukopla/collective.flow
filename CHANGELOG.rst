@@ -1,10 +1,20 @@
 Changelog
 =========
 
-1.5.3 (unreleased)
+1.6.0 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Add synchronization of defaults and vocabulary values between main schema
+  language versions
+  [Asko Soukka]
+- Customize form flow sub folder add form to copy schema from the parent so
+  that it will include complete schema from the parent to fix issue where sub
+  folder was missing localizations from the parent
+  [Asko Soukka]
+- Change subfolder title and description localization to use the default
+  language instead of parent localization when localization is not yet
+  available
+  [Asko Soukka]
 
 
 1.5.2 (2019-02-19)
