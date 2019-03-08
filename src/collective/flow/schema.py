@@ -69,6 +69,11 @@ CUSTOMIZABLE_TAGS = [
     ns('values'),
 ]
 
+SYNCHRONIZED_TAGS = [
+    ns('default'),
+    ns('values'),
+]
+
 
 # noinspection PyProtectedMember
 def load_model(xml, cache_key=None):
@@ -175,11 +180,14 @@ def update_schema(xml, schema, name=u'', language=u''):
         for default in factory.itersiblings(ns('default'), preceding=True):
             default.getparent().remove(default)
 
-    return etree.tostring(
-        root,
-        pretty_print=True,
-        xml_declaration=True,
-        encoding='utf8',
+    return synchronized_schema(
+        etree.tostring(
+            root,
+            pretty_print=True,
+            xml_declaration=True,
+            encoding='utf8',
+        ),
+        master=language,
     )
 
 
@@ -305,6 +313,81 @@ def customized_schema(original, custom):
     )
 
     return customized
+
+
+def merge_vocabularies(from_node, to_node):
+    if from_node.tag == ns('values'):
+        vocabulary = {}
+        for term in from_node.iterchildren():
+            vocabulary[term.attrib.get('key') or term.text] = term.text
+        for term in to_node.iterchildren():
+            key = term.attrib.get('key') or term.text
+            term.text = vocabulary.get(key) or term.text
+    return to_node
+
+
+def synchronized_schema(xml, master=u''):
+    """Synchronize defaults and values between schemas"""
+    root = etree.fromstring(xml)
+    fields = {}
+
+    # copy values from master schema
+    for schema in root.findall(ns('schema')):
+        schema_name = schema.attrib.get('name') or u''
+        if schema_name != master:
+            continue
+
+        # fields_schemata.setdefault(schema_name, {})
+        for field in schema.xpath(
+                'supermodel:field',
+                namespaces=dict(supermodel=XML_NAMESPACE),
+        ):
+            name = field.attrib['name']
+            for node in [child for child in field.getchildren()
+                         if child.tag in SYNCHRONIZED_TAGS]:
+                fields.setdefault(name, {})
+                fields[name][node.tag] = node
+
+    # Re-parse schema to avoid "moving instead of cloning" mistakes later
+    root = etree.fromstring(xml)
+
+    # apply values for other languages
+    for schema in root.findall(ns('schema')):
+        schema_name = schema.attrib.get('name') or u''
+
+        # skip master schema
+        if schema_name == master:
+            continue
+
+        # skip object field schemas
+        if not IS_TRANSLATION.match(schema_name) and schema_name != '':
+            continue
+
+        for name in fields:
+            fields.setdefault(name, {})
+            for field in schema.xpath(
+                    'supermodel:field[@name="{0:s}"]'.format(name),
+                    namespaces=dict(supermodel=XML_NAMESPACE,
+                                    flow=FLOW_NAMESPACE),
+            ):
+                for node in [child for child in field.getchildren()
+                             if child.tag in fields[name]]:
+                    field.replace(
+                        node,
+                        merge_vocabularies(node, fields[name].pop(node.tag)),
+                    )
+                for node in fields[name].values():
+                    field.append(node)
+
+    # serialize
+    synchronized = etree.tostring(
+        root,
+        pretty_print=True,
+        xml_declaration=True,
+        encoding='utf8',
+    )
+
+    return synchronized
 
 
 def remove_attachments(xml):
