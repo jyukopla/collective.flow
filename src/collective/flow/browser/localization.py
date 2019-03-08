@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from Acquisition import aq_base
 from collective.flow.interfaces import DEFAULT_FIELDSET_LABEL_FIELD
 from collective.flow.interfaces import SUBMISSION_TITLE_TEMPLATE_FIELD
 from collective.flow.interfaces import SUBMIT_LABEL_FIELD
@@ -15,7 +16,10 @@ class LanguageFieldsProxy(ProxyBase):
 
     def get_title(self):
         try:
-            return getattr(self._context, 'title' + '_' + self._language)
+            return getattr(
+                aq_base(self._context),
+                'title' + '_' + self._language,
+            )
         except AttributeError:
             return self._context.title
 
@@ -26,7 +30,10 @@ class LanguageFieldsProxy(ProxyBase):
 
     def get_description(self):
         try:
-            return getattr(self._context, 'description' + '_' + self._language)
+            return getattr(
+                aq_base(self._context),
+                'description' + '_' + self._language,
+            )
         except AttributeError:
             return self._context.description
 
