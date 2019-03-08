@@ -16,10 +16,13 @@ from collective.flow.subfolder import ICustomizableField
 from collective.flow.utils import get_navigation_root_language
 from OFS.interfaces import IItem
 from plone import api
+from plone.dexterity.browser import add
 from plone.dexterity.browser.edit import DefaultEditForm
+from plone.dexterity.interfaces import IDexterityFTI
 from plone.schemaeditor.browser.schema.traversal import SchemaContext
 from plone.schemaeditor.interfaces import IFieldEditorExtender
 from plone.schemaeditor.interfaces import ISchemaContext
+from Products.CMFCore.interfaces import IFolderish
 from venusianconfiguration import configure
 from zope import schema
 from zope.component import adapter
@@ -31,6 +34,7 @@ from zope.interface import Interface
 from zope.interface import noLongerProvides
 from zope.lifecycleevent import IObjectModifiedEvent
 from zope.publisher.interfaces import IPublishTraverse
+from zope.publisher.interfaces.browser import IBrowserPage
 from zope.schema.interfaces import IField
 
 
@@ -98,6 +102,44 @@ def on_flow_change_customize_schemata(context, event):
         )
 
 
+class FlowSubFolderAddForm(add.DefaultAddForm):
+    portal_type = 'FlowSubFolder'
+
+    def createAndAdd(self, data):
+        obj = super(FlowSubFolderAddForm, self).createAndAdd(data)
+        try:
+            obj.schema = self.context.schema
+            obj.schema_digest = self.context.schema_digest
+        except AttributeError:
+            pass
+        self.immediate_view = '/'.join([
+            self.context.absolute_url(),
+            obj.id,
+            '/@@design',
+        ])
+        return obj
+
+
+@configure.adapter.factory(
+    name='FlowSubFolder',
+    for_=(
+        IFolderish,
+        ICollectiveFlowLayer,
+        IDexterityFTI,
+    ),
+    provides=IBrowserPage,
+)
+class FlowSubFolderAddView(add.DefaultAddView):
+    form = FlowSubFolderAddForm
+
+
+with configure.class_(class_=FlowSubFolderAddView) as subconfigure:
+    subconfigure.require(
+        permission='cmf.AddPortalContent',
+        interface=IBrowserPage,
+    )
+
+
 @configure.browser.page.class_(
     name='design',
     for_=IFlowSubFolder,
@@ -146,7 +188,6 @@ class SubFolderListing(FolderListing):
 )
 @implementer(IFlowSchemaForm)
 class SubFlowSubmitForm(FlowSubmitForm):
-
     def __init__(self, context, request):
         super(SubFlowSubmitForm, self).__init__(context, request)
         language = negotiate(context=request)
