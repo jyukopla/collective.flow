@@ -1,7 +1,7 @@
 Changelog
 =========
 
-1.6.1 (unreleased)
+1.6.1 (2019-03-11)
 ------------------
 
 - Add tests for schema synchronization function
