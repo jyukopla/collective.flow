@@ -343,6 +343,15 @@ def synchronized_schema(xml, master=u''):
                 namespaces=dict(supermodel=XML_NAMESPACE),
         ):
             name = field.attrib['name']
+            type_ = field.attrib['type']
+            if type_ in [
+                    'zope.schema.Text',
+                    'zope.schema.TextLine',
+                    'plone.app.textfield.RichText',
+            ]:
+                # Skip synchronizing text fields, because they are
+                # expected to contain localization specific data
+                continue
             for node in [child for child in field.getchildren()
                          if child.tag in SYNCHRONIZED_TAGS]:
                 fields.setdefault(name, {})

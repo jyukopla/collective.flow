@@ -141,6 +141,7 @@ class FlowLayer(PloneSandboxLayer):
         try:
             language_tool.settings.available_languages = [
                 os.environ.get('LANGUAGE', 'en'),
+                'fi',
             ]
         except AttributeError:
             pass
