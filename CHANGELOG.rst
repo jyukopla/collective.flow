@@ -4,8 +4,12 @@ Changelog
 1.6.1 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Add tests for schema synchronization function
+  [Asko Soukka]
 
+- Add to not synchronize default
+  values of text fields between languages
+  [Asko Soukka]
 
 1.6.0 (2019-03-08)
 ------------------
