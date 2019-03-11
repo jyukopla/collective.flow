@@ -58,6 +58,7 @@ class FlowSchema(Container):
 @implementer(IFlowSubmission)
 class FlowSubmission(Container):
     __providedBy__ = FlowSchemaSpecificationDescriptor()
+    submission_behaviors = None
 
 
 class FlowDataSpecificationDescriptor(ObjectSpecificationDescriptor):

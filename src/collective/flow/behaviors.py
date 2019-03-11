@@ -28,7 +28,7 @@ class FlowSubmissionBehaviorAssignable(DexterityBehaviorAssignable):
         try:
             # We cannot acquire from parent FlowFolder, because behaviors
             # are resolved (this method called) without acquisition chain
-            behaviors = aq_base(self.context.submission_behaviors) or []
+            behaviors = aq_base(self.context).submission_behaviors or []
         except AttributeError:
             behaviors = []
         for behavior in behaviors:
