@@ -38,7 +38,7 @@ class TestSynchronizedSchema(unittest.TestCase):
   <schema name="/fi/">
   </schema>
 </model>
-"""
+""",
         )
         b = synchronized_schema(a)
         self.assertEqual(a, b)
@@ -66,7 +66,7 @@ class TestSynchronizedSchema(unittest.TestCase):
     </field>
   </schema>
 </model>
-"""
+""",
         )
         b = synchronized_schema(a)
         c = canonical_xml(
@@ -93,7 +93,7 @@ class TestSynchronizedSchema(unittest.TestCase):
     </field>
   </schema>
 </model>
-"""
+""",
         )
         self.assertEqual(b, c)
 
@@ -121,7 +121,7 @@ class TestSynchronizedSchema(unittest.TestCase):
     </field>
   </schema>
 </model>
-"""
+""",
         )
         b = synchronized_schema(a)
         c = canonical_xml(
@@ -148,7 +148,7 @@ class TestSynchronizedSchema(unittest.TestCase):
     </field>
   </schema>
 </model>
-"""
+""",
         )
         self.assertEqual(b, c)
 
@@ -176,7 +176,7 @@ class TestSynchronizedSchema(unittest.TestCase):
     </field>
   </schema>
 </model>
-"""
+""",
         )
         b = synchronized_schema(a)
         c = canonical_xml(
@@ -203,7 +203,7 @@ class TestSynchronizedSchema(unittest.TestCase):
     </field>
   </schema>
 </model>
-"""
+""",
         )
         self.assertEqual(b, c)
 
@@ -232,7 +232,7 @@ class TestSynchronizedSchema(unittest.TestCase):
     </field>
   </schema>
 </model>
-"""
+""",
         )
         b = synchronized_schema(a)
         c = canonical_xml(
@@ -261,7 +261,7 @@ class TestSynchronizedSchema(unittest.TestCase):
     </field>
   </schema>
 </model>
-"""
+""",
         )
         self.assertEqual(b, c)
 
@@ -290,7 +290,7 @@ class TestSynchronizedSchema(unittest.TestCase):
     </field>
   </schema>
 </model>
-"""
+""",
         )
         b = synchronized_schema(a, '/fi/')
         c = canonical_xml(
@@ -319,7 +319,7 @@ class TestSynchronizedSchema(unittest.TestCase):
     </field>
   </schema>
 </model>
-"""
+""",
         )
         self.assertEqual(b, c)
 
@@ -341,7 +341,7 @@ class TestSynchronizedSchema(unittest.TestCase):
     </field>
   </schema>
 </model>
-"""
+""",
         )
         b = synchronized_schema(a)
         self.assertEqual(a, b)
