@@ -4,8 +4,9 @@ Changelog
 1.6.2 (unreleased)
 ------------------
 
-- Nothing changed yet.
-
+- Fix issue where resolving submission behaviors failed with the upstream
+  dexterity version
+  [Asko Soukka]
 
 1.6.1 (2019-03-11)
 ------------------
