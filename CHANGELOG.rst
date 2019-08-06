@@ -1,11 +1,11 @@
 Changelog
 =========
 
-1.6.3 (unreleased)
+1.7.0 (unreleased)
 ------------------
 
-- Nothing changed yet.
-
+- Add automatic metromap to ignore 'deleted' state
+  [Asko Soukka]
 
 1.6.2 (2019-03-11)
 ------------------
