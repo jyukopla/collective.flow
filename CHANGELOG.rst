@@ -1,7 +1,7 @@
 Changelog
 =========
 
-1.7.0 (unreleased)
+1.7.0 (2019-08-06)
 ------------------
 
 - Add automatic metromap to ignore 'deleted' state
