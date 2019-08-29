@@ -38,10 +38,11 @@
         <td class="commentBody">
           <div tal:replace="structure reply/getText">Comment</div>
           <div class="commentActions">
-            <form name="delete" style="display: none;"
+            <form name="delete"
                   action=""
                   method="post"
                   class="commentactionsform"
+               tal:condition="not:reply_dict/actions|nothing"
                tal:attributes="action string:${reply/absolute_url}/@@moderate-delete-comment">
               <input name="form.button.DeleteComment"
                      class="destructive"
