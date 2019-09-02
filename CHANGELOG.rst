@@ -1,11 +1,14 @@
 Changelog
 =========
 
-1.7.1 (unreleased)
+1.8.0 (unreleased)
 ------------------
 
-- Nothing changed yet.
-
+- Implement 'require fields filled' transition guard and widget for warning
+  about 'deleted' state
+  [Asko Soukka]
+- Add to allow deletion of comment when no other actions are available
+  [Asko Soukka]
 
 1.7.0 (2019-08-06)
 ------------------
