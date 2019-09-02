@@ -393,7 +393,8 @@ class FolderListing(BrowserView):
             query['b_size'] = b_size + orphan
 
         catalog = api.portal.get_tool('portal_catalog')
-        results = catalog(query)
+        results = [b for b in catalog(query)
+                   if b.review_state != 'deleted']
         return IContentListing(results)
 
 

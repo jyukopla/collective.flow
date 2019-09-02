@@ -75,8 +75,8 @@ class IRichTextLabel(Interface, IField):
         default=u'',
         missing_value=u'',
     )
-    description = Attribute(u'Labels don\'t need to be described.')
-    required = Attribute(u'Labels don\'t require any input value.')
+    description = Attribute(u"Labels don't need to be described.")
+    required = Attribute(u"Labels don't require any input value.")
 
 
 class IRichTextLabelWidget(IWidget):

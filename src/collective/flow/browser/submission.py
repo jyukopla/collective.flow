@@ -17,6 +17,7 @@ from plone.dexterity.browser.edit import DefaultEditForm
 from plone.locking.interfaces import ILockable
 from plone.z3cform.fieldsets.extensible import ExtensibleForm
 from Products.CMFCore.interfaces import IActionWillBeInvokedEvent
+from Products.Five import BrowserView
 from venusianconfiguration import configure
 from z3c.form import button
 from zope.browsermenu.interfaces import IBrowserMenu
@@ -30,6 +31,8 @@ from zope.interface import implementer
 from zope.lifecycleevent import Attributes
 from zope.lifecycleevent import IObjectModifiedEvent
 from zope.lifecycleevent import ObjectModifiedEvent
+from zope.schema import getSchemaValidationErrors
+from zope.schema._bootstrapinterfaces import RequiredMissing
 
 import functools
 import plone.api as api
@@ -226,6 +229,33 @@ class SubmissionEditForm(DefaultEditForm):
                 descriptions.append(Attributes(interface, *names))
             notify(ObjectModifiedEvent(self.context, *descriptions))
         return changes
+
+
+@configure.browser.page.class_(
+    name='guard-no-required-missing',
+    for_=IFlowSubmission,
+    layer=ICollectiveFlowLayer,
+    permission='cmf.RequestReview',
+)
+@implementer(IFlowSchemaForm)
+class SubmissionValidationGuard(BrowserView):
+    def __call__(self):
+        for name, value in getSchemaValidationErrors(
+            self.schema,
+            self.context,
+        ):
+            if isinstance(value, RequiredMissing):
+                return False
+        return True
+
+    @Lazy
+    def schema(self):
+        language = negotiate(context=self.request)
+        return load_schema(
+            aq_base(self.context).schema,
+            language=language,
+            cache_key=aq_base(self.context).schema_digest,
+        )
 
 
 def append_action_buttons(form):

@@ -21,6 +21,37 @@ import plone.api as api
 import re
 
 
+@configure.browser.viewlet.class_(
+    name='collective.flow.submission.deletion_warning',
+    for_=IFlowSubmission,
+    view=IViewView,
+    manager=IAboveContentTitle,
+    permission='cmf.RequestReview',
+    template=os.path.join('viewlets_templates',
+                          'submission_deleted_viewlet.pt'),
+)
+@implementer(IViewlet)
+class SubmissionDeletionWarningViewlet(BrowserView):
+    enabled = False
+
+    def __init__(self, context, request, view, manager=None):
+        super(SubmissionDeletionWarningViewlet, self).__init__(
+            context,
+            request,
+        )
+        self.__parent__ = view
+        self.context = context
+        self.request = request
+        self.view = view
+        self.manager = manager
+        self.steps = []
+
+    def update(self):
+        state = api.content.get_state(self.context)
+        if state == 'deleted':
+            self.enabled = True
+
+
 def override_with_current_state(state, wf, current_state_id):
     # Enforce that current state otherwise being dropped is shown
     state = deepcopy(state)
@@ -36,7 +67,7 @@ def override_with_current_state(state, wf, current_state_id):
     return state
 
 
-def get_default_metromap(wf, current_state_id=None):
+def get_default_metromap(wf, current_state_id=None):  # noqa: C901 too complex
     """Return heuristically guessed "happy path" version of the workflow
     """
     states = {}
