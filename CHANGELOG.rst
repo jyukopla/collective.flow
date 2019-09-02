@@ -1,7 +1,7 @@
 Changelog
 =========
 
-1.8.0 (unreleased)
+1.8.0 (2019-09-02)
 ------------------
 
 - Implement 'require fields filled' transition guard and widget for warning
