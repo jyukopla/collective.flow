@@ -21,7 +21,7 @@ from plone.memoize.volatile import CleanupDict
 from plone.schemaeditor.interfaces import ISchemaModifiedEvent
 from plone.stringinterp.interfaces import IStringInterpolator
 from plone.supermodel import loadString
-from plone.supermodel import serializeSchema
+from plone.supermodel import serializeSchema as _serializeSchema
 from plone.supermodel.interfaces import ISchemaPolicy
 from plone.supermodel.interfaces import XML_NAMESPACE
 from plone.supermodel.utils import ns
@@ -73,6 +73,20 @@ SYNCHRONIZED_TAGS = [
     ns('default'),
     ns('values'),
 ]
+
+
+def serializeSchema(schema, name):
+    """Patched serializeSchema"""
+    xml = _serializeSchema(schema, name)
+    # Something in plone.autoform integration for supermodel is
+    # duplicating form:mode="display -values leading huge XML and
+    # performance issues in parsing.
+    while 'form:mode="display display' in xml:
+        xml = xml.replace(
+            'form:mode="display display',
+            'form:mode="display',
+        )
+    return xml
 
 
 # noinspection PyProtectedMember
