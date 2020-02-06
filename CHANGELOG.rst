@@ -1,7 +1,7 @@
 Changelog
 =========
 
-1.8.1 (unreleased)
+1.8.1 (2020-02-06)
 ------------------
 
 - Workaround issue where form:mode=display gets duplicated in schema serialization
