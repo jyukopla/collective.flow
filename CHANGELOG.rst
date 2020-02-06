@@ -4,8 +4,8 @@ Changelog
 1.8.1 (unreleased)
 ------------------
 
-- Nothing changed yet.
-
+- Workaround issue where form:mode=display gets duplicated in schema serialization
+  [Asko Soukka]
 
 1.8.0 (2019-09-02)
 ------------------
