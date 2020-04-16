@@ -192,7 +192,7 @@ class SubFlowSubmitForm(FlowSubmitForm):
         super(SubFlowSubmitForm, self).__init__(context, request)
         language = negotiate(context=request)
         context_language = get_navigation_root_language(self.context)
-        if context_language.startswith(language):
+        if context_language.startswith(language or context_language):
             self.localized_context = context
         else:
             proxy = LanguageFieldsProxy(self.context)
