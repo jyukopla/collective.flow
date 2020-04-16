@@ -1,2 +1,0 @@
-dataflake.fakeldap==1.0
-zc.buildout==2.12.2
