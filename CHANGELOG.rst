@@ -1,7 +1,7 @@
 Changelog
 =========
 
-1.9.0 (unreleased)
+1.9.0 (2020-04-16)
 ------------------
 
 - Add flow.AuthorPortalContent permission
