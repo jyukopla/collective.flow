@@ -604,7 +604,7 @@ def save_schema_from_schema_context(schema_context, event=None):
     save_schema(
         schema_context.content,
         schema=schema_context.schema,
-        language=not context_language.startswith(language) and language or u'',
+        language=not context_language.startswith(language or context_language) and language or u'',
     )
 
 
