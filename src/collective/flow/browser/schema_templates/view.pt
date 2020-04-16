@@ -12,7 +12,8 @@
   <h1 class="documentFirstHeading" tal:content="context/Title"></h1>
 
   <tal:block repeat="widget view/widgets/values">
-    <div class="field">
+    <div class="field" tal:define="id widget/id|nothing"
+         tal:attributes="id python:id and 'formfield-' + id or None">
       <label tal:content="widget/label"></label><br/>
       <div tal:content="structure widget"></div>
     </div>

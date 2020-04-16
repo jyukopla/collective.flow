@@ -21,7 +21,8 @@
      tal:condition="view/default_fieldset_label|nothing">Fieldset heading</h2>
 
   <tal:block repeat="widget view/widgets/values">
-    <div class="field">
+    <div class="field" tal:define="id widget/id|nothing"
+         tal:attributes="id python:id and 'formfield-' + id or None">
       <tal:label condition="widget/label|nothing">
         <label tal:content="widget/label"></label><br/>
       </tal:label>
@@ -37,7 +38,8 @@
        tal:content="group/description"
        tal:condition="group/description|nothing">Fieldset description</p>
     <tal:block repeat="widget group/widgets/values">
-      <div class="field">
+      <div class="field" tal:define="id widget/id|nothing"
+           tal:attributes="id python:id and 'formfield-' + id or None">
         <tal:label condition="widget/label|nothing">
           <label tal:content="widget/label"></label><br/>
         </tal:label>
