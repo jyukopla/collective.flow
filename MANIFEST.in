@@ -2,5 +2,4 @@ graft src/collective
 graft docs
 include *.rst LICENSE* setup.cfg
 global-exclude *.pyc
-exclude Makefile* Dockerfile* *.pyc *.yml *.txt *.nix *.sh *.cfg
-exclude Makefile* *.pyc *.yml *.txt *.nix
+exclude Makefile* Dockerfile* *.pyc *.yml *.txt *.nix *.sh *.cfg .kopla .editorconfig
