@@ -341,7 +341,7 @@ def fire_default_transitions(
 
 
 def get_submission_title(form, submission):
-    language = negotiate(context=getRequest())
+    language = negotiate(context=getRequest()) or u''
     try:
         try:
             template = submission.aq_explicit.aq_acquire(
@@ -422,7 +422,7 @@ class FlowSubmitForm(DefaultAddForm):
 
     def __init__(self, context, request):
         super(FlowSubmitForm, self).__init__(context, request)
-        language = negotiate(context=self.request)
+        language = negotiate(context=self.request) or u''
         context_language = get_navigation_root_language(self.context)
         if context_language.startswith(language or context_language):
             self.localized_context = context
@@ -498,7 +498,7 @@ class FlowSubmitForm(DefaultAddForm):
     @property
     @view.memoize
     def schema(self):
-        language = negotiate(context=self.request)
+        language = negotiate(context=self.request) or u''
         try:
             try:
                 schema = load_schema(
@@ -660,7 +660,7 @@ class FlowImpersonationForm(AutoExtensibleForm, Form):
     @view.memoize
     def schema(self):
         try:
-            language = negotiate(context=self.request)
+            language = negotiate(context=self.request) or u''
             schema = load_schema(
                 aq_base(self.context).schema,
                 name='@@impersonate',
@@ -728,7 +728,7 @@ class SubmissionView(WidgetsView):
     )
 
     def __init__(self, context, request, content):
-        language = negotiate(context=request)
+        language = negotiate(context=request) or u''
         self.content = content
         self.schema = load_schema(
             aq_base(content).schema,
@@ -739,7 +739,7 @@ class SubmissionView(WidgetsView):
 
     @property
     def default_fieldset_label(self):
-        language = negotiate(context=self.request)
+        language = negotiate(context=self.request) or u''
         try:
             try:
                 return getattr(
@@ -780,7 +780,7 @@ class SubmissionView(WidgetsView):
 @implementer(IFlowSchemaForm)
 class FlowFolderEditForm(DefaultEditForm):
     def getContent(self):
-        language = negotiate(context=self.request)
+        language = negotiate(context=self.request) or u''
         context_language = get_navigation_root_language(self.context)
         if context_language.startswith(language):
             return self.context

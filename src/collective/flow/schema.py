@@ -119,6 +119,8 @@ def load_schema(xml, name=u'', language=u'', cache_key=None):
         name = name.strip()
     if language:
         language = u'/' + language.strip() + u'/'
+    else:
+        language = u''
     model = load_model(xml, cache_key=cache_key)
     try:
         return model.schemata[language + name]
@@ -570,7 +572,7 @@ def save_schema(context, schema=None, xml=None, language=u''):
             )
             # TODO: synchronize languages
         except AttributeError:
-            context.schema = serializeSchema(schema)
+            context.schema = serializeSchema(schema, name=u'')
         for name in schema:
             value_type = getattr(schema[name], 'value_type', None)
             if isinstance(value_type, Object):
@@ -599,7 +601,7 @@ def save_schema(context, schema=None, xml=None, language=u''):
 @adapter(IFlowSchemaContext, ISchemaModifiedEvent)
 def save_schema_from_schema_context(schema_context, event=None):
     assert event
-    language = negotiate(context=getRequest())
+    language = negotiate(context=getRequest()) or u''
     context_language = get_navigation_root_language(schema_context.content)
     save_schema(
         schema_context.content,
@@ -643,7 +645,7 @@ def fixed_language(language, request=None):
     """
     if request is None:
         request = getRequest()
-    current_language = negotiate(context=request)
+    current_language = negotiate(context=request) or u''
     if current_language != language:
         original = queryUtility(INegotiator)
         if original is not None:

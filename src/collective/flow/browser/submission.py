@@ -73,7 +73,7 @@ def on_flow_change_update_behaviors(context, event):
 class SubmissionView(WidgetsView, ExtensibleForm):
     @property
     def default_fieldset_label(self):
-        language = negotiate(context=self.request)
+        language = negotiate(context=self.request) or u''
         try:
             try:
                 return self.context.aq_explicit.aq_acquire(
@@ -88,7 +88,7 @@ class SubmissionView(WidgetsView, ExtensibleForm):
 
     @Lazy
     def schema(self):
-        language = negotiate(context=self.request)
+        language = negotiate(context=self.request) or u''
         return load_schema(
             aq_base(self.context).schema,
             language=language,
@@ -137,7 +137,7 @@ class SubmissionEditForm(DefaultEditForm):
 
     def __init__(self, context, request):
         super(SubmissionEditForm, self).__init__(context, request)
-        language = negotiate(context=request)
+        language = negotiate(context=request) or u''
         context_language = get_navigation_root_language(self.context)
         if context_language.startswith(language or context_language):
             self._locale_postfix = ''
@@ -181,7 +181,7 @@ class SubmissionEditForm(DefaultEditForm):
 
     @Lazy
     def schema(self):
-        language = negotiate(context=self.request)
+        language = negotiate(context=self.request) or u''
         return load_schema(
             aq_base(self.context).schema,
             language=language,
@@ -250,7 +250,7 @@ class SubmissionValidationGuard(BrowserView):
 
     @Lazy
     def schema(self):
-        language = negotiate(context=self.request)
+        language = negotiate(context=self.request) or u''
         return load_schema(
             aq_base(self.context).schema,
             language=language,

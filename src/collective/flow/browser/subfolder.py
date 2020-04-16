@@ -150,7 +150,7 @@ with configure.class_(class_=FlowSubFolderAddView) as subconfigure:
 @implementer(IFlowSchemaContext)
 class SubFlowSchemaContext(SchemaContext):
     def __init__(self, context, request):
-        language = negotiate(context=request)
+        language = negotiate(context=request) or u''
         try:
             schema = load_schema(
                 aq_base(context).schema,
@@ -190,7 +190,7 @@ class SubFolderListing(FolderListing):
 class SubFlowSubmitForm(FlowSubmitForm):
     def __init__(self, context, request):
         super(SubFlowSubmitForm, self).__init__(context, request)
-        language = negotiate(context=request)
+        language = negotiate(context=request) or u''
         context_language = get_navigation_root_language(self.context)
         if context_language.startswith(language or context_language):
             self.localized_context = context
@@ -236,7 +236,7 @@ class ImpersonatedSubFlowSubmitForm(SubFlowSubmitForm):
 @implementer(IFlowSchemaForm)
 class FlowSubFolderEditForm(DefaultEditForm):
     def getContent(self):
-        language = negotiate(context=self.request)
+        language = negotiate(context=self.request) or u''
         context_language = get_navigation_root_language(self.context)
         if context_language.startswith(language):
             return self.context

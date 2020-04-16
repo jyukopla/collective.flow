@@ -46,7 +46,7 @@ class SchemaView(DefaultEditForm):
     @property
     @view.memoize
     def schema(self):
-        language = negotiate(context=self.request)
+        language = negotiate(context=self.request) or u''
         try:
             return load_schema(
                 aq_base(self.context).schema,
@@ -72,7 +72,7 @@ class SchemaView(DefaultEditForm):
 @implementer(IFlowSchemaContext)
 class FlowSchemaContext(SchemaContext):
     def __init__(self, context, request):
-        language = negotiate(context=request)
+        language = negotiate(context=request) or u''
         try:
             schema = load_schema(
                 aq_base(context).schema,
