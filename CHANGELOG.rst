@@ -1,11 +1,13 @@
 Changelog
 =========
 
-1.8.2 (unreleased)
+1.9.0 (unreleased)
 ------------------
 
-- Nothing changed yet.
-
+- Add flow.AuthorPortalContent permission
+  [Asko Soukka]
+- Add to include full formfield ids on display form
+  [Asko Soukka]
 
 1.8.1 (2020-02-06)
 ------------------
