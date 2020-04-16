@@ -1,5 +1,5 @@
 graft src/collective
 graft docs
-include setup.* *.nix *.rst *.txt
+include *.rst LICENSE*
 global-exclude *.pyc
-exclude .* *.sh result Makefile* Dockerfile* buildout* heroku.cfg
+exclude Makefile* *.pyc *.yml *.txt *.nix
