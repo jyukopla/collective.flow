@@ -1,5 +1,6 @@
 graft src/collective
 graft docs
-include *.rst LICENSE*
+include *.rst LICENSE* setup.cfg
 global-exclude *.pyc
+exclude Makefile* Dockerfile* *.pyc *.yml *.txt *.nix *.sh *.cfg
 exclude Makefile* *.pyc *.yml *.txt *.nix
