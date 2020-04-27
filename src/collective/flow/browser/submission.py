@@ -235,7 +235,7 @@ class SubmissionEditForm(DefaultEditForm):
     name='guard-no-required-missing',
     for_=IFlowSubmission,
     layer=ICollectiveFlowLayer,
-    permission='cmf.RequestReview',
+    permission='zope2.View',
 )
 @implementer(IFlowSchemaForm)
 class SubmissionValidationGuard(BrowserView):
