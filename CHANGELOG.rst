@@ -1,7 +1,7 @@
 Changelog
 =========
 
-1.9.1 (unreleased)
+1.9.1 (2020-04-27)
 ------------------
 
 - Change to allow 'guard-no-required-missing' with just view permissions
