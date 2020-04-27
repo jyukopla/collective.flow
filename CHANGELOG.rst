@@ -4,8 +4,9 @@ Changelog
 1.9.2 (unreleased)
 ------------------
 
-- Nothing changed yet.
-
+- Fix issue where ObjectCreatedEvent was not called for attachment and
+  attachment were missing uuids
+  [Asko Soukka]
 
 1.9.1 (2020-04-27)
 ------------------
