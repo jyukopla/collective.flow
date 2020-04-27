@@ -4,8 +4,8 @@ Changelog
 1.9.1 (unreleased)
 ------------------
 
-- Nothing changed yet.
-
+- Change to allow 'guard-no-required-missing' with just view permissions
+  [Asko Soukka]
 
 1.9.0 (2020-04-16)
 ------------------
