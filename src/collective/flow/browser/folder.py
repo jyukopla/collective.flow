@@ -66,9 +66,10 @@ from zope.event import notify
 from zope.globalrequest import getRequest
 from zope.i18n import negotiate
 from zope.i18nmessageid import MessageFactory
+from zope.interface import Invalid
 from zope.interface import alsoProvides
 from zope.interface import implementer
-from zope.interface import Invalid
+from zope.lifecycleevent import ObjectCreatedEvent
 from zope.location.interfaces import IContained
 from zope.publisher.interfaces import IPublishTraverse
 from ZPublisher.HTTPRequest import FileUpload
@@ -590,6 +591,7 @@ class FlowSubmitForm(DefaultAddForm):
             checkConstraints=False,
         )
         for attachment in attachments:
+            notify(ObjectCreatedEvent(attachment))
             addContentToContainer(
                 submission,
                 attachment,
