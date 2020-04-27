@@ -1,7 +1,7 @@
 Changelog
 =========
 
-1.9.2 (unreleased)
+1.9.2 (2020-04-27)
 ------------------
 
 - Fix issue where ObjectCreatedEvent was not called for attachment and
