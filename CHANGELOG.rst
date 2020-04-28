@@ -1,7 +1,7 @@
 Changelog
 =========
 
-1.9.4 (unreleased)
+1.9.4 (2020-04-28)
 ------------------
 
 - Fix attachments listing to directly open attachments
