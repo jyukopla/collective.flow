@@ -4,8 +4,8 @@ Changelog
 1.9.3 (unreleased)
 ------------------
 
-- Nothing changed yet.
-
+- Rename submission contents as attachments
+  [Asko Soukka]
 
 1.9.2 (2020-04-27)
 ------------------
