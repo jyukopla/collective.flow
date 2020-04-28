@@ -4,8 +4,8 @@ Changelog
 1.9.4 (unreleased)
 ------------------
 
-- Nothing changed yet.
-
+- Fix attachments listing to directly open attachments
+  [Asko Soukka]
 
 1.9.3 (2020-04-28)
 ------------------
