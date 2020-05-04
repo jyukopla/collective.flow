@@ -1,7 +1,7 @@
 Changelog
 =========
 
-1.9.5 (unreleased)
+1.9.5 (2020-05-04)
 ------------------
 
 - Change to replace 'flow.CanAuthorContent' with 'zope2.View' on submission add form
