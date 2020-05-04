@@ -513,7 +513,7 @@ class FlowSubmitForm(DefaultAddForm):
             except KeyError:
                 schema = aq_base(self.context).schema.replace(
                     'flow.AuthorPortalContent',
-                    'cmf.AddPortalContent',
+                    'zope2.View',
                 )
                 key = hashlib.md5(schema).hexdigest()
                 return load_schema(schema, language=language, cache_key=key)
