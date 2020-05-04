@@ -511,11 +511,12 @@ class FlowSubmitForm(DefaultAddForm):
                 alsoProvides(schema, IAddFlowSchemaDynamic)
                 return schema
             except KeyError:
-                return load_schema(
-                    aq_base(self.context).schema,
-                    language=language,
-                    cache_key=aq_base(self.context).schema_digest,
+                schema = aq_base(self.context).schema.replace(
+                    'flow.AuthorPortalContent',
+                    'cmf.AddPortalContent',
                 )
+                key = hashlib.md5(schema).hexdigest()
+                return load_schema(schema, language=language, cache_key=key)
         except AttributeError:
             self.request.response.redirect(
                 u'{0}/@@design'.format(self.context.absolute_url()),
