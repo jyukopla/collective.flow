@@ -1,14 +1,20 @@
 stages:
   - test
 
-test-plone-5.0:
+test-plone-5.0-py2:
+  tags:
+    - nix
   stage: test
   script:
-  - make -f Makefile.docker BUILDOUT_FILENAME=buildout-plone-5.0.cfg show
-  - make -f Makefile.docker BUILDOUT_FILENAME=buildout-plone-5.0.cfg test
-
-test-plone-5.x:
-  stage: test
-  script:
-  - make -f Makefile.docker BUILDOUT_FILENAME=buildout-plone-5.x.cfg show
-  - make -f Makefile.docker BUILDOUT_FILENAME=buildout-plone-5.x.cfg test
+    - PLONE=plone50
+      PYTHON=python27
+      make nix-show
+    - BUILDOUT_ARGS="-N install pocompile test"
+      LC_ALL=C
+      PLONE=plone50
+      PYTHON=python27
+      ROBOT_BROWSER=headlessfirefox
+      make nix-test
+  artifacts:
+    paths:
+      - parts/test

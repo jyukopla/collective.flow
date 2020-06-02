@@ -36,6 +36,11 @@ plone.supermodel.exportimport.ChoiceHandler.filteredAttributes.pop(
 i18n_domain('collective.flow')
 configure.i18n.registerTranslations(directory='locales')
 
+configure.permission(
+    id=u'flow.AuthorPortalContent',
+    title=u'collective.flow: Author portal content',
+)
+
 scan(behaviors)
 scan(buttons)
 scan(comments)
@@ -205,6 +210,16 @@ configure.gs.registerProfile(
     description=_(u'Deactivates collective.flow'),
     directory=u'profiles/uninstall',
     provides=u'Products.GenericSetup.interfaces.EXTENSION',
+)
+
+configure.gs.upgradeDepends(
+    source='1010',
+    destination='1011',
+    sortkey='1010',
+    title=u'Upgrade collective.flow from 1010 to 1011',
+    description=u'Init rolemap for flow.AuthorPortalContent',
+    profile='collective.flow:default',
+    import_steps='rolemap',
 )
 
 

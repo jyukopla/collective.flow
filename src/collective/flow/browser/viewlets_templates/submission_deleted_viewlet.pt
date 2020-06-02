@@ -1,0 +1,6 @@
+<div tal:condition="view/enabled" i18n:domain="plone" class="portalMessage warning">
+  <strong i18n:translate="">Warning</strong>
+  <span i18n:domain="collective.flow" class="content" i18n:translate="">
+     This document is currently awaiting to be automatically deleted in the near future without further notice.
+  </span>
+</div>

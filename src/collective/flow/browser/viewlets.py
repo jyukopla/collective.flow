@@ -2,7 +2,7 @@
 from collective.flow.buttons import IBottomButtons
 from collective.flow.buttons import ITopButtons
 from collective.flow.interfaces import IFlowSubmission
-from plone import api
+from copy import deepcopy
 from plone.app.layout.globals.interfaces import IViewView
 from plone.app.layout.viewlets.interfaces import IAboveContentBody
 from plone.app.layout.viewlets.interfaces import IAboveContentTitle
@@ -17,22 +17,57 @@ from zope.interface import implementer
 from zope.viewlet.interfaces import IViewlet
 
 import os.path
+import plone.api as api
 import re
+
+
+@configure.browser.viewlet.class_(
+    name='collective.flow.submission.deletion_warning',
+    for_=IFlowSubmission,
+    view=IViewView,
+    manager=IAboveContentTitle,
+    permission='cmf.RequestReview',
+    template=os.path.join('viewlets_templates',
+                          'submission_deleted_viewlet.pt'),
+)
+@implementer(IViewlet)
+class SubmissionDeletionWarningViewlet(BrowserView):
+    enabled = False
+
+    def __init__(self, context, request, view, manager=None):
+        super(SubmissionDeletionWarningViewlet, self).__init__(
+            context,
+            request,
+        )
+        self.__parent__ = view
+        self.context = context
+        self.request = request
+        self.view = view
+        self.manager = manager
+        self.steps = []
+
+    def update(self):
+        state = api.content.get_state(self.context)
+        if state == 'deleted':
+            self.enabled = True
 
 
 def override_with_current_state(state, wf, current_state_id):
     # Enforce that current state otherwise being dropped is shown
+    state = deepcopy(state)
     for transition_id in state['next_transition']:
         if transition_id in wf.transitions:
             state_id = wf.transitions[transition_id].new_state_id
             if state_id == current_state_id:
                 state['state'] = current_state_id
                 state['className'] = 'exception'
+                state['next_transitions'] = []
+                state['reopen_transitions'] = []
                 break
     return state
 
 
-def get_default_metromap(wf, current_state_id=None):
+def get_default_metromap(wf, current_state_id=None):  # noqa: C901 too complex
     """Return heuristically guessed "happy path" version of the workflow
     """
     states = {}
@@ -56,17 +91,23 @@ def get_default_metromap(wf, current_state_id=None):
     reopen_transitions = []
     stack = [states.pop(wf.initial_state)]
     seen_current_state_id = False
+    inserts = {}
 
     while stack:
         state = stack.pop()
         if state['state'] == current_state_id:
             seen_current_state_id = True
+        elif state['state'] in ['deleted']:  # blacklisted metro states
+            continue
         reopen_transitions.extend(state['reopen_transition'])
         state['reopen_transition'] = sorted(
             set(transitions).intersection(set(state['reopen_transition'])),
             key=lambda x: (transitions[x], x[0]),
         )
         for transition_id in reopen_transitions:
+            state_id = wf.transitions[transition_id].new_state_id
+            if state_id in ['deleted']:
+                continue
             if transition_id in transitions:
                 transitions.pop(transition_id)
             break
@@ -78,16 +119,24 @@ def get_default_metromap(wf, current_state_id=None):
             transitions.pop(transition_id)
             if transition_id in wf.transitions:
                 state_id = wf.transitions[transition_id].new_state_id
+                if state_id in ['deleted']:
+                    continue
                 if state_id in states:
                     stack.append(states.pop(state_id))
                 if state_id == current_state_id:
                     seen_current_state_id = True
             break
 
+        metro.append(state)
+
         if current_state_id and not seen_current_state_id:
             state = override_with_current_state(state, wf, current_state_id)
+            if state['state'] == current_state_id:
+                inserts.clear()
+                inserts[len(metro)] = state
 
-        metro.append(state)
+    for idx, override in inserts.items():
+        metro.insert(idx, override)
 
     for state in metro:
         state['next_transition'] = ','.join(state['next_transition'])
@@ -187,7 +236,7 @@ class MetroMapViewlet(BrowserView):
 
         return actions
 
-    @view.memoize
+    @view.memoize  # trick to render this only once per request
     def update(self):
         tool = api.portal.get_tool('portal_workflow')
 
@@ -210,9 +259,9 @@ class MetroMapViewlet(BrowserView):
         except AttributeError:
             metro = get_default_metromap(wf)
             # Fix issue where default metro missed the current state
-            if status and status.get('review_state') not in [
-                step.get('state') for step in metro
-            ]:
+            if status and status.get('review_state') not in [step.get('state')
+                                                             for step in metro
+                                                             ]:
                 metro = get_default_metromap(wf, status.get('review_state'))
 
         # Build data for our metro map

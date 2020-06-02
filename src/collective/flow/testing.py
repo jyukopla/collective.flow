@@ -38,6 +38,7 @@ try:
     if pkg_resources.get_distribution('Products.CMFPlone>=5.0'):
         HAVE_PLONE_5 = True
         import plone.app.contenttypes
+        import plone.app.versioningbehavior
 except pkg_resources.VersionConflict:
     pass
 
@@ -126,6 +127,7 @@ class FlowLayer(PloneSandboxLayer):
 
     def setUpZope(self, app, configurationContext):
         if HAVE_PLONE_5:
+            self.loadZCML(package=plone.app.versioningbehavior)
             self.loadZCML(package=plone.app.contenttypes)
         venusianconfiguration.enable()
         self.loadZCML(package=collective.flow, name='configure.py')
@@ -141,6 +143,7 @@ class FlowLayer(PloneSandboxLayer):
         try:
             language_tool.settings.available_languages = [
                 os.environ.get('LANGUAGE', 'en'),
+                'fi',
             ]
         except AttributeError:
             pass

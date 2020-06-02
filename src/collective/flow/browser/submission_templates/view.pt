@@ -21,7 +21,8 @@
      tal:condition="view/default_fieldset_label|nothing">Fieldset heading</h2>
 
   <tal:block repeat="widget view/widgets/values">
-    <div class="field">
+    <div class="field" tal:define="id widget/id|nothing"
+         tal:attributes="id python:id and 'formfield-' + id or None">
       <tal:label condition="widget/label|nothing">
         <label tal:content="widget/label"></label><br/>
       </tal:label>
@@ -37,7 +38,8 @@
        tal:content="group/description"
        tal:condition="group/description|nothing">Fieldset description</p>
     <tal:block repeat="widget group/widgets/values">
-      <div class="field">
+      <div class="field" tal:define="id widget/id|nothing"
+           tal:attributes="id python:id and 'formfield-' + id or None">
         <tal:label condition="widget/label|nothing">
           <label tal:content="widget/label"></label><br/>
         </tal:label>
@@ -47,9 +49,39 @@
   </tal:block>
 
   <fieldset id="folder-listing" tal:condition="view/context/objectIds|nothing">
-    <legend i18n:translate="" i18n:domain="plone">Contents</legend>
+    <legend i18n:translate="" i18n:domain="collective.flow">Attachments</legend>
     <tal:block define="view nocall:context/folder_listing; listing_macro view/macros/listing">
-      <metal:use_macro use-macro="listing_macro" />
+      <metal:use_macro use-macro="listing_macro">
+        <metal:fill_slot fill-slot="entry">
+          <article class="entry"
+                   tal:define="has_image nocall:obj/image|nothing;
+                               has_file nocall:obj/file|nothing"
+                   tal:condition="python: has_image or has_file">
+            <header>
+              <a tal:attributes="href string:${item_link}/@@display-file/image;
+                                 class string:$item_type_class $item_wf_state_class url;
+                                 title item_type"
+                 tal:content="item_title" tal:condition="has_image">
+               Item Title
+              </a>
+              <a tal:attributes="href string:${item_link}/@@display-file/file;
+                                 class string:$item_type_class $item_wf_state_class url;
+                                 title item_type"
+                 tal:content="item_title" tal:condition="python:has_file and not item_id.startswith(context.id)">
+               Item Title
+              </a>
+              <tal:special tal:condition="python:has_file and item_id.startswith(context.id)">
+                 <hr/>
+                 <a tal:attributes="href string:${item_link}/@@download/file;
+                                    class string:$item_type_class $item_wf_state_class url;
+                                    title item_type"
+                    tal:content="item_title">
+                  Item Title
+                 </a>
+              </tal:special>
+          </article>
+        </metal:fill_slot>
+      </metal:use_macro>
     </tal:block>
   </fieldset>
 

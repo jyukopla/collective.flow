@@ -1,127 +1,109 @@
-export PATH := .pyenv/bin:$(PATH)
+# Requires .netrc file with
+#
+# machine repo.kopla.jyu.fi
+# login username
+# password secret
 
-BUILDOUT_BIN ?= $(shell command -v buildout || echo 'bin/buildout')
-BUILDOUT_ARGS ?=
-PYBOT_ARGS ?=
+INDEX_URL ?= https://repo.kopla.jyu.fi/api/pypi/pypi/simple
+INDEX_HOSTNAME ?= repo.kopla.jyu.fi
+PYPI_USERNAME ?= guest
+PYPI_PASSWORD ?= guest
 
-.PHONY: all
-all: build check
+PLONE ?= plone50
+PYTHON ?= python27
+
+BUILDOUT_CFG ?= test_$(PLONE).cfg
+BUILDOUT_ARGS ?= -N
+
+NIX_OPTIONS ?= --argstr plone $(PLONE) --argstr python $(PYTHON)
+REF_NIXPKGS = branches nixos-20.03
+
+.PHONY: check
+check: .installed.cfg
+ifeq ($(PYTHON), python37)
+	bin/black -t py27 --check src
+	# pylama src
+endif
+
+env:
+	nix-build $(NIX_OPTIONS) setup.nix -A env -o env
 
 .PHONY: format
-format: bin/isort bin/yapf
-	bin/yapf -r -i src
+format: .installed.cfg
+ifeq ($(PYTHON), python37)
+	bin/black -t py27 src
+endif
 	bin/isort -rc -y src
 
 .PHONY: show
-show: $(BUILDOUT_BIN)
-	$(BUILDOUT_BIN) $(BUILDOUT_ARGS) annotate
+show:
+	buildout -c $(BUILDOUT_CFG) $(BUILDOUT_ARGS) annotate
 
-.PHONY: build
-build: $(BUILDOUT_BIN)
-	$(BUILDOUT_BIN) $(BUILDOUT_ARGS)
-
-.PHONY: docs
-docs: bin/pocompile bin/sphinx-build
-	bin/pocompile src
-	LANGUAGE=fi bin/sphinx-build docs html
+.PHONY: start
+start: .installed.cfg
+	PYTHON= bin/instance fg
 
 .PHONY: test
-export ZSERVER_PORT=55001
-test: bin/pocompile bin/code-analysis bin/test bin/pybot
+test: check
 	bin/pocompile src
-	bin/code-analysis
-	bin/test --all
-	LANGUAGE=fi bin/pybot $(PYBOT_ARGS) -d parts/test docs
-
-.PHONY: check
-check: test
-
-.PHONY: dist
-dist:
-	@echo "Not implemented"
-
-.PHONY: deploy
-deploy:
-	@echo "Not implemented"
-
-.PHONY: watch
-watch: bin/instance
-	RELOAD_PATH=src bin/instance fg
-
-.PHONY: robot-server
-robot-server: bin/robot-server
-	LANGUAGE=fi RELOAD_PATH=src bin/robot-server collective.flow.testing.FLOW_ACCEPTANCE_TESTING -v
-
-.PHONY: robot
-robot: bin/robot
-	bin/robot -d parts/test docs
-
-.PHONY: sphinx
-sphinx: bin/robot-sphinx-build
-	bin/robot-sphinx-build -d html docs html
-
-.PHONY: clean
-clean:
-	rm -rf .installed bin develop-eggs parts
+	bin/test  --all
 
 ###
 
-bootstrap-buildout.py:
-	curl -k -O https://bootstrap.pypa.io/bootstrap-buildout.py
+nix-%: netrc
+	NIX_CONF_DIR=$(PWD) \
+	nix-shell $(NIX_OPTIONS) setup.nix -A shell --run "$(MAKE) $*"
 
-bin/buildout: bootstrap-buildout.py buildout.cfg
-	@[ -f /.dockerenv ] && virtualenv --no-pip --no-setuptools --no-wheel .pyenv || true
-	python bootstrap-buildout.py -c buildout.cfg
+nix-shell: netrc
+	NIX_CONF_DIR=$(PWD) \
+	nix-shell $(NIX_OPTIONS) setup.nix -A shell
 
-bin/test: $(BUILDOUT_BIN) buildout.cfg
-	$(BUILDOUT_BIN) $(BUILDOUT_ARGS) install test
+.installed.cfg: $(BUILDOUT_CFG)
+	buildout -c $(BUILDOUT_CFG) $(BUILDOUT_ARGS)
 
-bin/pybot: $(BUILDOUT_BIN) buildout.cfg
-	$(BUILDOUT_BIN) $(BUILDOUT_ARGS) install pybot
+.cache:
+	@if [ -d ~/.cache ]; then ln -s ~/.cache .; else \
+	  mkdir -p .cache; \
+	fi
 
-bin/sphinx-build: $(BUILDOUT_BIN) buildout.cfg
-	$(BUILDOUT_BIN) $(BUILDOUT_ARGS) install sphinx-build
+.netrc:
+	@if [ -f ~/.netrc ]; then ln -s ~/.netrc .; else \
+	  echo machine ${INDEX_HOSTNAME} > .netrc && \
+	  echo login ${PYPI_USERNAME} >> .netrc && \
+	  echo password ${PYPI_PASSWORD} >> .netrc; \
+	fi
 
-bin/robot: $(BUILDOUT_BIN) buildout.cfg
-	$(BUILDOUT_BIN) $(BUILDOUT_ARGS) install robot
+netrc: .netrc .cache
+	@ln -sf .netrc netrc
 
-bin/robot-server: $(BUILDOUT_BIN) buildout.cfg
-	$(BUILDOUT_BIN) $(BUILDOUT_ARGS) install robot
+.PHONY: requirements
+requirements: requirements-$(PLONE)-$(PYTHON).nix
 
-bin/robot-sphinx-build: $(BUILDOUT_BIN) buildout.cfg
-	$(BUILDOUT_BIN) $(BUILDOUT_ARGS) install robot
+requirements-$(PLONE)-$(PYTHON).nix: requirements-$(PLONE)-$(PYTHON).txt
+	HOME=$(PWD) NIX_CONF_DIR=$(PWD) \
+	nix-shell setup.nix $(NIX_OPTIONS) -A pip2nix --run "HOME=$(PWD) NIX_CONF_DIR=$(PWD) pip2nix generate -r requirements-$(PLONE)-$(PYTHON).txt --index-url $(INDEX_URL) --output=requirements-$(PLONE)-$(PYTHON).nix"
 
-bin/instance: $(BUILDOUT_BIN) buildout.cfg
-	$(BUILDOUT_BIN) $(BUILDOUT_ARGS) install instance
-
-bin/code-analysis: $(BUILDOUT_BIN) buildout.cfg
-	$(BUILDOUT_BIN) $(BUILDOUT_ARGS) install code-analysis
-
-bin/isort: $(BUILDOUT_BIN) buildout.cfg
-	$(BUILDOUT_BIN) $(BUILDOUT_ARGS) install isort
-
-bin/yapf: $(BUILDOUT_BIN) buildout.cfg
-	$(BUILDOUT_BIN) $(BUILDOUT_ARGS) install yapf
-
-bin/pocompile: $(BUILDOUT_BIN) buildout.cfg
-	$(BUILDOUT_BIN) $(BUILDOUT_ARGS) install i18ndude
-
-requirements.nix: requirements.txt requirements-manual.txt
-	nix-shell setup.nix -A pip2nix --run "pip2nix generate -r requirements.txt -r requirements-manual.txt --output=requirements.nix"
+requirements-$(PLONE)-$(PYTHON).txt: $(BUILDOUT_CFG) setup.cfg
+	$(RM) .installed.cfg
+	nix-shell $(NIX_OPTIONS) --run "buildout -c $(BUILDOUT_CFG) $(BUILDOUT_ARGS)"
+	HOME=$(PWD) NIX_CONF_DIR=$(PWD) \
+	nix-shell setup.nix $(NIX_OPTIONS) -A pip2nix --run "HOME=$(PWD) NIX_CONF_DIR=$(PWD) pip2nix generate -r requirements.txt --index-url $(INDEX_URL) --output=requirements-$(PLONE)-$(PYTHON).nix"
+	@grep "pname =\|version =" requirements-$(PLONE)-$(PYTHON).nix|awk "ORS=NR%2?FS:RS"|sed 's|.*"\(.*\)";.*version = "\(.*\)".*|\1==\2|' > requirements-$(PLONE)-$(PYTHON).txt
 
 .PHONY: upgrade
 upgrade:
-	@echo "Updating nixpkgs 18.09 revision"; \
-	rev=$$(curl https://api.github.com/repos/NixOS/nixpkgs-channels/branches/nixos-18.09|jq -r .commit.sha); \
-	echo "Updating nixpkgs $$rev hash"; \
+	nix-shell --pure -p cacert curl gnumake jq nix --run "make setup.nix"
+
+.PHONY: setup.nix
+setup.nix:
+	@set -e pipefail; \
+	echo "Updating nixpkgs @ setup.nix using $(REF_NIXPKGS)"; \
+	rev=$$(curl https://api.github.com/repos/NixOS/nixpkgs-channels/$(firstword $(REF_NIXPKGS)) \
+		| jq -er '.[]|select(.name == "$(lastword $(REF_NIXPKGS))").commit.sha'); \
+	echo "Latest commit sha: $$rev"; \
 	sha=$$(nix-prefetch-url --unpack https://github.com/NixOS/nixpkgs-channels/archive/$$rev.tar.gz); \
-	sed -i "2s|.*|    url = \"https://github.com/NixOS/nixpkgs-channels/archive/$$rev.tar.gz\";|" setup.nix; \
-	sed -i "3s|.*|    sha256 = \"$$sha\";|" setup.nix; \
-	sed -i "2s|.*|    url = \"https://github.com/NixOS/nixpkgs-channels/archive/$$rev.tar.gz\";|" setup.nix; \
-	sed -i "3s|.*|    sha256 = \"$$sha\";|" setup.nix
-	@echo "Updating setup.nix version"; \
-	rev=$$(curl https://api.github.com/repos/datakurre/setup.nix/branches/master|jq -r ".commit.sha"); \
-	echo "Updating setup.nix $$rev hash"; \
-	sha=$$(nix-prefetch-url --unpack https://github.com/datakurre/setup.nix/archive/$$rev.tar.gz); \
-	sed -i "6s|.*|    url = \"https://github.com/datakurre/setup.nix/archive/$$rev.tar.gz\";|" setup.nix; \
-	sed -i "7s|.*|    sha256 = \"$$sha\";|" setup.nix
+	sed -i \
+		-e "2s|.*|    # $(REF_NIXPKGS)|" \
+		-e "3s|.*|    url = \"https://github.com/NixOS/nixpkgs-channels/archive/$$rev.tar.gz\";|" \
+		-e "4s|.*|    sha256 = \"$$sha\";|" \
+		setup.nix

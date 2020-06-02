@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 from Acquisition import aq_base
+from collective.flow.behaviors import ICancelButton
+from collective.flow.behaviors import ISaveAndActionButtons
 from collective.flow.browser.folder import save_form
 from collective.flow.browser.folder import validate
 from collective.flow.browser.widgets import RichTextLabelWidget
@@ -12,7 +14,10 @@ from collective.flow.schema import load_schema
 from collective.flow.utils import get_navigation_root_language
 from plone.autoform.view import WidgetsView
 from plone.dexterity.browser.edit import DefaultEditForm
+from plone.locking.interfaces import ILockable
 from plone.z3cform.fieldsets.extensible import ExtensibleForm
+from Products.CMFCore.interfaces import IActionWillBeInvokedEvent
+from Products.Five import BrowserView
 from venusianconfiguration import configure
 from z3c.form import button
 from zope.browsermenu.interfaces import IBrowserMenu
@@ -26,6 +31,8 @@ from zope.interface import implementer
 from zope.lifecycleevent import Attributes
 from zope.lifecycleevent import IObjectModifiedEvent
 from zope.lifecycleevent import ObjectModifiedEvent
+from zope.schema import getSchemaValidationErrors
+from zope.schema._bootstrapinterfaces import RequiredMissing
 
 import functools
 import plone.api as api
@@ -66,7 +73,7 @@ def on_flow_change_update_behaviors(context, event):
 class SubmissionView(WidgetsView, ExtensibleForm):
     @property
     def default_fieldset_label(self):
-        language = negotiate(context=self.request)
+        language = negotiate(context=self.request) or u''
         try:
             try:
                 return self.context.aq_explicit.aq_acquire(
@@ -81,7 +88,7 @@ class SubmissionView(WidgetsView, ExtensibleForm):
 
     @Lazy
     def schema(self):
-        language = negotiate(context=self.request)
+        language = negotiate(context=self.request) or u''
         return load_schema(
             aq_base(self.context).schema,
             language=language,
@@ -130,9 +137,9 @@ class SubmissionEditForm(DefaultEditForm):
 
     def __init__(self, context, request):
         super(SubmissionEditForm, self).__init__(context, request)
-        language = negotiate(context=request)
+        language = negotiate(context=request) or u''
         context_language = get_navigation_root_language(self.context)
-        if context_language.startswith(language):
+        if context_language.startswith(language or context_language):
             self._locale_postfix = ''
         else:
             self._locale_postfix = '_' + language
@@ -174,7 +181,7 @@ class SubmissionEditForm(DefaultEditForm):
 
     @Lazy
     def schema(self):
-        language = negotiate(context=self.request)
+        language = negotiate(context=self.request) or u''
         return load_schema(
             aq_base(self.context).schema,
             language=language,
@@ -187,42 +194,15 @@ class SubmissionEditForm(DefaultEditForm):
         btn = button.Button(name='save', title=_(u'Save'))
         self.buttons += button.Buttons(btn)
         self.handlers.addHandler(btn, self.handleApply)
-        # Get currently available workflow actions (re-use from menu)
-        actions = {}
-        menu = getUtility(IBrowserMenu, name='plone_contentmenu_workflow')
-        for action in menu.getMenuItems(self.context, self.request):
-            item_id = action.get('extra', {}).get('id', u'') or u''
-            action_id = re.sub('^workflow-transition-(.*)', '\\1', item_id)
-            actions[action_id] = action
 
-        for action in ['advanced', 'policy']:  # blacklisted menuitems
-            if action in actions:
-                del actions[action]
+        if ISaveAndActionButtons.providedBy(self.context):
+            append_action_buttons(self)
 
-        self.buttons = self.buttons.copy()
-        for action_id, action in actions.iteritems():
-            new_button = button.Button(
-                name=re.sub('^workflow-transition-(.*)', '\\1', action_id),
-                title=u' '.join([
-                    translate(
-                        _(u'Save and'),
-                        context=self.request,
-                    ),
-                    translate(
-                        action['title'],
-                        domain='plone',
-                        context=self.request,
-                    ).lower(),
-                ]),
-            )
-            self.buttons += button.Buttons(new_button)
-            self.handlers.addHandler(
-                new_button,
-                button.Handler(
-                    new_button,
-                    functools.partial(self.redirect, action['action']),
-                ),
-            )
+        if ICancelButton.providedBy(self.context):
+            btn = button.Button(name='cancel', title=_(u'Cancel'))
+            self.buttons += button.Buttons(btn)
+            self.handlers.addHandler(btn, self.handleCancel)
+
         super(SubmissionEditForm, self).updateActions()
 
     def redirect(self, url, form, button_action):
@@ -249,3 +229,89 @@ class SubmissionEditForm(DefaultEditForm):
                 descriptions.append(Attributes(interface, *names))
             notify(ObjectModifiedEvent(self.context, *descriptions))
         return changes
+
+
+@configure.browser.page.class_(
+    name='guard-no-required-missing',
+    for_=IFlowSubmission,
+    layer=ICollectiveFlowLayer,
+    permission='zope2.View',
+)
+@implementer(IFlowSchemaForm)
+class SubmissionValidationGuard(BrowserView):
+    def __call__(self):
+        for name, value in getSchemaValidationErrors(
+            self.schema,
+            self.context,
+        ):
+            if isinstance(value, RequiredMissing):
+                return False
+        return True
+
+    @Lazy
+    def schema(self):
+        language = negotiate(context=self.request) or u''
+        return load_schema(
+            aq_base(self.context).schema,
+            language=language,
+            cache_key=aq_base(self.context).schema_digest,
+        )
+
+
+def append_action_buttons(form):
+    # Get currently available workflow actions (re-use from menu)
+    actions = {}
+    menu = getUtility(IBrowserMenu, name='plone_contentmenu_workflow')
+
+    def lower_first(s):
+        if s and isinstance(s, unicode) and len(s) > 1:
+            return s[0].lower() + s[1:]
+        elif s and isinstance(s, unicode):
+            return s.lower()
+        return s
+
+    for action in menu.getMenuItems(form.context, form.request):
+        item_id = action.get('extra', {}).get('id', u'') or u''
+        action_id = re.sub('^workflow-transition-(.*)', '\\1', item_id)
+        actions[action_id] = action
+
+    for action in ['advanced', 'policy']:  # blacklisted menuitems
+        if action in actions:
+            del actions[action]
+
+    form.buttons = form.buttons.copy()
+    for action_id, action in actions.iteritems():
+        new_button = button.Button(
+            name=re.sub('^workflow-transition-(.*)', '\\1', action_id),
+            title=u' '.join([
+                translate(
+                    _(u'Save and'),
+                    context=form.request,
+                ),
+                lower_first(
+                    translate(
+                        action['title'],
+                        domain='plone',
+                        context=form.request,
+                    ),
+                ),
+            ]),
+        )
+        form.buttons += button.Buttons(new_button)
+        form.handlers.addHandler(
+            new_button,
+            button.Handler(
+                new_button,
+                functools.partial(form.redirect, action['action']),
+            ),
+        )
+
+
+@configure.subscriber.handler(
+    for_=(IFlowSubmission, IActionWillBeInvokedEvent),
+)
+def unlock_before_transition(ob, event):
+    # Force unlock to always allow workflow transitions
+    lockable = ILockable(ob, None)
+    if lockable is not None:
+        lockable.clear_locks()

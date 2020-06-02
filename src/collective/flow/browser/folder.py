@@ -3,6 +3,7 @@ from AccessControl.interfaces import IOwned
 from AccessControl.security import checkPermission
 from Acquisition import aq_base
 from Acquisition import aq_inner
+from collective.flow.browser.localization import LanguageFieldsProxy
 from collective.flow.browser.widgets import RichTextLabelWidget
 from collective.flow.interfaces import DEFAULT_FIELDSET_LABEL_FIELD
 from collective.flow.interfaces import DEFAULT_SCHEMA
@@ -13,7 +14,6 @@ from collective.flow.interfaces import IFlowImpersonation
 from collective.flow.interfaces import IFlowSchemaForm
 from collective.flow.interfaces import IImpersonateFlowSchemaDynamic
 from collective.flow.interfaces import SUBMISSION_TITLE_TEMPLATE_FIELD
-from collective.flow.interfaces import SUBMIT_LABEL_FIELD
 from collective.flow.schema import FlowSchemaFieldPermissionChecker
 from collective.flow.schema import interpolate
 from collective.flow.schema import load_schema
@@ -66,11 +66,11 @@ from zope.event import notify
 from zope.globalrequest import getRequest
 from zope.i18n import negotiate
 from zope.i18nmessageid import MessageFactory
+from zope.interface import Invalid
 from zope.interface import alsoProvides
 from zope.interface import implementer
-from zope.interface import Invalid
+from zope.lifecycleevent import ObjectCreatedEvent
 from zope.location.interfaces import IContained
-from zope.proxy import ProxyBase
 from zope.publisher.interfaces import IPublishTraverse
 from ZPublisher.HTTPRequest import FileUpload
 
@@ -342,7 +342,7 @@ def fire_default_transitions(
 
 
 def get_submission_title(form, submission):
-    language = negotiate(context=getRequest())
+    language = negotiate(context=getRequest()) or u''
     try:
         try:
             template = submission.aq_explicit.aq_acquire(
@@ -394,7 +394,8 @@ class FolderListing(BrowserView):
             query['b_size'] = b_size + orphan
 
         catalog = api.portal.get_tool('portal_catalog')
-        results = catalog(query)
+        results = [b for b in catalog(query)
+                   if b.review_state != 'deleted']
         return IContentListing(results)
 
 
@@ -422,9 +423,9 @@ class FlowSubmitForm(DefaultAddForm):
 
     def __init__(self, context, request):
         super(FlowSubmitForm, self).__init__(context, request)
-        language = negotiate(context=self.request)
+        language = negotiate(context=self.request) or u''
         context_language = get_navigation_root_language(self.context)
-        if context_language.startswith(language):
+        if context_language.startswith(language or context_language):
             self.localized_context = context
         else:
             proxy = LanguageFieldsProxy(self.context)
@@ -432,11 +433,10 @@ class FlowSubmitForm(DefaultAddForm):
             self.localized_context = proxy
         self.buttons = button.Buttons()
         self.handlers = button.Handlers()
-
-    def __call__(self):
         if 'disable_border' in self.request.form:
             del self.request.form['disable_border']
 
+    def __call__(self):
         pc = api.portal.get_tool('portal_catalog')
         path = '/'.join(self.context.getPhysicalPath())
         if (not self.submission_path_template and
@@ -499,7 +499,7 @@ class FlowSubmitForm(DefaultAddForm):
     @property
     @view.memoize
     def schema(self):
-        language = negotiate(context=self.request)
+        language = negotiate(context=self.request) or u''
         try:
             try:
                 schema = load_schema(
@@ -511,11 +511,12 @@ class FlowSubmitForm(DefaultAddForm):
                 alsoProvides(schema, IAddFlowSchemaDynamic)
                 return schema
             except KeyError:
-                return load_schema(
-                    aq_base(self.context).schema,
-                    language=language,
-                    cache_key=aq_base(self.context).schema_digest,
+                schema = aq_base(self.context).schema.replace(
+                    'flow.AuthorPortalContent',
+                    'zope2.View',
                 )
+                key = hashlib.md5(schema).hexdigest()
+                return load_schema(schema, language=language, cache_key=key)
         except AttributeError:
             self.request.response.redirect(
                 u'{0}/@@design'.format(self.context.absolute_url()),
@@ -591,6 +592,7 @@ class FlowSubmitForm(DefaultAddForm):
             checkConstraints=False,
         )
         for attachment in attachments:
+            notify(ObjectCreatedEvent(attachment))
             addContentToContainer(
                 submission,
                 attachment,
@@ -661,7 +663,7 @@ class FlowImpersonationForm(AutoExtensibleForm, Form):
     @view.memoize
     def schema(self):
         try:
-            language = negotiate(context=self.request)
+            language = negotiate(context=self.request) or u''
             schema = load_schema(
                 aq_base(self.context).schema,
                 name='@@impersonate',
@@ -729,7 +731,7 @@ class SubmissionView(WidgetsView):
     )
 
     def __init__(self, context, request, content):
-        language = negotiate(context=request)
+        language = negotiate(context=request) or u''
         self.content = content
         self.schema = load_schema(
             aq_base(content).schema,
@@ -740,7 +742,7 @@ class SubmissionView(WidgetsView):
 
     @property
     def default_fieldset_label(self):
-        language = negotiate(context=self.request)
+        language = negotiate(context=self.request) or u''
         try:
             try:
                 return getattr(
@@ -772,100 +774,6 @@ class SubmissionView(WidgetsView):
                     widget.label = u''
 
 
-class LanguageFieldsProxy(ProxyBase):
-    __slots__ = ['_context', '_language']
-
-    def __init__(self, context):
-        super(LanguageFieldsProxy, self).__init__(context)
-        self._context = context
-        self._language = None
-
-    def get_title(self):
-        try:
-            return getattr(self._context, 'title' + '_' + self._language)
-        except AttributeError:
-            return self._context.title
-
-    def set_title(self, value):
-        setattr(self._context, 'title' + '_' + self._language, value)
-
-    title = property(get_title, set_title)
-
-    def get_description(self):
-        try:
-            return getattr(self._context, 'description' + '_' + self._language)
-        except AttributeError:
-            return self._context.description
-
-    def set_description(self, value):
-        setattr(self._context, 'description' + '_' + self._language, value)
-
-    description = property(get_description, set_description)
-
-    def get_default_fieldset_label(self):
-        try:
-            return getattr(
-                self._context,
-                DEFAULT_FIELDSET_LABEL_FIELD + '_' + self._language,
-            )
-        except AttributeError:
-            return self._context.default_fieldset_label
-
-    def set_default_fieldset_label(self, value):
-        setattr(
-            self._context,
-            DEFAULT_FIELDSET_LABEL_FIELD + '_' + self._language,
-            value,
-        )
-
-    default_fieldset_label = property(
-        get_default_fieldset_label,
-        set_default_fieldset_label,
-    )
-
-    def get_submit_label(self):
-        try:
-            return getattr(
-                self._context,
-                SUBMIT_LABEL_FIELD + '_' + self._language,
-            )
-        except AttributeError:
-            return self._context.submit_label
-
-    def set_submit_label(self, value):
-        setattr(
-            self._context,
-            SUBMIT_LABEL_FIELD + '_' + self._language,
-            value,
-        )
-
-    submit_label = property(
-        get_submit_label,
-        set_submit_label,
-    )
-
-    def get_submission_title_template(self):
-        try:
-            return getattr(
-                self._context,
-                SUBMISSION_TITLE_TEMPLATE_FIELD + '_' + self._language,
-            )
-        except AttributeError:
-            return self._context.submission_title_template
-
-    def set_submission_title_template(self, value):
-        setattr(
-            self._context,
-            SUBMISSION_TITLE_TEMPLATE_FIELD + '_' + self._language,
-            value,
-        )
-
-    submission_title_template = property(
-        get_submission_title_template,
-        set_submission_title_template,
-    )
-
-
 @configure.browser.page.class_(
     name='edit',
     for_=IFlowFolder,
@@ -875,7 +783,7 @@ class LanguageFieldsProxy(ProxyBase):
 @implementer(IFlowSchemaForm)
 class FlowFolderEditForm(DefaultEditForm):
     def getContent(self):
-        language = negotiate(context=self.request)
+        language = negotiate(context=self.request) or u''
         context_language = get_navigation_root_language(self.context)
         if context_language.startswith(language):
             return self.context

@@ -1,11 +1,141 @@
 Changelog
 =========
 
-1.3.5 (unreleased)
+1.9.6 (unreleased)
 ------------------
 
 - Nothing changed yet.
 
+
+1.9.5 (2020-05-04)
+------------------
+
+- Change to replace 'flow.CanAuthorContent' with 'zope2.View' on submission add form
+  [Asko Soukka]
+
+1.9.4 (2020-04-28)
+------------------
+
+- Fix attachments listing to directly open attachments
+  [Asko Soukka]
+
+1.9.3 (2020-04-28)
+------------------
+
+- Rename submission contents as attachments
+  [Asko Soukka]
+
+1.9.2 (2020-04-27)
+------------------
+
+- Fix issue where ObjectCreatedEvent was not called for attachment and
+  attachment were missing uuids
+  [Asko Soukka]
+
+1.9.1 (2020-04-27)
+------------------
+
+- Change to allow 'guard-no-required-missing' with just view permissions
+  [Asko Soukka]
+
+1.9.0 (2020-04-16)
+------------------
+
+- Add flow.AuthorPortalContent permission
+  [Asko Soukka]
+- Add to include full formfield ids on display form
+  [Asko Soukka]
+
+1.8.1 (2020-02-06)
+------------------
+
+- Workaround issue where form:mode=display gets duplicated in schema serialization
+  [Asko Soukka]
+
+1.8.0 (2019-09-02)
+------------------
+
+- Implement 'require fields filled' transition guard and widget for warning
+  about 'deleted' state
+  [Asko Soukka]
+- Add to allow deletion of comment when no other actions are available
+  [Asko Soukka]
+
+1.7.0 (2019-08-06)
+------------------
+
+- Add automatic metromap to ignore 'deleted' state
+  [Asko Soukka]
+
+1.6.2 (2019-03-11)
+------------------
+
+- Fix issue where resolving submission behaviors failed with the upstream
+  dexterity version
+  [Asko Soukka]
+
+1.6.1 (2019-03-11)
+------------------
+
+- Add tests for schema synchronization function
+  [Asko Soukka]
+
+- Add to not synchronize default
+  values of text fields between languages
+  [Asko Soukka]
+
+1.6.0 (2019-03-08)
+------------------
+
+- Add synchronization of defaults and vocabulary values between main schema
+  language versions
+  [Asko Soukka]
+- Customize form flow sub folder add form to copy schema from the parent so
+  that it will include complete schema from the parent to fix issue where sub
+  folder was missing localizations from the parent
+  [Asko Soukka]
+- Change subfolder title and description localization to use the default
+  language instead of parent localization when localization is not yet
+  available
+  [Asko Soukka]
+
+
+1.5.2 (2019-02-19)
+------------------
+
+- Fix error rendering actions in plone toolbar.
+  [Valtteri Karppinen]
+
+
+1.5.1 (2019-02-18)
+------------------
+
+- Update translations in folder listing template
+  [Valtteri Karppinen]
+
+
+1.5.0 (2018-11-26)
+------------------
+
+- Add to copy flow folder customizations from the default language to new
+  translated language
+  [Asko Soukka]
+
+1.4.0 (2018-11-16)
+------------------
+
+- Add edit form cancel button with behavior
+  [Asko Soukka]
+
+- Change edit form save and workflow action buttons to depend on behavior
+  [Asko Soukka]
+
+1.3.5 (2018-11-12)
+------------------
+
+- Fix to clear locks when saving with worklflow action fix issue where lock
+  prevented workflow action
+  [Asko Soukka]
 
 1.3.4 (2018-10-31)
 ------------------

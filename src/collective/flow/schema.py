@@ -8,6 +8,7 @@ from collective.flow.interfaces import IFlowSchemaContext
 from collective.flow.interfaces import IFlowSchemaDynamic
 from collective.flow.utils import get_navigation_root_language
 from contextlib import contextmanager
+from copy import deepcopy
 from lxml import etree
 from lxml.etree import tostring
 from plone.alterego import dynamic
@@ -20,7 +21,7 @@ from plone.memoize.volatile import CleanupDict
 from plone.schemaeditor.interfaces import ISchemaModifiedEvent
 from plone.stringinterp.interfaces import IStringInterpolator
 from plone.supermodel import loadString
-from plone.supermodel import serializeSchema
+from plone.supermodel import serializeSchema as _serializeSchema
 from plone.supermodel.interfaces import ISchemaPolicy
 from plone.supermodel.interfaces import XML_NAMESPACE
 from plone.supermodel.utils import ns
@@ -68,6 +69,25 @@ CUSTOMIZABLE_TAGS = [
     ns('values'),
 ]
 
+SYNCHRONIZED_TAGS = [
+    ns('default'),
+    ns('values'),
+]
+
+
+def serializeSchema(schema, name):
+    """Patched serializeSchema"""
+    xml = _serializeSchema(schema, name)
+    # Something in plone.autoform integration for supermodel is
+    # duplicating form:mode="display -values leading huge XML and
+    # performance issues in parsing.
+    while 'form:mode="display display' in xml:
+        xml = xml.replace(
+            'form:mode="display display',
+            'form:mode="display',
+        )
+    return xml
+
 
 # noinspection PyProtectedMember
 def load_model(xml, cache_key=None):
@@ -99,6 +119,8 @@ def load_schema(xml, name=u'', language=u'', cache_key=None):
         name = name.strip()
     if language:
         language = u'/' + language.strip() + u'/'
+    else:
+        language = u''
     model = load_model(xml, cache_key=cache_key)
     try:
         return model.schemata[language + name]
@@ -166,30 +188,35 @@ def update_schema(xml, schema, name=u'', language=u''):
 
     # Drop default values from fields with defaultFactories
     for factory in root.xpath(
-        '//supermodel:defaultFactory',
-        namespaces=dict(supermodel=XML_NAMESPACE),
+            '//supermodel:defaultFactory',
+            namespaces=dict(supermodel=XML_NAMESPACE),
     ):
         for default in factory.itersiblings(ns('default'), preceding=False):
             default.getparent().remove(default)
         for default in factory.itersiblings(ns('default'), preceding=True):
             default.getparent().remove(default)
 
-    return etree.tostring(
-        root,
-        pretty_print=True,
-        xml_declaration=True,
-        encoding='utf8',
+    return synchronized_schema(
+        etree.tostring(
+            root,
+            pretty_print=True,
+            xml_declaration=True,
+            encoding='utf8',
+        ),
+        master=language,
     )
 
 
 def customized_schema(original, custom):
     root = etree.fromstring(custom)
     fields = {}
+    # fields_schemata = {}
 
     # copy customizable data from customized schema
     for schema in root.findall(ns('schema')):
         schema_name = schema.attrib.get('name') or u''
         fields.setdefault(schema_name, {})
+        # fields_schemata.setdefault(schema_name, {})
         for field in schema.xpath(
                 'supermodel:field',
                 namespaces=dict(supermodel=XML_NAMESPACE),
@@ -200,8 +227,79 @@ def customized_schema(original, custom):
                 fields[schema_name].setdefault(name, {})
                 fields[schema_name][name][node.tag] = node
 
-    # apply customizations for copy of original schema
+            # NOTE: This code was written to copy sub schema customizations
+            # from the default language for new translated languages, but
+            # it is not currently possible to customize sub schemas TTW.
+            #
+            # field_schemata = field.xpath(
+            #     'supermodel:schema',
+            #     namespaces=dict(supermodel=XML_NAMESPACE),
+            # ) + field.xpath(
+            #     '*/supermodel:schema',
+            #     namespaces=dict(supermodel=XML_NAMESPACE),
+            # )
+            # for schema_ in field_schemata:
+            #     name_ = schema_.text or ''
+            #     if not name_.startswith(SCHEMA_MODULE + '.'):
+            #         continue
+            #     fields_schemata[schema_name][name] = name_[
+            #         len(SCHEMA_MODULE + '.'):]
+
+    # copy original schema
     root = etree.fromstring(original)
+
+    # copy default language customizations for missing languages
+    for schema in root.findall(ns('schema')):
+        schema_name = schema.attrib.get('name') or u''
+
+        if schema_name in fields:
+            continue
+
+        if not IS_TRANSLATION.match(schema_name):
+            continue
+
+        canonical_name = schema_name[4:]
+        if canonical_name not in fields:
+            continue
+
+        fields.setdefault(
+            schema_name,
+            deepcopy(fields[canonical_name]),
+        )
+
+        # NOTE: This code was written to copy sub schema customizations
+        # from the default language for new translated languages, but
+        # it is not currently possible to customize sub schemas TTW.
+
+        # if canonical_name not in fields_schemata:
+        #     continue
+        #
+        # for field in schema.xpath(
+        #         'supermodel:field',
+        #         namespaces=dict(supermodel=XML_NAMESPACE),
+        # ):
+        #     name = field.attrib['name']
+        #     if name not in fields_schemata[canonical_name]:
+        #         continue
+        #
+        #     field_schemata = field.xpath(
+        #         'supermodel:schema',
+        #         namespaces=dict(supermodel=XML_NAMESPACE),
+        #     ) + field.xpath(
+        #         '*/supermodel:schema',
+        #         namespaces=dict(supermodel=XML_NAMESPACE),
+        #     )
+        #     for schema_ in field_schemata:
+        #         name_ = schema_.text or ''
+        #         if not name_.startswith(SCHEMA_MODULE + '.'):
+        #             continue
+        #         name_ = name_[len(SCHEMA_MODULE + '.'):]
+        #         fields.setdefault(
+        #             name_,
+        #             deepcopy(fields[fields_schemata[canonical_name][name]]),
+        #         )
+
+    # apply customizations for copy of original schema
     for schema in root.findall(ns('schema')):
         schema_name = schema.attrib.get('name') or u''
         fields.setdefault(schema_name, {})
@@ -231,6 +329,90 @@ def customized_schema(original, custom):
     )
 
     return customized
+
+
+def merge_vocabularies(from_node, to_node):
+    if from_node.tag == ns('values'):
+        vocabulary = {}
+        for term in from_node.iterchildren():
+            vocabulary[term.attrib.get('key') or term.text] = term.text
+        for term in to_node.iterchildren():
+            key = term.attrib.get('key') or term.text
+            term.text = vocabulary.get(key) or term.text
+    return to_node
+
+
+def synchronized_schema(xml, master=u''):
+    """Synchronize defaults and values between schemas"""
+    root = etree.fromstring(xml)
+    fields = {}
+
+    # copy values from master schema
+    for schema in root.findall(ns('schema')):
+        schema_name = schema.attrib.get('name') or u''
+        if schema_name != master:
+            continue
+
+        # fields_schemata.setdefault(schema_name, {})
+        for field in schema.xpath(
+                'supermodel:field',
+                namespaces=dict(supermodel=XML_NAMESPACE),
+        ):
+            name = field.attrib['name']
+            type_ = field.attrib['type']
+            if type_ in [
+                    'zope.schema.Text',
+                    'zope.schema.TextLine',
+                    'plone.app.textfield.RichText',
+            ]:
+                # Skip synchronizing text fields, because they are
+                # expected to contain localization specific data
+                continue
+            for node in [child for child in field.getchildren()
+                         if child.tag in SYNCHRONIZED_TAGS]:
+                fields.setdefault(name, {})
+                fields[name][node.tag] = node
+
+    # Re-parse schema to avoid "moving instead of cloning" mistakes later
+    root = etree.fromstring(xml)
+
+    # apply values for other languages
+    for schema in root.findall(ns('schema')):
+        schema_name = schema.attrib.get('name') or u''
+
+        # skip master schema
+        if schema_name == master:
+            continue
+
+        # skip object field schemas
+        if not IS_TRANSLATION.match(schema_name) and schema_name != '':
+            continue
+
+        for name in fields:
+            fields.setdefault(name, {})
+            for field in schema.xpath(
+                    'supermodel:field[@name="{0:s}"]'.format(name),
+                    namespaces=dict(supermodel=XML_NAMESPACE,
+                                    flow=FLOW_NAMESPACE),
+            ):
+                for node in [child for child in field.getchildren()
+                             if child.tag in fields[name]]:
+                    field.replace(
+                        node,
+                        merge_vocabularies(node, fields[name].pop(node.tag)),
+                    )
+                for node in fields[name].values():
+                    field.append(node)
+
+    # serialize
+    synchronized = etree.tostring(
+        root,
+        pretty_print=True,
+        xml_declaration=True,
+        encoding='utf8',
+    )
+
+    return synchronized
 
 
 def remove_attachments(xml):
@@ -390,7 +572,7 @@ def save_schema(context, schema=None, xml=None, language=u''):
             )
             # TODO: synchronize languages
         except AttributeError:
-            context.schema = serializeSchema(schema)
+            context.schema = serializeSchema(schema, name=u'')
         for name in schema:
             value_type = getattr(schema[name], 'value_type', None)
             if isinstance(value_type, Object):
@@ -419,12 +601,12 @@ def save_schema(context, schema=None, xml=None, language=u''):
 @adapter(IFlowSchemaContext, ISchemaModifiedEvent)
 def save_schema_from_schema_context(schema_context, event=None):
     assert event
-    language = negotiate(context=getRequest())
+    language = negotiate(context=getRequest()) or u''
     context_language = get_navigation_root_language(schema_context.content)
     save_schema(
         schema_context.content,
         schema=schema_context.schema,
-        language=not context_language.startswith(language) and language or u'',
+        language=not context_language.startswith(language or context_language) and language or u'',
     )
 
 
@@ -463,7 +645,7 @@ def fixed_language(language, request=None):
     """
     if request is None:
         request = getRequest()
-    current_language = negotiate(context=request)
+    current_language = negotiate(context=request) or u''
     if current_language != language:
         original = queryUtility(INegotiator)
         if original is not None:

@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<rolemap>
+  <permissions>
+    <permission name="collective.flow: Author portal content"
+                acquire="True">
+      <role name="Owner"/>
+    </permission>
+  </permissions>
+</rolemap>
