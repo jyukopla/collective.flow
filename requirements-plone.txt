@@ -6,7 +6,7 @@ Chameleon==2.25
 DateTime==4.2
 DocumentTemplate==2.13.4
 ExtensionClass==4.3.0
-Jinja2==2.10
+Jinja2==2.11.3
 Markdown==2.6.9
 MarkupSafe==1.0
 Missing==3.2
