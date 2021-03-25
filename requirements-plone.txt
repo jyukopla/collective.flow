@@ -55,7 +55,7 @@ Products.contentmigration==2.1.19
 Products.statusmessages==5.0.4
 Products.validation==2.1
 PyJWT==1.6.4
-PyYAML==3.13
+PyYAML==5.4
 Record==2.13.0
 RestrictedPython==3.6.0
 Sphinx==1.6.5
