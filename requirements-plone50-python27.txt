@@ -91,7 +91,7 @@ icalendar==4.0.2
 initgroups==2.13.0
 isort==4.3.21
 jsonschema==2.6.0
-lxml==3.5.0
+lxml==4.6.3
 mailinglogger==3.8.0
 mechanize==0.2.5
 mockup==2.1.9
