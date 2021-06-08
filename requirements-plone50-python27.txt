@@ -10,7 +10,7 @@ Missing==2.13.1
 MultiMapping==2.13.0
 Persistence==2.13.2
 Pillow==6.2.2
-Plone==5.0.10
+Plone==5.2.4
 Products.ATContentTypes==2.2.14
 Products.Archetypes==1.10.19
 Products.BTreeFolder2==2.14.0
