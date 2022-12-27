@@ -226,7 +226,7 @@ robotsuite==2.0.0
 roman==1.4.0
 sauna.reload==0.5.5
 selenium==2.53.6
-setuptools==40.2.0
+setuptools==65.5.1
 simplejson==3.12.0
 slimit==0.8.1
 snowballstemmer==1.2.1
