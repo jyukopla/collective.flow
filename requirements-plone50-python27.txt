@@ -93,7 +93,7 @@ isort==4.3.21
 jsonschema==2.6.0
 lxml==3.5.0
 mailinglogger==3.8.0
-mechanize==0.2.5
+mechanize==0.4.6
 mockup==2.1.9
 ordereddict==1.1
 pathlib==1.0.1
